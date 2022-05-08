@@ -2,6 +2,7 @@ theme: jekyll-theme-minimal
 title: 'XFLOPS'
 description: "Build infinite FLOPS by cloud native technology."
 url:   'https://xflops.cn'
+logo: "/images/xflops-logo.jpg"
 author:
   name:  'Klaus Ma'
 show_downloads: "true"
