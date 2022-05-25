@@ -15,5 +15,5 @@
 ## Contacts
 
 * E-mail: [support@xflops.cn](mailto:support@xflops.cn)
-* Github: [http://github.xom/xflops](http://github.xom/xflops)
+* Github: [http://github.com/xflops](http://github.com/xflops)
 * Slack: [http://xflops.slack.com](http://xflops.slack.com)
