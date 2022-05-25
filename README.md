@@ -7,6 +7,7 @@
 * Batch Workload: 
 * Elastic Workload:
 * Intelligent Scheduling:
+* Heterogeneous Devices:
 * High Throughput:
 * Auto-scaling:
 * Federation:
