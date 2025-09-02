@@ -1,0 +1,68 @@
+---
+layout: default
+---
+
+<div class="blog-container">
+    <div class="container">
+        <article class="blog-post">
+            <header class="blog-header">
+                <h1 class="blog-title">{{ page.title }}</h1>
+                
+                <div class="blog-meta">
+                    {% if page.author %}
+                        <span class="blog-author">By {{ page.author }}</span>
+                    {% endif %}
+                    
+                    {% if page.date %}
+                        <time class="blog-date" datetime="{{ page.date | date_to_xmlschema }}">
+                            {{ page.date | date: "%B %d, %Y" }}
+                        </time>
+                    {% endif %}
+                    
+                    {% if page.categories %}
+                        <div class="blog-categories">
+                            {% for category in page.categories %}
+                                <span class="blog-category">{{ category }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </header>
+
+            <div class="blog-content">
+                {{ content }}
+            </div>
+
+            <!-- Navigation -->
+            <nav class="blog-navigation">
+                {% if page.previous %}
+                    <a href="{{ page.previous.url | relative_url }}" class="blog-nav-prev">
+                        ← {{ page.previous.title }}
+                    </a>
+                {% endif %}
+                
+                {% if page.next %}
+                    <a href="{{ page.next.url | relative_url }}" class="blog-nav-next">
+                        {{ page.next.title }} →
+                    </a>
+                {% endif %}
+            </nav>
+
+            <!-- Related Posts -->
+            {% if page.categories %}
+                <div class="related-posts">
+                    <h3>Related Posts</h3>
+                    <ul class="related-posts-list">
+                        {% assign related_posts = site.posts | where_exp: "post", "post.categories contains page.categories[0]" | where_exp: "post", "post.url != page.url" | limit: 3 %}
+                        {% for post in related_posts %}
+                            <li>
+                                <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+                                <span class="post-date">{{ post.date | date: "%B %d, %Y" }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </article>
+    </div>
+</div>

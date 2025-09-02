@@ -1,8 +1,0 @@
-###############################################
-# set server-side redirects in this file      #
-# see https://www.netlify.com/docs/redirects/ #
-# test at https://play.netlify.com/redirects  #
-###############################################
-
-# Redirect golang vanity imports for xflops.cn
-/flame/* go-get=1 /golang/flame.html 200

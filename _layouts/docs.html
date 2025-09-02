@@ -1,0 +1,66 @@
+---
+layout: default
+---
+
+<div class="docs-container">
+    <div class="container">
+        <div class="docs-layout">
+            <!-- Sidebar -->
+            <aside class="docs-sidebar">
+                <nav class="docs-nav">
+                    <ul class="docs-nav-list">
+                        <li class="docs-nav-item">
+                            <a href="/docs/" class="docs-nav-link">Overview</a>
+                        </li>
+                        <li class="docs-nav-item">
+                            <a href="/docs/getting-started/" class="docs-nav-link">Getting Started</a>
+                        </li>
+                        <li class="docs-nav-item">
+                            <a href="/docs/use-cases/" class="docs-nav-link">Use Cases</a>
+                        </li>
+                        <li class="docs-nav-item">
+                            <a href="/docs/user-guide/" class="docs-nav-link">User Guide</a>
+                        </li>
+                        <li class="docs-nav-item">
+                            <a href="/docs/api-reference/" class="docs-nav-link">API Reference</a>
+                        </li>
+                        <li class="docs-nav-item">
+                            <a href="/docs/ecosystem/" class="docs-nav-link">Ecosystem</a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="docs-main">
+                <article class="docs-content">
+                    <header class="docs-header">
+                        <h1 class="docs-title">{{ page.title }}</h1>
+                        {% if page.description %}
+                            <p class="docs-description">{{ page.description }}</p>
+                        {% endif %}
+                    </header>
+
+                    <div class="docs-body">
+                        {{ content }}
+                    </div>
+
+                    <!-- Navigation -->
+                    <nav class="docs-navigation">
+                        {% if page.previous %}
+                            <a href="{{ page.previous.url | relative_url }}" class="docs-nav-prev">
+                                ← {{ page.previous.title }}
+                            </a>
+                        {% endif %}
+                        
+                        {% if page.next %}
+                            <a href="{{ page.next.url | relative_url }}" class="docs-nav-next">
+                                {{ page.next.title }} →
+                            </a>
+                        {% endif %}
+                    </nav>
+                </article>
+            </main>
+        </div>
+    </div>
+</div>

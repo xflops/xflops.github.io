@@ -1,8 +1,87 @@
-theme: jekyll-theme-slate
+# Site settings
 title: 'XFLOPS'
 description: "Build infinite FLOPS by cloud native technology."
-url:   'https://xflops.cn'
-logo: "/images/xflops-logo.jpg"
+url: 'https://xflops.cn'
+baseurl: ''
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+permalink: /:categories/:title/
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /docs/:path/
+  blog:
+    output: true
+    permalink: /blog/:title/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "docs"
+  - scope:
+      path: ""
+      type: "blog"
+    values:
+      layout: "blog"
+      author: "XFLOPS Team"
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Navigation
+nav:
+  - title: Home
+    url: /
+  - title: Documentation
+    url: /docs/
+    children:
+      - title: Getting Started
+        url: /docs/getting-started/
+      - title: Use Cases
+        url: /docs/use-cases/
+      - title: User Guide
+        url: /docs/user-guide/
+      - title: API Reference
+        url: /docs/api-reference/
+      - title: Ecosystem
+        url: /docs/ecosystem/
+  - title: Blog
+    url: /blog/
+  - title: GitHub
+    url: https://github.com/xflops/flame
+    external: true
+
+# Social links
+social:
+  - name: GitHub
+    url: https://github.com/xflops
+  - name: Slack
+    url: http://xflops.slack.com
+
+# Author
 author:
-  name:  'Klaus Ma'
-show_downloads: "true"
+  name: 'Klaus Ma'
+  email: 'support@xflops.cn'
+
+# Logo
+logo: "/images/xflops-logo.jpg"
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/

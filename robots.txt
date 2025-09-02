@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://xflops.cn/sitemap.xml
+
+# Disallow admin and internal areas
+Disallow: /admin/
+Disallow: /internal/
+Disallow: /_/
+Disallow: /assets/js/
+Disallow: /assets/css/
+
+# Allow important pages
+Allow: /docs/
+Allow: /blog/
+Allow: /images/
