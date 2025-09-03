@@ -12,11 +12,18 @@ This guide will walk you through installing and configuring Flame for your first
 
 Before you begin, ensure you have the following:
 
-- **Kubernetes Cluster**: A working Kubernetes cluster (version 1.20 or later)
+- **Kubernetes Cluster**: A working Kubernetes cluster (version `1.20` or later)
 - **kubectl**: Configured to communicate with your cluster
-- **Helm**: Version 3.0 or later (optional, for Helm-based installation)
+- **Helm**: Version `3.0` or later (optional, for Helm-based installation)
 - **Docker**: For building and running containers locally (optional)
 - **Storage**: Persistent storage provisioner configured in your cluster
+
+### System Requirements
+
+- **CPU**: Minimum `2 cores`, recommended `4+ cores`
+- **Memory**: Minimum `4GB RAM`, recommended `8GB+ RAM`
+- **Storage**: At least `20GB` available disk space
+- **Network**: Stable internet connection for downloading images
 
 ### Supported Kubernetes Distributions
 
@@ -30,7 +37,7 @@ Flame can be installed using several methods. Choose the one that best fits your
 
 ### Method 1: Helm Installation (Recommended)
 
-Helm provides the easiest way to install and manage Flame:
+Helm provides the easiest way to install and manage Flame. You'll need Helm version `3.0` or later:
 
 ```bash
 # Add the XFLOPS Helm repository
@@ -44,9 +51,11 @@ helm install flame xflops/flame \
   --set global.imageRegistry=ghcr.io/xflops
 ```
 
+> **Note**: The `--create-namespace` flag automatically creates the `flame-system` namespace if it doesn't exist.
+
 ### Method 2: Direct Kubernetes Manifests
 
-For environments where Helm is not available:
+For environments where Helm is not available, you can use `kubectl` directly:
 
 ```bash
 # Create namespace
@@ -58,6 +67,8 @@ kubectl apply -f https://raw.githubusercontent.com/xflops/flame/main/deploy/mani
 # Apply the operator
 kubectl apply -f https://raw.githubusercontent.com/xflops/flame/main/deploy/manifests/operator.yaml
 ```
+
+> **Tip**: You can also download the manifest files locally and apply them with `kubectl apply -f ./manifests/`
 
 ### Method 3: Operator Installation
 
@@ -73,7 +84,7 @@ kubectl wait --for=condition=ready pod -l app=flame-operator -n flame-system
 
 ## Verification
 
-After installation, verify that all components are running correctly:
+After installation, verify that all components are running correctly. You can use these `kubectl` commands:
 
 ```bash
 # Check all pods in the flame-system namespace
@@ -84,6 +95,9 @@ kubectl get services -n flame-system
 
 # Check custom resources
 kubectl get crd | grep flame
+
+# Check Flame operator logs
+kubectl logs -n flame-system -l app=flame-operator --tail=50
 ```
 
 You should see output similar to:
@@ -108,7 +122,7 @@ flameclusters.flame.xflops.cn
 
 ### 1. Configure Resource Limits
 
-Set appropriate resource limits for your environment:
+Set appropriate resource limits for your environment. Create a file named `flame-config.yaml`:
 
 ```yaml
 # flame-config.yaml
@@ -132,6 +146,8 @@ data:
       defaultTimeout: "1h"
 ```
 
+> **Important**: Adjust the `cpu` and `memory` values based on your cluster's available resources.
+
 Apply the configuration:
 
 ```bash
@@ -140,7 +156,7 @@ kubectl apply -f flame-config.yaml
 
 ### 2. Configure Storage
 
-Set up persistent storage for your workloads:
+Set up persistent storage for your workloads. Create a file named `storage-config.yaml`:
 
 ```yaml
 # storage-config.yaml
@@ -157,6 +173,8 @@ spec:
       storage: 100Gi
   storageClassName: your-storage-class
 ```
+
+> **Note**: Replace `your-storage-class` with the actual storage class name from your cluster. Common values include `standard`, `gp2`, or `fast-ssd`.
 
 ### 3. Configure Authentication
 
