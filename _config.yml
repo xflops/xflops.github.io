@@ -1,6 +1,6 @@
 # Site settings
-title: 'XFLOPS'
-description: "Build infinite FLOPS by cloud native technology."
+title: 'xflops'
+description: "Agent runtime with Flame for Security, Performance and Cost."
 url: 'https://xflops.cn'
 baseurl: ''
 
@@ -30,7 +30,7 @@ defaults:
       type: "blog"
     values:
       layout: "blog"
-      author: "XFLOPS Team"
+      author: "xflops Team"
 
 # Plugins
 plugins:
@@ -43,18 +43,14 @@ nav:
   - title: Home
     url: /
   - title: Documentation
-    url: /docs/
+    url: /docs/overview/
     children:
       - title: Getting Started
         url: /docs/getting-started/
-      - title: Use Cases
-        url: /docs/use-cases/
       - title: User Guide
         url: /docs/user-guide/
       - title: API Reference
         url: /docs/api-reference/
-      - title: Ecosystem
-        url: /docs/ecosystem/
   - title: Blog
     url: /blog/
   - title: GitHub
