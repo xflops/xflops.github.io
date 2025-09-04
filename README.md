@@ -115,7 +115,7 @@ The website is automatically deployed to GitHub Pages when changes are pushed to
 
 ## Contact and Support
 
-- **Email**: [support@xflops.cn](mailto:support@xflops.cn)
+- **Email**: [support@xflops.io](mailto:support@xflops.io)
 - **GitHub**: [http://github.com/xflops](http://github.com/xflops)
 - **Slack**: [http://xflops.slack.com](http://xflops.slack.com)
 

@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://xflops.cn/sitemap.xml
+Sitemap: https://xflops.io/sitemap.xml
 
 # Disallow admin and internal areas
 Disallow: /admin/

@@ -66,11 +66,11 @@ social:
 
 # Author
 author:
-  name: 'Klaus Ma'
+  name: 'XFLOPS'
   email: 'support@xflops.io'
 
 # Logo
-logo: "/images/flame-logo.jpg"
+logo: "/images/flame-logo.png"
 
 # Exclude from processing
 exclude:
