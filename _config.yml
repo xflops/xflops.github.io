@@ -1,7 +1,7 @@
 # Site settings
 title: 'xflops'
 description: "Serverless runtime with Flame for Security, Performance and Cost."
-url: 'https://xflops.cn'
+url: 'https://xflops.io'
 baseurl: ''
 
 # Build settings
@@ -67,7 +67,7 @@ social:
 # Author
 author:
   name: 'Klaus Ma'
-  email: 'support@xflops.cn'
+  email: 'support@xflops.io'
 
 # Logo
 logo: "/images/flame-logo.jpg"
