@@ -1,6 +1,6 @@
 # Site settings
 title: 'xflops'
-description: "Agent runtime with Flame for Security, Performance and Cost."
+description: "Serverless runtime with Flame for Security, Performance and Cost."
 url: 'https://xflops.cn'
 baseurl: ''
 
