@@ -34,7 +34,7 @@ If you're ready to dive in immediately, here's a quick overview of what you'll n
 
 Flame follows a microservices architecture designed for cloud-native environments:
 
-![]("/images/flame-arch.jpg")
+![](/images/flame-arch.jpg)
 
 ## Getting Help
 
