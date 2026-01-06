@@ -239,7 +239,7 @@ Session History
 
 * [#273: Patch Objects to improve performances](https://github.com/xflops/flame/issues/273)
 * [#274: Persist common data for closed session](https://github.com/xflops/flame/issues/274)
-* Data Aware Scheduling and Routing
+* [#275: Data Aware Scheduling and Routing](https://github.com/xflops/flame/issues/275)
 
 
 ## References
