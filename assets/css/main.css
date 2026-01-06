@@ -469,6 +469,24 @@ a:hover {
     line-height: 1.8;
 }
 
+/* Image constraints - ensure images don't exceed page width */
+.blog-content img,
+.docs-body img,
+.site-main img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.5rem auto;
+}
+
+/* Ensure images in paragraphs and other inline contexts also respect max-width */
+.blog-content p img,
+.docs-body p img,
+.site-main p img {
+    display: block;
+    margin: 1.5rem auto;
+}
+
 .blog-navigation {
     display: flex;
     justify-content: space-between;
