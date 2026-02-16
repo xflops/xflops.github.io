@@ -69,7 +69,7 @@ sudo chmod 640 /etc/xflops/flm.conf
 
 ### Database Setup
 
-For production environments, update the `database_uri` in `flmadm.conf`.
+For production environments, update the `database_uri` in `flm.conf`.
 
 ```ini
 [database]
@@ -123,7 +123,7 @@ tail -f /var/log/xflops/flm.log
 
 2.  **Permission Denied**
     - **Error**: `PermissionError: [Errno 13] Permission denied: '/var/lib/xflops/data'`
-    - **Fix**: Ensure the `xflops` user owns the data directory: `sudo chown -R xflops:xflops /var/lib/xflops`.
+    - **Fix**: The `flmadm init` command handles directory creation and permissions automatically. If manual intervention is required as a fallback, ensure the `xflops` user owns the data directory: `sudo chown -R xflops:xflops /var/lib/xflops`.
 
 3.  **Database Connection Failed**
     - **Error**: `OperationalError: connection to server at "localhost" failed`
