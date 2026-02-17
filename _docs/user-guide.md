@@ -1,127 +1,83 @@
----
-layout: docs
-title: User Guide
-description: Comprehensive guide for using Flame effectively on bare metal.
----
+# Flame User Guide
 
-# User Guide
+## Cluster Management with flmadm
 
-This guide covers how to configure, manage, and monitor Flame on bare metal environments using `flmadm` and `flmctl`.
+`flmadm` is the administration CLI for Flame, designed for installing, configuring, and managing Flame clusters on bare-metal servers or VMs. It handles the full lifecycle of the cluster, including installation, upgrades, and uninstallation.
 
-## Table of Contents
+### Installation & Management
 
-1. [Configuration](#configuration)
-2. [Cluster Management](#cluster-management)
-3. [Workload Management](#workload-management)
-4. [Monitoring](#monitoring)
-5. [Troubleshooting](#troubleshooting)
-
-## Configuration
-
-Flame uses a TOML-based configuration file located at `/usr/local/flame/conf/flm.conf`.
-
-### Basic Configuration
-
-```toml
-[common]
-# Unique identifier for the node
-node_id = "node-01"
-
-[session_manager]
-# Port for the Session Manager service
-port = 8080
-
-[executor_manager]
-# Port for the Executor Manager service
-port = 9090
-# Maximum number of concurrent tasks
-max_tasks = 10
-```
-
-To apply changes, restart the services:
-
+To install `flmadm`:
 ```bash
-sudo systemctl restart flame-session-manager
-sudo systemctl restart flame-executor-manager
+cd /path/to/flame
+cargo build --release -p flmadm
+sudo cp target/release/flmadm /usr/local/bin/
 ```
 
-## Cluster Management
+Use `flmadm` to manage the cluster:
+- **Install**: `sudo flmadm install --all`
+- **Uninstall**: `sudo flmadm uninstall`
+- **Upgrade**: `sudo flmadm install --force --skip-build`
 
-Use `flmadm` to manage the cluster nodes.
+## Worker Node Configuration
 
-### Adding a Node
+Worker nodes require a `flm.conf` configuration file to connect to the control plane.
 
-To add a new worker node to the cluster:
+Example `flm.conf`:
 
-1. Install Flame on the new node (see [Installation Guide](installation.md)).
-2. Configure the `flm.conf` to point to the Session Manager.
-3. Start the `flame-executor-manager` service.
+```ini
+[cluster]
+leader_address = "http://control-plane-node:8080"
+role = "worker"
 
-### Checking Cluster Status
-
-Use `flmctl` to view the status of all nodes:
-
-```bash
-flmctl get nodes
+[executor]
+slots = 4
 ```
 
-## Workload Management
+Ensure `leader_address` points to the Flame Session Manager on the control plane node.
 
-Flame workloads are submitted using the `flmctl` CLI or the Python SDK.
+## Using flmctl
 
-### Submitting a Task
+`flmctl` is the user-facing CLI for submitting jobs and managing sessions.
 
-Create a task definition file `task.json`:
+### Common Commands
 
-```json
-{
-  "name": "my-task",
-  "image": "python:3.9",
-  "command": "python script.py",
-  "resources": {
-    "cpu": 2,
-    "memory": "4Gi"
-  }
-}
-```
+- **List resources**:
+  ```bash
+  flmctl list --session
+  flmctl list --application
+  flmctl list --executor
+  ```
 
-Submit the task:
+- **View resource details**:
+  ```bash
+  flmctl view --session <session-id>
+  flmctl view --application <app-name>
+  flmctl view --task <task-id>
+  ```
 
-```bash
-flmctl submit task.json
-```
+- **Create resources**:
+  ```bash
+  flmctl create --app <app-name> --slots <slots>
+  ```
 
-### Listing Tasks
-
-```bash
-flmctl get tasks
-```
-
-### Viewing Task Logs
-
-```bash
-flmctl logs <task-id>
-```
-
-## Monitoring
-
-Flame services log to systemd journal.
-
-### Service Logs
-
-View Session Manager logs:
-```bash
-journalctl -u flame-session-manager -f
-```
-
-View Executor Manager logs:
-```bash
-journalctl -u flame-executor-manager -f
-```
+- **Close session**:
+  ```bash
+  flmctl close --session <session-id>
+  ```
 
 ## Troubleshooting
 
 ### Common Issues
 
-- **Service fails to start**: Check configuration file syntax.
-- **Task stuck in PENDING**: Check if there are enough resources (CPU/Memory) available on worker nodes.
+1. **Service Fails to Start**:
+   - Check logs: `journalctl -u flame-session-manager` or `journalctl -u flame-executor-manager`
+   - Verify configuration syntax in `/usr/local/flame/conf/flm.conf`
+
+2. **Worker Cannot Join**:
+   - Verify network connectivity: `nc -zv <control-plane-ip> 8080`
+   - Check firewall rules allow traffic on port 8080 (Session Manager) and 9090 (Executor Manager)
+   - Ensure `leader_address` in `flm.conf` is correct and reachable
+
+3. **Job Submission Fails**:
+   - Check if Session Manager is running: `systemctl status flame-session-manager`
+   - Verify client connectivity to Session Manager port 8080
