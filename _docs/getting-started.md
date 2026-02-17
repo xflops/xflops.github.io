@@ -25,9 +25,8 @@ Flame is installed using the `flmadm` tool, which manages the installation of al
 First, you need to install the `flmadm` CLI tool.
 
 ```bash
-# Clone the repository
-git clone https://github.com/xflops/flame.git
-cd flame
+# Clone the repository and enter the directory
+git clone https://github.com/xflops/flame.git && cd flame
 
 # Build flmadm
 cargo build --release -p flmadm
@@ -61,8 +60,11 @@ sudo systemctl status flame-executor-manager
 You can also use the `flmping` tool to verify the cluster functionality:
 
 ```bash
+# Add flame binaries to your PATH for this session
+export PATH=$PATH:/usr/local/flame/bin
+
 # Run a simple ping test
-/usr/local/flame/bin/flmping
+flmping
 ```
 
 You should see output indicating successful task execution:
@@ -75,14 +77,55 @@ Session <1> was created in <3 ms>, start to run <10> tasks in the session:
 
 ## Your First Workload
 
-Now let's verify your installation by checking the session status using `flmctl`.
+Now that your cluster is running, let's submit a simple workload to understand how Flame distributes tasks.
 
-```bash
-# List sessions
-/usr/local/flame/bin/flmctl list -s
+### 1. Create a Simple Python Task
+
+Create a file named `hello_flame.py`:
+
+```python
+#!/usr/bin/env python3
+"""A simple Flame workload example."""
+
+import flame
+
+def task_function(task_id: int) -> str:
+    """A simple task that returns a greeting."""
+    import socket
+    hostname = socket.gethostname()
+    return f"Hello from Flame! Task {task_id} executed on {hostname}"
+
+if __name__ == "__main__":
+    # Create a session with 5 tasks
+    session = flame.Session()
+    
+    # Submit tasks
+    for i in range(5):
+        session.submit(task_function, i)
+    
+    # Wait for results and print them
+    results = session.wait()
+    for result in results:
+        print(result)
+    
+    print(f"\nCompleted {len(results)} tasks successfully!")
 ```
 
-You should see your `flmping` session in the output.
+### 2. Run the Workload
+
+```bash
+# Ensure PATH is set (assuming /usr/local/flame/bin is in your PATH)
+python3 hello_flame.py
+```
+
+### 3. Check Session Status
+
+```bash
+# List sessions to see your workload
+flmctl list -s
+```
+
+You should see your session in the output, showing the completed tasks.
 
 ## Next Steps
 

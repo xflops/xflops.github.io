@@ -24,7 +24,7 @@ Before installing Flame, ensure your environment meets the following requirement
 
 The `flmadm` tool is the administrator CLI for Flame.
 
-### Option 1: Build from Source (Recommended)
+### Build from Source
 
 ```bash
 # Clone the repository
@@ -84,6 +84,8 @@ For machines that only need to submit jobs (no services running):
 flmadm install --client --prefix ~/flame --no-systemd
 ```
 
+> **Note**: After installation, add `export PATH=$PATH:~/flame/bin` to your shell profile (e.g., `~/.bashrc` or `~/.zshrc`) to make the client tools available in your terminal.
+
 ## Verifying Installation
 
 After installation, check the status of the services:
@@ -100,8 +102,8 @@ You can also use `flmctl` to check the cluster status:
 # Add flmctl to PATH if needed
 export PATH=$PATH:/usr/local/flame/bin
 
-# Check version
-flmctl --version
+# Check cluster status by listing sessions
+flmctl list -s
 ```
 
 ## Troubleshooting
