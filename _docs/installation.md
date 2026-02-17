@@ -17,7 +17,7 @@ Before installing Flame, ensure your environment meets the following requirement
 - **Dependencies**:
   - `curl` (for downloading scripts)
   - `git` (if building from source)
-  - `rust` toolchain (if building from source)
+  - `rust` toolchain (version 1.70 or later)
   - `python3` & `pip` (for Python SDK)
 
 ## Installing flmadm
@@ -104,14 +104,25 @@ export PATH=$PATH:/usr/local/flame/bin
 flmctl --version
 ```
 
+## Troubleshooting
+
+If you encounter issues during installation or verification, check the following:
+
+### Common Issues
+
+- **`flmadm: command not found`**: Ensure that `/usr/local/bin` is in your `$PATH`. You may need to add `export PATH=$PATH:/usr/local/bin` to your `.bashrc` or `.zshrc`.
+- **Build Failures**: If `cargo build` fails, ensure you have the required build dependencies installed (e.g., `build-essential`, `libssl-dev`, `pkg-config`).
+- **Service Failures**: If `systemctl status` shows services as `failed`, check the logs using `journalctl -u flame-session-manager` or `journalctl -u flame-executor-manager` for error details.
+
 ## Uninstallation
 
 To remove Flame from your system:
 
 ```bash
 # Uninstall with backup (default)
+# Backups are stored in /var/backups/flame/ by default.
 sudo flmadm uninstall
 
-# Uninstall without backup
+# Uninstall without backup (WARNING: This will permanently delete all data!)
 sudo flmadm uninstall --no-backup --force
 ```
