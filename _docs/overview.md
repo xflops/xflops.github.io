@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: XFLOPS/Flame Overview
-description: Welcome to the XFLOPS! Learn about Flame, an distributed engine for AI Agents and Quant.
+description: Welcome to the XFLOPS! Learn about Flame, a distributed engine for AI Agents and Quant.
 ---
 
 # Welcome to XFLOPS!
@@ -15,24 +15,24 @@ XFLOPS is a vibrant community focused on empowering members to build serverless 
 ### Key Features of Flame
 
 - **Elastic**: Scale the workloads dynamically based on demand with auto-scaling capabilities and resource optimization.
-- **Security**: Session-based authentication and authorization for secure access to your elastic workloads which are running in microVMs, e.g. AI agents, Quant, etc.
+- **Security**: Session-based authentication and authorization for secure access to your elastic workloads.
 - **Cost Effective**: Advanced scheduling algorithms that optimize resource utilization and workload distribution across the infrastructure.
-- **Heterogeneous**: Support for various hardware configurations including GPUs, TPUs, and specialized accelerators for elastic workloads.
-- **High Performance**: Optimized for maximum throughput and performance, ensuring your elastic workloads run at peak efficiency.
-- **Cloud Native**: Designed by Cloud Native architecture, make it possible to be deployed on any cloud platform or on-premise.
+- **Heterogeneous**: Support for various hardware configurations including GPUs, TPUs, and specialized accelerators.
+- **High Performance**: Optimized for maximum throughput and performance.
+- **Bare Metal Native**: Designed for bare metal environments to squeeze every bit of performance.
 
 ## Quick Start
 
 If you're ready to dive in immediately, here's a quick overview of what you'll need:
 
-1. **Prerequisites**: Docker, Docker Compose and basic familiarity with container orchestration
-2. **Installation**: Deploy Flame using docker compose for developer environment
-3. **Configuration**: Set up your first AI workload configuration
+1. **Prerequisites**: Linux, Rust, Python 3
+2. **Installation**: Deploy Flame using `flmadm`
+3. **Configuration**: Set up your first `flm.conf`
 4. **Deployment**: Launch your first distributed AI workload
 
 ## Architecture Overview
 
-Flame follows a microservices architecture designed for cloud-native environments:
+Flame follows a distributed architecture designed for high-performance computing:
 
 ![](/images/flame-arch.jpg)
 
