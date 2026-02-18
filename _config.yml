@@ -45,12 +45,12 @@ nav:
   - title: Documentation
     url: /docs/overview/
     children:
+      - title: Installation
+        url: /docs/installation/
       - title: Getting Started
         url: /docs/getting-started/
       - title: User Guide
         url: /docs/user-guide/
-      - title: API Reference
-        url: /docs/api-reference/
   - title: Blog
     url: /blog/
   - title: GitHub
