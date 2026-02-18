@@ -6,324 +6,150 @@ description: Learn how to install and configure Flame for your first distributed
 
 # Getting Started with Flame
 
-This guide will walk you through installing and configuring Flame for your first distributed AI workload deployment. By the end of this guide, you'll have a working Flame installation and understand the basic concepts.
+This guide will walk you through installing and configuring Flame for your first distributed AI workload deployment on bare metal or virtual machines. By the end of this guide, you'll have a working Flame installation and understand the basic concepts.
 
 ## Prerequisites
 
 Before you begin, ensure you have the following:
 
-- **Kubernetes Cluster**: A working Kubernetes cluster (version `1.20` or later)
-- **kubectl**: Configured to communicate with your cluster
-- **Helm**: Version `3.0` or later (optional, for Helm-based installation)
-- **Docker**: For building and running containers locally (optional)
-- **Storage**: Persistent storage provisioner configured in your cluster
+- **Operating System**: Linux (Ubuntu 20.04+, CentOS 8+, etc.)
+- **Dependencies**: Rust toolchain, Git, and Python 3.
+- **Root Access**: For system-wide installation.
 
-### System Requirements
+## Installation
 
-- **CPU**: Minimum `2 cores`, recommended `4+ cores`
-- **Memory**: Minimum `4GB RAM`, recommended `8GB+ RAM`
-- **Storage**: At least `20GB` available disk space
-- **Network**: Stable internet connection for downloading images
+Flame is installed using the `flmadm` tool, which manages the installation of all components.
 
-### Supported Kubernetes Distributions
+### 1. Install flmadm
 
-- **Cloud Providers**: AWS EKS, Google GKE, Azure AKS
-- **On-Premises**: OpenShift, Rancher, VMware Tanzu
-- **Local Development**: Minikube, Docker Desktop, Kind
-
-## Installation Methods
-
-Flame can be installed using several methods. Choose the one that best fits your environment:
-
-### Method 1: Helm Installation (Recommended)
-
-Helm provides the easiest way to install and manage Flame. You'll need Helm version `3.0` or later:
+First, you need to install the `flmadm` CLI tool.
 
 ```bash
-# Add the XFLOPS Helm repository
-helm repo add xflops https://charts.xflops.cn
-helm repo update
+# Clone the repository and enter the directory
+git clone https://github.com/xflops/flame.git && cd flame
 
-# Install Flame
-helm install flame xflops/flame \
-  --namespace flame-system \
-  --create-namespace \
-  --set global.imageRegistry=ghcr.io/xflops
+# Build flmadm
+cargo build --release -p flmadm
+
+# Install to system path
+sudo cp target/release/flmadm /usr/local/bin/
 ```
 
-> **Note**: The `--create-namespace` flag automatically creates the `flame-system` namespace if it doesn't exist.
+### 2. Install Flame Cluster
 
-### Method 2: Direct Kubernetes Manifests
-
-For environments where Helm is not available, you can use `kubectl` directly:
+For a quick start, install all components on a single machine:
 
 ```bash
-# Create namespace
-kubectl create namespace flame-system
-
-# Apply the core components
-kubectl apply -f https://raw.githubusercontent.com/xflops/flame/main/deploy/manifests/core.yaml
-
-# Apply the operator
-kubectl apply -f https://raw.githubusercontent.com/xflops/flame/main/deploy/manifests/operator.yaml
+sudo flmadm install --all --enable
 ```
 
-> **Tip**: You can also download the manifest files locally and apply them with `kubectl apply -f ./manifests/`
+This will install the Control Plane, Worker, and Client components, and start the necessary systemd services.
 
-### Method 3: Operator Installation
-
-Using the Flame Operator for advanced management:
-
-```bash
-# Install the Flame Operator
-kubectl apply -f https://raw.githubusercontent.com/xflops/flame/main/deploy/manifests/operator.yaml
-
-# Wait for the operator to be ready
-kubectl wait --for=condition=ready pod -l app=flame-operator -n flame-system
-```
+For more detailed installation options, including multi-node setups, see the [Installation Guide](/docs/installation.md).
 
 ## Verification
 
-After installation, verify that all components are running correctly. You can use these `kubectl` commands:
+After installation, verify that the services are running:
 
 ```bash
-# Check all pods in the flame-system namespace
-kubectl get pods -n flame-system
-
-# Check services
-kubectl get services -n flame-system
-
-# Check custom resources
-kubectl get crd | grep flame
-
-# Check Flame operator logs
-kubectl logs -n flame-system -l app=flame-operator --tail=50
+# Check service status
+sudo systemctl status flame-session-manager
+sudo systemctl status flame-executor-manager
 ```
 
-You should see output similar to:
-
-```
-NAME                                    READY   STATUS    RESTARTS   AGE
-flame-operator-7d8f9c8b9-abc12         1/1     Running   0          2m
-flame-core-6d8f9c8b9-def34             1/1     Running   0          2m
-flame-api-server-8d8f9c8b9-ghi56       1/1     Running   0          2m
-
-NAME                    TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
-flame-api-server        ClusterIP   10.96.123.45    <none>        8080/TCP  2m
-flame-core              ClusterIP   10.96.123.46    <none>        9090/TCP  2m
-
-NAME
-flameworkloads.flame.xflops.cn
-flameagents.flame.xflops.cn
-flameclusters.flame.xflops.cn
-```
-
-## Basic Configuration
-
-### 1. Configure Resource Limits
-
-Set appropriate resource limits for your environment. Create a file named `flame-config.yaml`:
-
-```yaml
-# flame-config.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: flame-config
-  namespace: flame-system
-data:
-  config.yaml: |
-    resources:
-      limits:
-        cpu: "4"
-        memory: "8Gi"
-      requests:
-        cpu: "1"
-        memory: "2Gi"
-    
-    scheduling:
-      maxConcurrentWorkloads: 10
-      defaultTimeout: "1h"
-```
-
-> **Important**: Adjust the `cpu` and `memory` values based on your cluster's available resources.
-
-Apply the configuration:
+You can also use the `flmping` tool to verify the cluster functionality:
 
 ```bash
-kubectl apply -f flame-config.yaml
+# Add flame binaries to your PATH for this session
+export PATH=$PATH:/usr/local/flame/bin
+
+# Run a simple ping test
+flmping
 ```
 
-### 2. Configure Storage
+You should see output indicating successful task execution:
 
-Set up persistent storage for your workloads. Create a file named `storage-config.yaml`:
-
-```yaml
-# storage-config.yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: flame-storage
-  namespace: flame-system
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 100Gi
-  storageClassName: your-storage-class
 ```
-
-> **Note**: Replace `your-storage-class` with the actual storage class name from your cluster. Common values include `standard`, `gp2`, or `fast-ssd`.
-
-### 3. Configure Authentication
-
-Set up authentication for the Flame API:
-
-```yaml
-# auth-config.yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: flame-auth
-  namespace: flame-system
-type: Opaque
-data:
-  api-key: <base64-encoded-api-key>
-  admin-token: <base64-encoded-admin-token>
+Session <1> was created in <3 ms>, start to run <10> tasks in the session:
+...
+<10> tasks was completed in <473 ms>.
 ```
 
 ## Your First Workload
 
-Now let's deploy your first AI workload with Flame:
+Now that your cluster is running, let's submit a simple workload to understand how Flame distributes tasks.
 
-### 1. Create a Simple Workload
+### 1. Create a Simple Python Task
 
-```yaml
-# first-workload.yaml
-apiVersion: flame.xflops.cn/v1alpha1
-kind: FlameWorkload
-metadata:
-  name: hello-flame
-  namespace: default
-spec:
-  type: Training
-  replicas: 2
-  
-  template:
-    spec:
-      containers:
-      - name: training
-        image: pytorch/pytorch:latest
-        command: ["python", "-c"]
-        args:
-        - |
-          import torch
-          import torch.distributed as dist
-          
-          # Initialize distributed training
-          dist.init_process_group(backend='nccl')
-          
-          print(f"Hello from Flame! Rank: {dist.get_rank()}")
-          print(f"World size: {dist.get_world_size()}")
-          
-          # Clean up
-          dist.destroy_process_group()
-        
-        resources:
-          requests:
-            nvidia.com/gpu: 1
-            memory: "4Gi"
-            cpu: "2"
-          limits:
-            nvidia.com/gpu: 1
-            memory: "8Gi"
-            cpu: "4"
+Create a file named `hello_flame.py`:
+
+```python
+#!/usr/bin/env python3
+"""A simple Flame workload example."""
+
+import flame
+
+def task_function(task_id: int) -> str:
+    """A simple task that returns a greeting."""
+    import socket
+    hostname = socket.gethostname()
+    return f"Hello from Flame! Task {task_id} executed on {hostname}"
+
+if __name__ == "__main__":
+    # Create a session with 5 tasks
+    session = flame.Session()
+    
+    # Submit tasks
+    for i in range(5):
+        session.submit(task_function, i)
+    
+    # Wait for results and print them
+    results = session.wait()
+    for result in results:
+        print(result)
+    
+    print(f"\nCompleted {len(results)} tasks successfully!")
 ```
 
-### 2. Deploy the Workload
+### 2. Run the Workload
 
 ```bash
-kubectl apply -f first-workload.yaml
+# Ensure PATH is set (assuming /usr/local/flame/bin is in your PATH)
+python3 hello_flame.py
 ```
 
-### 3. Monitor the Workload
+### 3. Check Session Status
 
 ```bash
-# Check workload status
-kubectl get flameworkloads
-
-# Check pods
-kubectl get pods -l flame.xflops.cn/workload=hello-flame
-
-# View logs
-kubectl logs -l flame.xflops.cn/workload=hello-flame -c training
+# List sessions to see your workload
+flmctl list -s
 ```
 
-## Understanding the Components
-
-### Flame Core
-
-The central orchestrator that manages all workloads and resources:
-
-- **Scheduler**: Distributes workloads across available nodes
-- **Resource Manager**: Tracks and allocates cluster resources
-- **Workload Controller**: Manages the lifecycle of AI workloads
-
-### Flame Agents
-
-Lightweight agents that run on each node:
-
-- **Resource Monitoring**: Tracks local resource usage
-- **Workload Execution**: Runs AI workloads and manages containers
-- **Health Reporting**: Reports node status back to the core
-
-### Flame API Server
-
-Provides a RESTful API for managing Flame resources:
-
-- **Workload Management**: Create, update, and delete workloads
-- **Cluster Information**: Query cluster status and resources
-- **Authentication**: Secure access to the Flame API
+You should see your session in the output, showing the completed tasks.
 
 ## Next Steps
 
 Congratulations! You now have a working Flame installation. Here's what you can explore next:
 
-1. **Use Cases**: Check out our [Use Cases](/docs/use-cases/) section for real-world examples
-2. **User Guide**: Dive deeper into [configuration and best practices](/docs/user-guide/)
-3. **API Reference**: Learn about the [Flame API](/docs/api-reference/) for programmatic access
-4. **Ecosystem**: Explore [integrations and extensions](/docs/ecosystem/)
+1. **User Guide**: Dive deeper into [configuration and best practices](/docs/user-guide/)
+2. **API Reference**: Learn about the [Flame API](/docs/api-reference/) for programmatic access
+3. **Ecosystem**: Explore [integrations and extensions](/docs/ecosystem/)
 
 ## Troubleshooting
 
 ### Common Issues
 
-**Pods stuck in Pending state:**
+**Services not starting:**
 ```bash
-# Check events
-kubectl describe pod <pod-name>
-
-# Check resource availability
-kubectl describe node <node-name>
+# Check logs
+sudo journalctl -u flame-session-manager -f
+tail -f /usr/local/flame/logs/fsm.log
 ```
 
-**Workload not starting:**
+**Build failures:**
+Ensure you have the latest Rust toolchain installed:
 ```bash
-# Check workload status
-kubectl describe flameworkload <workload-name>
-
-# Check operator logs
-kubectl logs -l app=flame-operator -n flame-system
-```
-
-**Storage issues:**
-```bash
-# Check PVC status
-kubectl get pvc
-
-# Check storage class
-kubectl get storageclass
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 ### Getting Help
@@ -333,7 +159,3 @@ If you encounter issues not covered here:
 - Check the [Flame GitHub repository](https://github.com/xflops/flame) for known issues
 - Join our [Slack community](http://xflops.slack.com) for real-time support
 - Open an issue on GitHub with detailed information about your problem
-
----
-
-*Ready to explore more? Check out our [Use Cases](/docs/use-cases/) section to see what you can build with Flame!*
