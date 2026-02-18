@@ -1,3 +1,8 @@
+---
+layout: docs
+title: User Guide
+description: User guide for Flame cluster management and usage.
+---
 # Flame User Guide
 
 ## Cluster Management with flmadm
