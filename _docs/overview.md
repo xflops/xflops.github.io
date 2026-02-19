@@ -54,8 +54,6 @@ We welcome contributions from the community! Whether it's improving documentatio
 
 Ready to get started? We recommend beginning with the [Getting Started](/docs/getting-started/) guide, which will walk you through your first Flame deployment.
 
-If you have specific use cases in mind, check out our [Use Cases](/docs/use-cases/) section to see examples of how others are using Flame in production.
-
 ---
 
 *Last updated: {{ site.time | date: "%B %d, %Y" }}*
