@@ -40,7 +40,7 @@ Flame follows a distributed architecture designed for high-performance computing
 
 - **Issues**: If you find errors or have suggestions, please [open an issue](https://github.com/xflops/flame/issues) on GitHub
 - **Community Support**: Join our [Slack community](http://xflops.slack.com) for real-time help
-- **Email Support**: Contact us at [support@xflops.cn](mailto:support@xflops.cn)
+- **Email Support**: Contact us at [support@xflops.io](mailto:support@xflops.io)
 
 ## Contributing
 
