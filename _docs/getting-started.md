@@ -132,8 +132,7 @@ You should see your session in the output, showing the completed tasks.
 Congratulations! You now have a working Flame installation. Here's what you can explore next:
 
 1. **User Guide**: Dive deeper into [configuration and best practices](/docs/user-guide/)
-2. **API Reference**: Learn about the [Flame API](/docs/api-reference/) for programmatic access
-3. **Ecosystem**: Explore [integrations and extensions](/docs/ecosystem/)
+2. **Ecosystem**: Explore [integrations and extensions](/docs/ecosystem/)
 
 ## Troubleshooting
 
