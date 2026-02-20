@@ -39,7 +39,7 @@ According to the description above, it's straight forward to approximate the val
 1. Continue step-1 and step-2 according to program's arguments, e.g. $10^7$.
 1. Approximate the value of `π` by $4*circle/square$, the square is the input of program's argument.
 
-Thanks to Rust `rand` model, it's easy to generate coordinates randomly; so the value of `π` is approximated as follows, the full source code can be downloaded from [Flame repo](../../examples/pi/src/local/).
+Thanks to Rust `rand` model, it's easy to generate coordinates randomly; so the value of `π` is approximated as followss, the full source code can be downloaded from [Flame repo](../../examples/pi/src/local/).
 
 ```rust
     let mut area = 0.0;
@@ -86,7 +86,7 @@ sys     0m0.031s
 
 ### Why Flame?
 
-Flame is a distributed system for intelligent workloads, it supports any application with **low latency**. It provides different shims, e.g. stdio shim, to integrate with applications, which makes it easy to migrate the local `π` approximation program to Flame, and get the benefit of a low latency distributed system.
+Flame is a distributed system for intelligent workloads, it supports any application with **a low latency**. It provides different shims, e.g. stdio shim, to integrate with applications, which makes it easy to migrate the local `π` approximation program to Flame, and get the benefit of a low latency distributed system.
 
 ### Pi in Flame
 
@@ -102,7 +102,7 @@ To submit tasks to Flame, the client need to connect to the Flame cluster by the
 let conn = flame::connect("http://127.0.0.1:8080").await?;
 ```
 
-After connected to Flame cluster, `flame::Connection` is used to create `Session` for tasks as follow; `flame::SessionAttributes` provides the information on how to create a session, e.g. which application to run, how many slots are used.
+After connected to Flame cluster, `flame::Connection` is used to create `Session` for tasks as follows; `flame::SessionAttributes` provides the information on how to create a session, e.g. which application to run, how many slots are used.
 
 ```rust
     let attr = SessionAttributes {
@@ -193,7 +193,7 @@ The Pi application server is similar with the local version; the only different 
 
 #### Output
 
-After build the client & server of Pi application, deploy and run the Pi application in a Flame cluster with 6 executors as follow. As shown in the output of Pi client, it only takes about 2 minutes to approximate `π` with $10^9$.
+After build the client & server of Pi application, deploy and run the Pi application in a Flame cluster with 6 executors as follows. As shown in the output of Pi client, it only takes about 2 minutes to approximate `π` with $10^9$.
 
 ```shell
 [klausm@hpc-cloud02 flame]$ time ./target/debug/pi --task-num 10000 --task-input 100000 # 10^9
