@@ -36,10 +36,10 @@ According to the description above, it's straight forward to approximate the val
 
 1. Generate two number randomly as coordinates of the point.
 1. Calculate the distance of the point by  $\sqrt{x^2+y^2}$; if the distance is less than the radius of circle, counting it as circle's area.
-1. Continue step-1 and step-2 according to programe's arguments, e.g. $10^7$.
-1. Approximate the value of `π` by $4*circle/square$, the square is the input of programe's argumment.
+1. Continue step-1 and step-2 according to program's arguments, e.g. $10^7$.
+1. Approximate the value of `π` by $4*circle/square$, the square is the input of program's argument.
 
-Thanks to Rust `rand` model, it's easy to generte coordinates randomly; so the value of `π` is approximated as follow, the full source code can be downloaded from [Flame repo](../../examples/pi/src/local/).
+Thanks to Rust `rand` model, it's easy to generate coordinates randomly; so the value of `π` is approximated as follow, the full source code can be downloaded from [Flame repo](../../examples/pi/src/local/).
 
 ```rust
     let mut area = 0.0;
@@ -86,11 +86,12 @@ sys     0m0.031s
 
 ### Why Flame?
 
-Flame is a distributed system for intelligent workloads, it supports any application with **low latency**. It provides different shim, e.g. stdio shim, to integrate with applications, which make it easy to migrate the local `π` approximation programe to Flame, and get the benifit of low latency distributed system.
+Flame is a distributed system for intelligent workloads, it supports any application with **low latency**. It provides different shim, e.g. stdio shim, to integrate with applications, which make it easy to migrate the local `π` approximation program to Flame, and get the benefit of low latency distributed system.
 
 ### Pi in Flame
 
 To migrate local `π` into Flame, a new client is introduced to submit Monte Carlo tasks and aggregate task outputs from the server, and approximate the value of `π` in client. In the server side, it only calculates how many points are in the circle as output.
+
 
 #### Pi Client
 
@@ -114,7 +115,7 @@ After connected to Flame cluster, `flame::Connection` is used to create `Session
 There're two ways to submit tasks and retrieve tasks outputs:
 
 1. Submit task input to create task by `flame::Session::create_task`, and then keep calling `flame::Session::get_task()` to check task status; when it's succeed, retrieve task output accordingly.
-1. Submit task input with an informer `flame::TaskInformer` to create task by `flame::Session::run_task`; when the task status chagned, a callback function in `flame::TaskInformer` will be triggerred.
+1. Submit task input with an informer `flame::TaskInformer` to create task by `flame::Session::run_task`; when the task status changed, a callback function in `flame::TaskInformer` will be triggerred.
 
 In this example, the second way is used. In the callback function, if there's an output (only generated when task completed), consider it into circle's area.
 

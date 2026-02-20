@@ -9,20 +9,20 @@ tags: ["flame", "ai-agents", "distributed-computing"]
 
 As more and more agents are being adopted in enterprises, it becomes increasingly important to deploy and manage them using distributed systems such as Kubernetes, Flame, or other cloud solutions. However, running agents remotely in the cloud introduces unique challenges for some fundamental features:
 
-* Running AI agents in the cloud incurs extra costs when they are idle, and conversation history—that is, the agent’s memory—can be lost if the agent shuts down.
-* HITL (Human-in-the-Loop) describes an approach where human operators can intervene or collaborate with AI agents during decision-making. In a cloud environment, it’s important for the agent to not only remain available, but also to persist the conversation history between the human and the agent.
+* Running AI agents in the cloud incurs extra costs when they are idle, and conversation history—that is, the agent's memory—can be lost if the agent shuts down.
+* HITL (Human-in-the-Loop) describes an approach where human operators can intervene or collaborate with AI agents during decision-making. In a cloud environment, it's important for the agent to not only remain available, but also to persist the conversation history between the human and the agent.
 
 Recently, Flame introduced a new feature called CommonData, designed to manage shared data and context across tasks of session. By letting Flame handle this common data, agents can persist the conversation history between humans and agent, ensuring continuity even if the agent is restarted or distributed across nodes. Additionally, CommonData lays the foundation for future agent optimizations, such as enhanced memory and context-aware processing.
 
-In this blog post, we explore how Flame’s CommonData feature works, and demonstrate its integration with the OpenAI Agent SDK’s Session to enable persistent and seamless agent conversations in distributed environments.
+In this blog post, we explore how Flame's CommonData feature works, and demonstrate its integration with the OpenAI Agent SDK's Session to enable persistent and seamless agent conversations in distributed environments.
 
 ## Common Data
 
-Flame's CommonData feature enables sharing data and context across different tasks within a session. In its initial release, CommonData was introduced as a read-only construct. Even with read-only access, it serves several practical scenarios, such as providing the agent’s system prompt or facilitating matrix data sharing during multiplication tasks.
+Flame's CommonData feature enables sharing data and context across different tasks within a session. In its initial release, CommonData was introduced as a read-only construct. Even with read-only access, it serves several practical scenarios, such as providing the agent's system prompt or facilitating matrix data sharing during multiplication tasks.
 
-However, certain scenarios demand that CommonData be writable. Examples include maintaining an agent’s memory across turns, executing Python objects remotely, or enabling reinforcement learning workflows where state must evolve over time.
+However, certain scenarios demand that CommonData be writable. Examples include maintaining an agent's memory across turns, executing Python objects remotely, or enabling reinforcement learning workflows where state must evolve over time.
 
-It’s important to note that CommonData can be large in size. To address this, Flame employs a caching strategy to hold actual data locally, while tasks are scheduled and dispatched using expressions that describe the data (like endpoint references or versioning), rather than transferring large blobs of data directly. The following diagram illustrates how Flame’s CommonData architecture works.
+It's important to note that CommonData can be large in size. To address this, Flame employs a caching strategy to hold actual data locally, while tasks are scheduled and dispatched using expressions that describe the data (like endpoint references or versioning), rather than transferring large blobs of data directly. The following diagram illustrates how Flame's CommonData architecture works.
 
 ![Flame CommonData Architecture](/images/flame_common_data_arch.png)
 
@@ -34,7 +34,7 @@ The [OpenAI Agent SDK's `Session` abstraction](https://openai.github.io/openai-a
 
 The ability to implement a **custom Session** allows developers to handle advanced memory management needs, fine-tune performance, and integrate features like Human-in-the-Loop (HITL) workflows, auditing, or multi-agent collaboration.
 
-By connecting the Session abstraction with Flame’s CommonData, you enable your agent to seamlessly persist and retrieve memory (conversation history, state, context) in a distributed environment. This not only allows continuity of experience across agent restarts and across cluster nodes, but also provides a natural foundation for implementing strong HITL workflows: both human and agent can share and mutate context safely and efficiently.
+By connecting the Session abstraction with Flame's CommonData, you enable your agent to seamlessly persist and retrieve memory (conversation history, state, context) in a distributed environment. This not only allows continuity of experience across agent restarts and across cluster nodes, but also provides a natural foundation for implementing strong HITL workflows: both human and agent can share and mutate context safely and efficiently.
 
 The next section demonstrates a straightforward example of how to integrate a custom Session backed by Flame's CommonData, enabling robust memory management and persistent HITL support.
 
@@ -43,7 +43,7 @@ The next section demonstrates a straightforward example of how to integrate a cu
 
 ### Agent Data Struct
 
-To streamline context management in this sample agent, a `MyContext` class is introduced. The `prompt` attribute stores the agent’s system prompt, while `messages` maintains the conversation history, enabling the agent to keep track of all exchanges seamlessly.
+To streamline context management in this sample agent, a `MyContext` class is introduced. The `prompt` attribute stores the agent's system prompt, while `messages` maintains the conversation history, enabling the agent to keep track of all exchanges seamlessly.
 
 
 ```python
@@ -53,7 +53,7 @@ class MyContext:
     messages: List[str] = None
 ```
 
-To take advantage of Flame’s CommonData for managing agent context, we introduce a custom session implementation. This session adheres to the OpenAI Agent SDK interface and utilizes the `MyContext` class to persist the agent’s conversation history efficiently. In addition to the session interface, it also provide `history()` function to retrieve the conversistion history.
+To take advantage of Flame's CommonData for managing agent context, we introduce a custom session implementation. This session adheres to the OpenAI Agent SDK interface and utilizes the `MyContext` class to persist the agent's conversation history efficiently. In addition to the session interface, it also provide `history()` function to retrieve the conversation history.
 
 ```python
 from agents.memory.session import SessionABC
@@ -91,7 +91,7 @@ class MyCustomSession(SessionABC):
 
 ### Agent Client
 
-In the agent client, a new session is created with the system prompt in `MyContext` if no session ID is provided; otherwise, an existing session is opened. After sending a question to the agent and receiving an answer, the code retrieves the common data (i.e., `MyContext`) using the `session.common_data()` API. Finally, it prints out the session’s conversation history for review.
+In the agent client, a new session is created with the system prompt in `MyContext` if no session ID is provided; otherwise, an existing session is opened. After sending a question to the agent and receiving an answer, the code retrieves the common data (i.e., `MyContext`) using the `session.common_data()` API. Finally, it prints out the session's conversation history for review.
 
 ```python
     if ssn_id:
@@ -114,6 +114,7 @@ In the agent client, a new session is created with the system prompt in `MyConte
     else:
         print("No history!")
 ```
+
 
 ### Agent service
 
@@ -198,6 +199,7 @@ root@4d73c0737bf2:/opt/examples/agents/openai# flmctl list -s
  ID                   State  App           Slots  Pending  Running  Succeed  Failed  Created  
  openai-agent-J1E9PE  Open   openai-agent  1      0        0        1        0       08:05:43 
 ```
+
 
 5. Talk with agent in existing session
 
