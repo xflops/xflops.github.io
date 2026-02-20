@@ -53,7 +53,7 @@ class MyContext:
     messages: List[str] = None
 ```
 
-To take advantage of Flame's CommonData for managing agent context, we introduce a custom session implementation. This session adheres to the OpenAI Agent SDK interface and utilizes the `MyContext` class to persist the agent's conversation history efficiently. In addition to the session interface, it also provide `history()` function to retrieve the conversation history.
+To take advantage of Flame's CommonData for managing agent context, we introduce a custom session implementation. This session adheres to the OpenAI Agent SDK interface and utilizes the `MyContext` class to persist the agent's conversation history efficiently. In addition to the session interface, it also provides the `history()` function to retrieve the conversation history.
 
 ```python
 from agents.memory.session import SessionABC
@@ -90,6 +90,7 @@ class MyCustomSession(SessionABC):
 ```
 
 ### Agent Client
+
 
 In the agent client, a new session is created with the system prompt in `MyContext` if no session ID is provided; otherwise, an existing session is opened. After sending a question to the agent and receiving an answer, the code retrieves the common data (i.e., `MyContext`) using the `session.common_data()` API. Finally, it prints out the session's conversation history for review.
 
@@ -201,6 +202,7 @@ root@4d73c0737bf2:/opt/examples/agents/openai# flmctl list -s
 ```
 
 
+
 5. Talk with agent in existing session
 
 ```shell
@@ -234,7 +236,7 @@ Session History
 {"content": "who are you?", "role": "user"}
 {"id": "__fake_id__", "content": [{"annotations": [], "text": "I am an AI assistant created by DeepSeek, designed to help answer questions, provide information, and assist with various tasks. If you have any questions or need assistance, feel free to ask! \ud83d\ude0a", "type": "output_text", "logprobs": []}], "role": "assistant", "status": "completed", "type": "message"}
 {"content": "How about the weather of Beijing?", "role": "user"}
-{"id": "__fake_id__", "content": [{"annotations": [], "text": "As an AI, I don't have real-time data access, but I can give you general information about Beijing's weather patterns:\n\n**Typical Climate:**\n- **Spring (Mar\u2013May):** Mild, windy, occasional sandstorms.\n- **Summer (Jun\u2013Aug):** Hot, humid, rainy (especially July\u2013August).\n- **Autumn (Sep\u2013Nov):** Cool, dry, generally pleasant.\n- **Winter (Dec\u2013Feb):** Cold, dry, occasional snow, often below freezing.\n\n**Right Now (General Expectation):**\nSince you're asking without a specific date, if it's currently **late autumn/early winter** (November\u2013December), expect chilly, dry days with temperatures around **0\u201310\u00b0C (32\u201350\u00b0F)**. Mornings and evenings can be cold, and air quality can vary.\n\n**For accurate real-time weather:**\nI recommend checking:\n- **Weather apps** (like AccuWeather, The Weather Channel)\n- **Websites** (China Meteorological Administration, timeanddate.com)\n- **Search online** for \"Beijing weather today\"\n\nWould you like tips on what to wear or activities based on the season?", "type": "output_text", "logprobs": []}], "role": "assistant", "status": "completed", "type": "message"}
+{"id": "__fake_id__", "content": [{"annotations": [], "text": "As an AI, I don't have real-time data access, but I can give you general information about Beijing's weather patterns:\n\n**Typical Climate:**\n- **Spring (Mar–May):** Mild, windy, occasional sandstorms.\n- **Summer (Jun–Aug):** Hot, humid, rainy (especially July–August).\n- **Autumn (Sep–Nov):** Cool, dry, generally pleasant.\n- **Winter (Dec–Feb):** Cold, dry, occasional snow, often below freezing.\n\n**Right Now (General Expectation):**\nSince you're asking without a specific date, if it's currently **late autumn/early winter** (November–December), expect chilly, dry days with temperatures around **0–10°C (32–50°F)**. Mornings and evenings can be cold, and air quality can vary.\n\n**For accurate real-time weather:**\nI recommend checking:\n- **Weather apps** (like AccuWeather, The Weather Channel)\n- **Websites** (China Meteorological Administration, timeanddate.com)\n- **Search online** for \"Beijing weather today\"\n\nWould you like tips on what to wear or activities based on the season?", "type": "output_text", "logprobs": []}], "role": "assistant", "status": "completed", "type": "message"}
 ```
 
 ## Roadmap

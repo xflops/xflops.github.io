@@ -39,7 +39,7 @@ According to the description above, it's straight forward to approximate the val
 1. Continue step-1 and step-2 according to program's arguments, e.g. $10^7$.
 1. Approximate the value of `π` by $4*circle/square$, the square is the input of program's argument.
 
-Thanks to Rust `rand` model, it's easy to generate coordinates randomly; so the value of `π` is approximated as follow, the full source code can be downloaded from [Flame repo](../../examples/pi/src/local/).
+Thanks to Rust `rand` model, it's easy to generate coordinates randomly; so the value of `π` is approximated as follows, the full source code can be downloaded from [Flame repo](../../examples/pi/src/local/).
 
 ```rust
     let mut area = 0.0;
@@ -86,11 +86,12 @@ sys     0m0.031s
 
 ### Why Flame?
 
-Flame is a distributed system for intelligent workloads, it supports any application with **low latency**. It provides different shim, e.g. stdio shim, to integrate with applications, which make it easy to migrate the local `π` approximation program to Flame, and get the benefit of low latency distributed system.
+Flame is a distributed system for intelligent workloads, it supports any application with **low latency**. It provides different shims, e.g. stdio shim, to integrate with applications, which makes it easy to migrate the local `π` approximation program to Flame, and get the benefit of a low latency distributed system.
 
 ### Pi in Flame
 
 To migrate local `π` into Flame, a new client is introduced to submit Monte Carlo tasks and aggregate task outputs from the server, and approximate the value of `π` in client. In the server side, it only calculates how many points are in the circle as output.
+
 
 
 #### Pi Client
