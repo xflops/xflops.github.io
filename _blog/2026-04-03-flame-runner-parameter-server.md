@@ -170,5 +170,5 @@ If something goes wrong:
 - [Flame on GitHub](https://github.com/xflops/flame)
 - [Parameter Server example (`examples/ps`)](https://github.com/xflops/flame/tree/main/examples/ps)
 - Mu Li *et al.*, [Scaling Distributed Machine Learning with the Parameter Server](https://www.usenix.org/system/files/conference/osdi14/osdi14-paper-li_mu.pdf) (OSDI ’14)
-- [RFE280 — Runner design](https://github.com/xflops/flame/blob/main/docs/designs/FRE280-runner/RFE280-runner.md)
+- [RFE280 — Runner design](https://github.com/xflops/flame/blob/main/docs/designs/RFE280-runner/RFE280-runner.md)
 - [Runner setup tutorial](https://github.com/xflops/flame/blob/main/docs/tutorials/runner-setup.md)
