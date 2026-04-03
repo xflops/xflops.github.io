@@ -17,7 +17,7 @@ The ps–worker pattern is a classic distributed training architecture:
 - Multiple **workers** compute gradients on different data batches in parallel.
 - Each worker fetches the latest weights, computes gradients, and sends them back to the Parameter Server.
 
-This example uses Flame’s **`flamepy.runner.Runner`** to orchestrate distributed services and handle communication between them. *(The WeChat text refers to `flamepy.rl.Runner`; the runnable example imports `Runner` from `flamepy.runner`.)*
+This example uses Flame’s **`flamepy.runner.Runner`** to orchestrate distributed services and handle communication between them.
 
 ## Architecture
 
