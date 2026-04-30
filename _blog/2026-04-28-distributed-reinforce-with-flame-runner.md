@@ -7,16 +7,16 @@ categories: ["Runner", "Flame", "RL"]
 tags: ["flame", "runner", "reinforce", "gymnasium", "mujoco", "distributed-training", "uv"]
 ---
 
-This report documents the RL example merged in [PR #424](https://github.com/xflops/flame/pull/424) and evaluates distributed versus local training for `Ant-v5`. The implementation is located under `examples/rl/` in the Flame repository.
+This report describes the reinforcement-learning example merged in [PR #424](https://github.com/xflops/flame/pull/424), summarizes its design against current upstream sources, and presents single-run throughput and reward metrics for `Ant-v5` and `CartPole-v1`. Companion site changes are recorded in [xflops.github.io #17](https://github.com/xflops/xflops.github.io/pull/17). Reference implementation: [`examples/rl/`](https://github.com/xflops/flame/tree/main/examples/rl) in the Flame repository.
 
 ## Executive summary
 
-- A distributed REINFORCE example was added using `flamepy.runner`.
-- The implementation supports both discrete and continuous action spaces.
-- On the reported `Ant-v5` benchmark (`10,000` episodes), distributed mode reached `29.8 eps/sec` versus `20.8 eps/sec` in local mode.
-- On the reported `CartPole-v1` benchmark (`10,000` episodes), distributed mode reached `19.3 eps/sec` versus `8.1 eps/sec` in local mode.
-- This corresponds to a throughput gain of approximately `43.3%`.
-- Across both runs, distributed mode improved wall-clock throughput; reward outcomes varied by environment and trial.
+| Item | Finding |
+|---|---|
+| Artifact | Distributed REINFORCE training using `flamepy.runner`; discrete and continuous Gymnasium environments. |
+| `Ant-v5` (10000 episodes) | Distributed 29.8 eps/sec vs local 20.8 eps/sec; relative throughput gain approximately 43.3%. |
+| `CartPole-v1` (10000 episodes) | Distributed 19.3 eps/sec vs local 8.1 eps/sec; relative throughput gain approximately 138.3%. |
+| Reward quality | Single-trial outcomes differ by mode and environment; multi-seed study recommended before policy conclusions. |
 
 ## Scope and motivation
 
@@ -50,11 +50,10 @@ Flame Runner is responsible for remote task scheduling and result collection; po
 
 ## Core implementation (`flamepy.runner`)
 
-The following snippet captures the distributed control path from `examples/rl/main.py`:
+**Excerpt — learner control path.** The listing below is abbreviated from upstream [`examples/rl/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/main.py); the learner-side loss and optimizer step are omitted for brevity.
 
 ```python
 from functools import partial
-from flamepy import put_object
 from flamepy.runner import Runner
 
 collect_fn = partial(collect_episode, env_name=env_name)
@@ -63,18 +62,21 @@ with Runner(f"rl-{env_name}") as rr:
     collector = rr.service(collect_fn)
 
     for iteration in range(num_iterations):
-        weights_ref = put_object(f"rl-weights-{iteration}", policy.state_dict())
+        weights_ref = rr.put_object(policy.state_dict())
 
         futures = [collector(weights_ref) for _ in range(episodes_per_iteration)]
         episodes = rr.get(futures)
 
-        # local learner step (compute loss, backprop, optimizer.step)
+        # ... policy loss, backward(), optimizer.step()
 ```
 
-The remote worker entrypoint (`collect_episode`) is plain Python:
+**Excerpt — remote worker.** The worker callable matches the upstream structure: third-party and framework modules are imported inside the function body so execution environments resolve them at task run time (see upstream file for the full rollout loop).
 
 ```python
 def collect_episode(weights, env_name: str) -> dict:
+    import gymnasium as gym
+    import torch
+
     from model import ENV_CONFIGS, create_policy
 
     env_config = ENV_CONFIGS[env_name]
@@ -83,7 +85,7 @@ def collect_episode(weights, env_name: str) -> dict:
     model.eval()
 
     env = gym.make(env_config.name)
-    # rollout loop ...
+    # ... rollout until termination ...
     return {
         "states": states,
         "actions": actions,
@@ -92,7 +94,7 @@ def collect_episode(weights, env_name: str) -> dict:
     }
 ```
 
-Each call to `collector(...)` can be scheduled on a remote executor; this enables concurrent episode collection.
+**Parallelism.** Each invocation of `collector(...)` may execute on a distinct remote executor, yielding concurrent episode collection subject to cluster capacity and scheduling policy.
 
 ## `flamepy.runner` interface notes
 
@@ -143,52 +145,52 @@ episodes = rr.get(futures)
 - Typical pattern: submit batch -> resolve batch -> run learner update.
 - Preserves clear separation between collection and optimization.
 
-### `put_object(key, value)`
+### `rr.put_object(value)`
 
-Publishes a large object and passes a reference to remote tasks:
+Publishes a payload on the active `Runner` session and yields a reference suitable for remote task arguments. Upstream training uses the policy `state_dict()` as the published value ([`examples/rl/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/main.py)):
 
 ```python
-weights_ref = put_object(f"rl-weights-{iteration}", policy.state_dict())
+weights_ref = rr.put_object(policy.state_dict())
 episodes = rr.get([collector(weights_ref) for _ in range(episodes_per_iteration)])
 ```
 
-- Reduces repeated serialization/transfer of model weights.
-- Remote workers consume the resolved object in `collect_episode`.
+- Publication is scoped to the runner instance (`rr.put_object`); earlier variants that used a module-level `put_object` with explicit string keys are not required here.
+- Workers observe a resolved `state_dict` where the runtime maps the reference to materialized data (per upstream docstring on `weights`).
 
-These interfaces implement an actor-learner pattern with minimal divergence from local training code.
+**Summary.** The listed APIs suffice for an actor-learner layout with localized changes relative to a single-process trainer.
 
 ## Reproduction procedure
 
-### Prerequisites
+### Environment
 
-Start the Flame cluster:
+1. Start the Flame cluster (repository default compose workflow):
 
 ```bash
 docker compose up -d
 ```
 
-Enter the console and switch to the example directory:
+2. Open a shell in the console container and set the working directory to the example:
 
 ```bash
 docker compose exec -it flame-console /bin/bash
 cd /opt/examples/rl
 ```
 
-### Execution commands
+### Commands exercised in this report
 
-Distributed `Ant-v5` run:
+Distributed `Ant-v5`:
 
 ```bash
 uv run main.py --env ant
 ```
 
-Local baseline:
+Local `Ant-v5` baseline:
 
 ```bash
 uv run main.py --env ant --local
 ```
 
-Additional runs:
+Additional command patterns (not all re-measured here):
 
 ```bash
 # distributed cartpole (default env)
@@ -216,57 +218,61 @@ uv run main.py --plot
 | `--episodes-per-iter` | Episodes collected per iteration | `100` |
 | `--plot` | Show reward plot after training | off |
 
-Reported benchmark settings:
+**Benchmark configuration (both environments reported below).**
 
-- `iterations = 100`
-- `episodes_per_iteration = 100`
-- `total_episodes = 10000`
+- Training iterations: `100`
+- Episodes per iteration: `100`
+- Total episodes: `10000`
 
-## Results (`Ant-v5`)
+## Results — `Ant-v5`
 
-Results are based on the provided execution logs:
+**Data source.** Single pair of runs; logs supplied for this note. Hardware and cluster topology were not varied within the study.
+
+**Measurements.**
 
 | Mode | Total Time | Episodes | Throughput | Final Mean Reward |
 |---|---:|---:|---:|---:|
 | Distributed (`--env ant`) | 335.71s | 10000 | 29.8 eps/sec | -252.6 |
 | Local (`--env ant --local`) | 481.70s | 10000 | 20.8 eps/sec | -166.1 |
 
-### Throughput comparison
+### Throughput
 
-Distributed mode improves episode throughput by approximately **43.3%**:
+Relative improvement of distributed over local throughput:
 
 \[
 \frac{29.8 - 20.8}{20.8} \approx 43.3\%
 \]
 
-### Reward observation
+### Reward
 
-In this single trial, local mode reached a better final mean reward (`-166.1` vs `-252.6`) while distributed mode completed substantially faster. Because policy-gradient outcomes are high variance, reward quality conclusions should be based on repeated multi-seed runs.
+Under the stated single trial, the local configuration achieved a higher terminal mean reward than the distributed configuration (`-166.1` vs `-252.6`), while distributed mode completed in less wall time. Policy-gradient estimators are sensitive to sample noise; generalization of reward ordering requires replicated experiments with controlled randomness.
 
-## Results (`CartPole-v1`)
+## Results — `CartPole-v1`
 
-Results are based on the provided execution logs:
+**Data source.** Single pair of runs; logs supplied for this note.
+
+**Measurements.**
 
 | Mode | Total Time | Episodes | Throughput | Final Mean Reward |
 |---|---:|---:|---:|---:|
 | Distributed (`uv run main.py`) | 517.94s | 10000 | 19.3 eps/sec | 499.8 |
 | Local (`uv run main.py --local`) | 1230.12s | 10000 | 8.1 eps/sec | 193.4 |
 
-### Throughput comparison
+### Throughput
 
-Distributed mode improves episode throughput by approximately **138.3%**:
+Relative improvement of distributed over local throughput:
 
 \[
 \frac{19.3 - 8.1}{8.1} \approx 138.3\%
 \]
 
-### Reward observation
+### Reward
 
-In this trial, distributed mode also reached a substantially better final mean reward (`499.8` vs `193.4`). The local run shows late-stage instability at iteration 99, which reinforces the need for repeated seeded runs before making algorithm-quality conclusions.
+Distributed mode reported a higher terminal mean reward than local mode (`499.8` vs `193.4`). The local trace exhibits a sharp regression at the final logged iteration, which is consistent with stochastic policy-gradient training rather than a definitive ranking of modes.
 
-## Interpretation: when distribution helps
+## Interpretation — when distribution helps
 
-Distributed execution introduces overhead; net benefit depends on rollout cost:
+Distributed execution incurs coordination and transfer overhead; net benefit scales with per-episode simulation cost and batching parameters:
 
 | Workload | Expected Distributed Benefit |
 |---|---|
@@ -275,14 +281,14 @@ Distributed execution introduces overhead; net benefit depends on rollout cost:
 | Heavier envs (for example Ant) | Strong with enough episodes per iteration |
 | Expensive real-world/sim workloads | Very strong; often essential |
 
-Observed in this setup:
+**Observations under this report’s configuration.**
 
-- `Ant-v5`: distributed throughput gain of `43.3%`.
-- `CartPole-v1`: distributed throughput gain of `138.3%`.
+- `Ant-v5`: distributed throughput approximately 43.3% above local.
+- `CartPole-v1`: distributed throughput approximately 138.3% above local.
 
-## Operational guidance
+## Recommendations (operations)
 
-For improved distributed efficiency:
+Operational parameters suggested by the example and measured runs:
 
 1. Increase `--episodes-per-iter` to amortize scheduling and transfer overhead.
 2. Prefer heavier environments when validating speedups.
@@ -291,22 +297,21 @@ For improved distributed efficiency:
 
 ## Conclusion
 
-This evaluation indicates that Flame Runner can materially improve rollout throughput for heavier RL environments while preserving a simple learner implementation.
+Within the two single-run configurations documented here, Flame Runner–backed distributed rollout increased episode throughput relative to local rollout for both `Ant-v5` and `CartPole-v1`. Terminal reward favored local training in the Ant trial and distributed training in the CartPole trial, underscoring that throughput and policy quality should be evaluated on separate criteria and, where reward matters, with multi-seed statistical replication.
 
-Practical implication:
+## Implementation status (upstream `examples/rl/`)
 
-- For faster experiment turnaround, distributed collection is effective in both tested environments.
-- For reward-quality assessment, use repeated seeded runs and tune optimization hyperparameters.
+The following items are reflected in the current `main` branch layout:
 
-## Post-merge notes
-
-Two review-driven refinements were incorporated as part of the merge:
-
-- Shared components were extracted into `model.py` to make remote imports more robust.
-- Discounted reward computation was updated to reverse-index assignment, eliminating quadratic `insert(0, ...)` behavior.
+- Shared policy and environment configuration in `model.py` to stabilize imports on remote workers.
+- Discounted return computation implemented with linear-time reverse indexing.
+- Weight publication via `Runner.put_object(policy.state_dict())` (session-scoped object handle).
 
 ## References
 
-- [Add RL example (PR #424)](https://github.com/xflops/flame/pull/424)
-- [Flame repository](https://github.com/xflops/flame)
-- [RL example README (`xflops/flame`, `main`)](https://raw.githubusercontent.com/xflops/flame/main/examples/rl/README.md)
+- Flame: [Add RL example — PR #424](https://github.com/xflops/flame/pull/424)
+- Flame repository: [xflops/flame](https://github.com/xflops/flame)
+- Reference code: [`examples/rl/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/main.py)
+- Reference documentation: [`examples/rl/README.md`](https://github.com/xflops/flame/blob/main/examples/rl/README.md)
+- This article (site merge): [xflops/xflops.github.io — PR #17](https://github.com/xflops/xflops.github.io/pull/17)
+- Report polish and unit consistency: [xflops/xflops.github.io — PR #18](https://github.com/xflops/xflops.github.io/pull/18)
