@@ -14,8 +14,8 @@ This report describes the reinforcement-learning example merged in [PR #424](htt
 | Item | Finding |
 |---|---|
 | Artifact | Distributed REINFORCE training using `flamepy.runner`; discrete and continuous Gymnasium environments. |
-| `Ant-v5` (10000 episodes) | Distributed 29.8 eps/s vs local 20.8 eps/s; relative throughput gain approximately 43.3%. |
-| `CartPole-v1` (10000 episodes) | Distributed 19.3 eps/s vs local 8.1 eps/s; relative throughput gain approximately 138.3%. |
+| `Ant-v5` (10000 episodes) | Distributed 29.8 eps/sec vs local 20.8 eps/sec; relative throughput gain approximately 43.3%. |
+| `CartPole-v1` (10000 episodes) | Distributed 19.3 eps/sec vs local 8.1 eps/sec; relative throughput gain approximately 138.3%. |
 | Reward quality | Single-trial outcomes differ by mode and environment; multi-seed study recommended before policy conclusions. |
 
 ## Scope and motivation
@@ -314,3 +314,4 @@ The following items are reflected in the current `main` branch layout:
 - Reference code: [`examples/rl/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/main.py)
 - Reference documentation: [`examples/rl/README.md`](https://github.com/xflops/flame/blob/main/examples/rl/README.md)
 - This article (site merge): [xflops/xflops.github.io — PR #17](https://github.com/xflops/xflops.github.io/pull/17)
+- Report polish and unit consistency: [xflops/xflops.github.io — PR #18](https://github.com/xflops/xflops.github.io/pull/18)
