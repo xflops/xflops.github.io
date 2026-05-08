@@ -9,6 +9,11 @@ markdown: kramdown
 highlighter: rouge
 permalink: /:categories/:title/
 
+# Kramdown: `$$ ... $$` → MathJax `<script type="math/tex">` (works with MathJax 2 in blog layout).
+# Same `$$` syntax renders on github.com when viewing `.md` sources.
+kramdown:
+  math_engine: mathjax
+
 # Collections
 collections:
   docs:

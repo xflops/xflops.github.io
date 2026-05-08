@@ -7,13 +7,14 @@ categories: ["Runner", "Flame", "RL"]
 tags: ["flame", "runner", "reinforce", "gymnasium", "mujoco", "distributed-training", "uv"]
 ---
 
-This report describes the reinforcement-learning example merged in [PR #424](https://github.com/xflops/flame/pull/424), summarizes its design against current upstream sources, and presents single-run throughput and reward metrics for `Ant-v5` and `CartPole-v1`. Companion site changes are recorded in [xflops.github.io #17](https://github.com/xflops/xflops.github.io/pull/17). Reference implementation: [`examples/rl/`](https://github.com/xflops/flame/tree/main/examples/rl) in the Flame repository.
+This report describes the reinforcement-learning example merged in [PR #424](https://github.com/xflops/flame/pull/424), summarizes its design against current upstream sources, and presents single-run throughput and reward metrics for `Ant-v5` and `CartPole-v1`. **Test hardware and the Podman-based Flame cluster (1 FSM / 3 FEM / 1 FOC) are spelled out in the executive summary**; runs were not on a datacenter or Linux-only rig—treat all timings as indicative, not universal baselines. Reference implementation: [`examples/rl/`](https://github.com/xflops/flame/tree/main/examples/rl) in the Flame repository.
 
 ## Executive summary
 
 | Item | Finding |
 |---|---|
 | Artifact | Distributed REINFORCE training using `flamepy.runner`; discrete and continuous Gymnasium environments. |
+| Test environment | **Host:** Apple M4 MacBook Pro (8 CPU cores, 24 GB unified memory). **VM:** Podman Machine (5 vCPU, 8 GB RAM). **Flame on Podman Compose:** 1× FSM, 3× FEM, 1× FOC (same-machine cluster; not a datacenter or bare-metal Linux farm). |
 | `Ant-v5` (10000 episodes) | Distributed 29.8 eps/sec vs local 20.8 eps/sec; relative throughput gain approximately 43.3%. |
 | `CartPole-v1` (10000 episodes) | Distributed 19.3 eps/sec vs local 8.1 eps/sec; relative throughput gain approximately 138.3%. |
 | Reward quality | Single-trial outcomes differ by mode and environment; multi-seed study recommended before policy conclusions. |
@@ -224,9 +225,11 @@ uv run main.py --plot
 - Episodes per iteration: `100`
 - Total episodes: `10000`
 
+**Test platform.** All runs were executed on an **Apple M4 MacBook Pro** (8 CPU cores, 24 GB unified memory) under **macOS**. For distributed mode, the Flame cluster ran inside **Podman Machine** (5 vCPU, 8 GB RAM) using **Podman Compose** with **1 FSM, 3 FEM, and 1 FOC** replicas—i.e. a single-host, VM-contained stack rather than a datacenter or Linux-only rig. Hardware, VM sizing, and service replica counts were not varied within this note.
+
 ## Results — `Ant-v5`
 
-**Data source.** Single pair of runs; logs supplied for this note. Hardware and cluster topology were not varied within the study.
+**Data source.** Single pair of runs on that macOS setup; logs supplied for this note.
 
 **Measurements.**
 
@@ -239,9 +242,9 @@ uv run main.py --plot
 
 Relative improvement of distributed over local throughput:
 
-\[
+$$
 \frac{29.8 - 20.8}{20.8} \approx 43.3\%
-\]
+$$
 
 ### Reward
 
@@ -249,7 +252,7 @@ Under the stated single trial, the local configuration achieved a higher termina
 
 ## Results — `CartPole-v1`
 
-**Data source.** Single pair of runs; logs supplied for this note.
+**Data source.** Single pair of runs on the same macOS setup; logs supplied for this note.
 
 **Measurements.**
 
@@ -262,9 +265,9 @@ Under the stated single trial, the local configuration achieved a higher termina
 
 Relative improvement of distributed over local throughput:
 
-\[
+$$
 \frac{19.3 - 8.1}{8.1} \approx 138.3\%
-\]
+$$
 
 ### Reward
 
@@ -283,6 +286,8 @@ Distributed execution incurs coordination and transfer overhead; net benefit sca
 
 **Observations under this report’s configuration.**
 
+Throughput and reward ordering below were measured only on the **M4 MacBook Pro + Podman Machine (5 vCPU / 8 GB) + 1 FSM / 3 FEM / 1 FOC** setup summarized in the executive summary. Absolute rates (episodes per second) will change on other CPUs, memory pressure, or different Flame replica layouts; relative distributed-vs-local gains may also shift once coordination overhead dominates or the VM is resized.
+
 - `Ant-v5`: distributed throughput approximately 43.3% above local.
 - `CartPole-v1`: distributed throughput approximately 138.3% above local.
 
@@ -297,7 +302,7 @@ Operational parameters suggested by the example and measured runs:
 
 ## Conclusion
 
-Within the two single-run configurations documented here, Flame Runner–backed distributed rollout increased episode throughput relative to local rollout for both `Ant-v5` and `CartPole-v1`. Terminal reward favored local training in the Ant trial and distributed training in the CartPole trial, underscoring that throughput and policy quality should be evaluated on separate criteria and, where reward matters, with multi-seed statistical replication.
+Within the two single-run configurations documented here—and **only on the stated M4 host and Podman-backed Flame cluster**—Flame Runner–backed distributed rollout increased episode throughput relative to local rollout for both `Ant-v5` and `CartPole-v1`. Terminal reward favored local training in the Ant trial and distributed training in the CartPole trial, underscoring that throughput and policy quality should be evaluated on separate criteria and, where reward matters, with multi-seed statistical replication.
 
 ## Implementation status (upstream `examples/rl/`)
 
@@ -313,5 +318,3 @@ The following items are reflected in the current `main` branch layout:
 - Flame repository: [xflops/flame](https://github.com/xflops/flame)
 - Reference code: [`examples/rl/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/main.py)
 - Reference documentation: [`examples/rl/README.md`](https://github.com/xflops/flame/blob/main/examples/rl/README.md)
-- This article (site merge): [xflops/xflops.github.io — PR #17](https://github.com/xflops/xflops.github.io/pull/17)
-- Report polish and unit consistency: [xflops/xflops.github.io — PR #18](https://github.com/xflops/xflops.github.io/pull/18)
