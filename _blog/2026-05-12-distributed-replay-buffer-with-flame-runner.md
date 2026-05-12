@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Distributed Replay Buffer with Flame Runner"
-date: 2026-05-13 00:00:00 +0800
+date: 2026-05-12
 author: "Klaus Ma"
 description: "A technical blog on Flame's replay-buffer example, covering patch_object delta updates, parallel sampling, and the handler-plus-data programming model."
 categories: ["Runner", "Flame", "RL"]
