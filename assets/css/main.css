@@ -469,6 +469,37 @@ a:hover {
     line-height: 1.8;
 }
 
+.blog-content table,
+.docs-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    display: block;
+    overflow-x: auto;
+}
+
+.blog-content th,
+.blog-content td,
+.docs-body th,
+.docs-body td {
+    border: 1px solid #d1d5db;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.blog-content th,
+.docs-body th {
+    background-color: #f3f4f6;
+    color: #111827;
+    font-weight: 600;
+}
+
+.blog-content tr:nth-child(even) td,
+.docs-body tr:nth-child(even) td {
+    background-color: #f9fafb;
+}
+
 /* Image constraints - ensure images don't exceed page width */
 .blog-content img,
 .docs-body img,
