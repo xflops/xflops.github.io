@@ -1,6 +1,6 @@
 # Site settings
 title: 'xflops'
-description: "Serverless runtime with Flame for Security, Performance and Cost."
+description: "Flame is a distributed engine for AI workloads, agents, and reinforcement learning."
 url: 'https://xflops.io'
 baseurl: ''
 
@@ -56,6 +56,8 @@ nav:
         url: /docs/getting-started/
       - title: User Guide
         url: /docs/user-guide/
+      - title: Runner Guide
+        url: /docs/runner/
   - title: Blog
     url: /blog/
   - title: GitHub
@@ -67,7 +69,7 @@ social:
   - name: GitHub
     url: https://github.com/xflops
   - name: Slack
-    url: http://xflops.slack.com
+    url: https://xflops.slack.com
 
 # Author
 author:

@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem "jekyll", "~> 4.4.0"
+gem "logger", ">= 1.6"
 
 # If you have any plugins, put them here!
 group :jekyll_plugins do

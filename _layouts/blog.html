@@ -53,7 +53,8 @@ layout: default
                 <div class="related-posts">
                     <h3>Related Posts</h3>
                     <ul class="related-posts-list">
-                        {% assign related_posts = site.posts | where_exp: "post", "post.categories contains page.categories[0]" | where_exp: "post", "post.url != page.url" | limit: 3 %}
+                        {% assign primary_category = page.categories | first %}
+                        {% assign related_posts = site.blog | where_exp: "post", "post.categories contains primary_category" | where_exp: "post", "post.url != page.url" | limit: 3 %}
                         {% for post in related_posts %}
                             <li>
                                 <a href="{{ post.url | relative_url }}">{{ post.title }}</a>

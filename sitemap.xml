@@ -1,27 +1,36 @@
+---
+layout: null
+---
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://xflops.io/</loc>
-    <lastmod>2024-01-15</lastmod>
+    <loc>{{ site.url }}/</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://xflops.io/docs/</loc>
-    <lastmod>2024-01-15</lastmod>
+    <loc>{{ site.url }}/blog/</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
+  {% assign docs = site.docs | sort: 'url' %}
+  {% for doc in docs %}
   <url>
-    <loc>https://xflops.io/docs/getting-started/</loc>
-    <lastmod>2024-01-15</lastmod>
+    <loc>{{ site.url }}{{ doc.url }}</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  {% endfor %}
+  {% assign posts = site.blog | sort: 'date' | reverse %}
+  {% for post in posts %}
   <url>
-    <loc>https://xflops.io/blog/</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>{{ site.url }}{{ post.url }}</loc>
+    <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  {% endfor %}
 </urlset>

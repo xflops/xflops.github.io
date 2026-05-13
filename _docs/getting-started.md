@@ -1,160 +1,112 @@
 ---
 layout: docs
 title: Getting Started with Flame
-description: Learn how to install and configure Flame for your first distributed AI workload deployment.
+description: Start a local Flame cluster, verify it with flmping, and run your first Runner service.
 ---
 
 # Getting Started with Flame
 
-This guide will walk you through installing and configuring Flame for your first distributed AI workload deployment on bare metal or virtual machines. By the end of this guide, you'll have a working Flame installation and understand the basic concepts.
+This guide follows the current Flame quick start: Docker Compose for the first local cluster, then `flmadm` for local source or systemd-based installs.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following:
+- Docker Compose for the quickest path.
+- Rust, Git, Python, and `uv` if you build and install from source with `flmadm`.
 
-- **Operating System**: Linux (Ubuntu 20.04+, CentOS 8+, etc.)
-- **Dependencies**: Rust toolchain, Git, and Python 3.
-- **Root Access**: For system-wide installation.
+## Option 1: Docker Compose
 
-## Installation
-
-Flame is installed using the `flmadm` tool, which manages the installation of all components.
-
-### 1. Install flmadm
-
-First, you need to install the `flmadm` CLI tool.
+Clone Flame and start the local cluster:
 
 ```bash
-# Clone the repository and enter the directory
-git clone https://github.com/xflops/flame.git && cd flame
-
-# Build flmadm
-cargo build --release -p flmadm
-
-# Install to system path
-sudo cp target/release/flmadm /usr/local/bin/
+git clone https://github.com/xflops/flame.git
+cd flame
+docker compose up -d
 ```
 
-### 2. Install Flame Cluster
-
-For a quick start, install all components on a single machine:
+Open a shell in the console container:
 
 ```bash
-sudo flmadm install --all --enable
+docker compose exec flame-console /bin/bash
 ```
 
-This will install the Control Plane, Worker, and Client components, and start the necessary systemd services.
-
-For more detailed installation options, including multi-node setups, see the [Installation Guide](/docs/installation.md).
-
-## Verification
-
-After installation, verify that the services are running:
+Verify the cluster:
 
 ```bash
-# Check service status
-sudo systemctl status flame-session-manager
-sudo systemctl status flame-executor-manager
-```
-
-You can also use the `flmping` tool to verify the cluster functionality:
-
-```bash
-# Add flame binaries to your PATH for this session
-export PATH=$PATH:/usr/local/flame/bin
-
-# Run a simple ping test
 flmping
+flmctl list --session
+flmctl list --application
 ```
 
-You should see output indicating successful task execution:
+The built-in applications should include `flmping`, `flmexec`, and `flmrun`.
 
+## Option 2: Local flmadm Install
+
+From a Flame source checkout:
+
+```bash
+cargo build --release -p flmadm
+sudo install -m 755 target/release/flmadm /usr/local/bin/
+sudo flmadm install --all --src-dir . --enable
+source /usr/local/flame/sbin/flmenv.sh
 ```
-Session <1> was created in <3 ms>, start to run <10> tasks in the session:
-...
-<10> tasks was completed in <473 ms>.
+
+For more installation profiles and multi-node layouts, see the [Installation Guide](/docs/installation/).
+
+## Client Configuration
+
+Python clients can use environment variables:
+
+```bash
+export FLAME_ENDPOINT=http://127.0.0.1:8080
+export FLAME_CACHE_ENDPOINT=grpc://127.0.0.1:9090
 ```
 
-## Your First Workload
+Runner can also read `~/.flame/flame.yaml`:
 
-Now that your cluster is running, let's submit a simple workload to understand how Flame distributes tasks.
+```yaml
+---
+current-context: flame
+contexts:
+  - name: flame
+    cluster:
+      endpoint: "http://127.0.0.1:8080"
+    cache:
+      endpoint: "grpc://127.0.0.1:9090"
+    package:
+      excludes:
+        - "*.log"
+        - "*.pkl"
+        - "*.tmp"
+```
 
-### 1. Create a Simple Python Task
+When `package.storage` is absent, Runner uploads packages to the Flame object cache through `cache.endpoint`.
 
-Create a file named `hello_flame.py`:
+## First Runner Service
+
+Create `hello_runner.py` inside a Python project that can import `flamepy`:
 
 ```python
-#!/usr/bin/env python3
-"""A simple Flame workload example."""
+from flamepy.runner import Runner
 
-import flame
 
-def task_function(task_id: int) -> str:
-    """A simple task that returns a greeting."""
-    import socket
-    hostname = socket.gethostname()
-    return f"Hello from Flame! Task {task_id} executed on {hostname}"
+def hello(name: str) -> str:
+    return f"hello, {name}"
 
-if __name__ == "__main__":
-    # Create a session with 5 tasks
-    session = flame.Session()
-    
-    # Submit tasks
-    for i in range(5):
-        session.submit(task_function, i)
-    
-    # Wait for results and print them
-    results = session.wait()
-    for result in results:
-        print(result)
-    
-    print(f"\nCompleted {len(results)} tasks successfully!")
+
+with Runner("hello-runner") as runner:
+    service = runner.service(hello)
+    result = service("flame")
+    print(result.get())
 ```
 
-### 2. Run the Workload
+Run it with the Flame endpoint and cache endpoint configured:
 
 ```bash
-# Ensure PATH is set (assuming /usr/local/flame/bin is in your PATH)
-python3 hello_flame.py
+python hello_runner.py
 ```
-
-### 3. Check Session Status
-
-```bash
-# List sessions to see your workload
-flmctl list -s
-```
-
-You should see your session in the output, showing the completed tasks.
 
 ## Next Steps
 
-Congratulations! You now have a working Flame installation. Here's what you can explore next:
-
-1. **User Guide**: Dive deeper into [configuration and best practices](/docs/user-guide/)
-2. **Ecosystem**: Explore [integrations and extensions](/docs/ecosystem/)
-
-## Troubleshooting
-
-### Common Issues
-
-**Services not starting:**
-```bash
-# Check logs
-sudo journalctl -u flame-session-manager -f
-tail -f /usr/local/flame/logs/fsm.log
-```
-
-**Build failures:**
-Ensure you have the latest Rust toolchain installed:
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-### Getting Help
-
-If you encounter issues not covered here:
-
-- Check the [Flame GitHub repository](https://github.com/xflops/flame) for known issues
-- Join our [Slack community](http://xflops.slack.com) for real-time support
-- Open an issue on GitHub with detailed information about your problem
+- Read the [Runner Guide](/docs/runner/) for functions, classes, instances, object futures, and package storage.
+- Read the [User Guide](/docs/user-guide/) for `flmctl`, application registration, and cluster operations.
+- Browse the [Flame examples](https://github.com/xflops/flame/tree/main/examples).

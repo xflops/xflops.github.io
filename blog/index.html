@@ -21,11 +21,18 @@ description: Latest news, updates, and insights from the XFLOPS team and communi
             <div class="filter-controls">
                 <select id="category-filter" class="category-filter">
                     <option value="">All Categories</option>
-                    <option value="AI">AI</option>
-                    <option value="Distributed Computing">Distributed Computing</option>
-                    <option value="Flame">Flame</option>
-                    <option value="Tutorials">Tutorials</option>
-                    <option value="Community">Community</option>
+                    {% capture categories_string %}
+                        {% for post in site.blog %}
+                            {% for category in post.categories %}{{ category }}|{% endfor %}
+                        {% endfor %}
+                    {% endcapture %}
+                    {% assign category_names = categories_string | split: '|' | uniq | sort %}
+                    {% for category in category_names %}
+                        {% assign category_name = category | strip %}
+                        {% unless category_name == "" %}
+                            <option value="{{ category_name }}">{{ category_name }}</option>
+                        {% endunless %}
+                    {% endfor %}
                 </select>
                 
                 <select id="sort-filter" class="sort-filter">
@@ -41,7 +48,11 @@ description: Latest news, updates, and insights from the XFLOPS team and communi
         <div class="blog-grid" id="blog-grid">
             {% assign sorted_posts = site.blog | sort: 'date' | reverse %}
             {% for post in sorted_posts %}
-            <article class="blog-card" data-categories="{{ post.categories | join: ' ' }}" data-title="{{ post.title | downcase }}">
+            <article class="blog-card"
+                data-categories="{{ post.categories | join: '|' }}"
+                data-title="{{ post.title | downcase }}"
+                data-excerpt="{% if post.description %}{{ post.description | downcase | escape }}{% else %}{{ post.content | strip_html | downcase | escape }}{% endif %}"
+                data-tags="{{ post.tags | join: '|' | downcase }}">
                 <div class="blog-card-content">
                     <header class="blog-card-header">
                         <div class="blog-meta">
@@ -189,7 +200,7 @@ description: Latest news, updates, and insights from the XFLOPS team and communi
 .blog-card {
     background: white;
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
     transition: all 0.2s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -232,7 +243,7 @@ description: Latest news, updates, and insights from the XFLOPS team and communi
     background: #f3f4f6;
     color: #374151;
     padding: 0.25rem 0.75rem;
-    border-radius: 20px;
+    border-radius: 999px;
     font-size: 0.75rem;
     font-weight: 500;
 }
@@ -409,11 +420,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedSort = sortFilter.value;
         
         filteredPosts = allPosts.filter(post => {
-            const title = post.dataset.title;
+            const title = post.dataset.title || '';
+            const excerpt = post.dataset.excerpt || '';
+            const tags = post.dataset.tags || '';
             const categories = post.dataset.categories;
             
-            const matchesSearch = title.includes(searchTerm);
-            const matchesCategory = !selectedCategory || categories.includes(selectedCategory);
+            const matchesSearch = title.includes(searchTerm) || excerpt.includes(searchTerm) || tags.includes(searchTerm);
+            const matchesCategory = !selectedCategory || categories.split('|').includes(selectedCategory);
             
             return matchesSearch && matchesCategory;
         });

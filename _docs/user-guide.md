@@ -1,88 +1,151 @@
 ---
 layout: docs
 title: User Guide
-description: User guide for Flame cluster management and usage.
+description: Use flmctl, register applications, configure clients, and operate Flame sessions.
 ---
+
 # Flame User Guide
 
-## Cluster Management with flmadm
+This guide covers day-to-day Flame usage after a cluster is running.
 
-`flmadm` is the administration CLI for Flame, designed for installing, configuring, and managing Flame clusters on bare-metal servers or VMs. It handles the full lifecycle of the cluster, including installation, upgrades, and uninstallation.
+## CLI Tools
 
-### Installation & Management
+Flame has two primary command-line tools:
 
-To install `flmadm`:
+- `flmctl`: user-facing CLI for applications, sessions, tasks, executors, and nodes.
+- `flmadm`: administrator CLI for installation, service setup, upgrades, and uninstall.
+
+## List Cluster Objects
+
 ```bash
-cd /path/to/flame
-cargo build --release -p flmadm
-sudo cp target/release/flmadm /usr/local/bin/
+flmctl list --application
+flmctl list --session
+flmctl list --executor
+flmctl list --node
 ```
 
-Use `flmadm` to manage the cluster:
-- **Install**: `sudo flmadm install --all`
-- **Uninstall**: `sudo flmadm uninstall`
-- **Upgrade**: `sudo flmadm install --force --skip-build`
+Short flags are also supported:
 
-## Worker Node Configuration
-
-Worker nodes require a `flm.conf` configuration file to connect to the control plane.
-
-Example `flm.conf`:
-
-```ini
-[cluster]
-leader_address = "http://control-plane-node:8080"
-role = "worker"
-
-[executor]
-slots = 4
+```bash
+flmctl list -a
+flmctl list -s
+flmctl list -e
+flmctl list -n
 ```
 
-Ensure `leader_address` points to the Flame Session Manager on the control plane node.
+## View Details
 
-## Using flmctl
+```bash
+flmctl view --application flmping
+flmctl view --session <session-id>
+flmctl view --task <task-id>
+flmctl view --node <node-name>
+```
 
-`flmctl` is the user-facing CLI for submitting jobs and managing sessions.
+Use `--output-format yaml` when you need structured output.
 
-### Common Commands
+## Create and Close Sessions
 
-- **List resources**:
-  ```bash
-  flmctl list --session
-  flmctl list --application
-  flmctl list --executor
-  ```
+Create a session for a registered application:
 
-- **View resource details**:
-  ```bash
-  flmctl view --session <session-id>
-  flmctl view --application <app-name>
-  flmctl view --task <task-id>
-  ```
+```bash
+flmctl create --app flmping --batch-size 1 --priority 0
+```
 
-- **Create resources**:
-  ```bash
-  flmctl create --app <app-name> --slots <slots>
-  ```
+Pass a resource request when the workload needs explicit resources:
 
-- **Close session**:
-  ```bash
-  flmctl close --session <session-id>
-  ```
+```bash
+flmctl create --app flmping --resreq cpu=1,mem=1g
+```
+
+Close a session:
+
+```bash
+flmctl close --session <session-id>
+```
+
+## Register Applications
+
+Register an application from YAML:
+
+```bash
+flmctl register --file app.yaml
+```
+
+Update or unregister it:
+
+```bash
+flmctl update --application app.yaml
+flmctl unregister --application <app-name>
+```
+
+Most Python users should start with [Runner](/docs/runner/), which packages the current project and registers a temporary application from the built-in `flmrun` template.
+
+## Client Configuration
+
+Use environment variables for simple local clients:
+
+```bash
+export FLAME_ENDPOINT=http://127.0.0.1:8080
+export FLAME_CACHE_ENDPOINT=grpc://127.0.0.1:9090
+```
+
+Use `~/.flame/flame.yaml` for persistent context-based configuration:
+
+```yaml
+---
+current-context: flame
+contexts:
+  - name: flame
+    cluster:
+      endpoint: "http://127.0.0.1:8080"
+    cache:
+      endpoint: "grpc://127.0.0.1:9090"
+```
+
+## Cluster Configuration
+
+Installed clusters use:
+
+```text
+/usr/local/flame/conf/flame-cluster.yaml
+```
+
+Important fields include:
+
+- `cluster.endpoint`: session manager endpoint.
+- `cluster.resreq`: default task resource request.
+- `cluster.policies`: scheduler policy list.
+- `cluster.executors.shim`: executor shim selection.
+- `cache.endpoint`: object cache endpoint.
+- `cache.storage`: object cache storage path.
+
+Restart Flame services after changing cluster configuration.
 
 ## Troubleshooting
 
-### Common Issues
+Services do not start:
 
-1. **Service Fails to Start**:
-   - Check logs: `journalctl -u flame-session-manager` or `journalctl -u flame-executor-manager`
-   - Verify configuration syntax in `/usr/local/flame/conf/flm.conf`
+```bash
+sudo systemctl status flame-session-manager
+sudo systemctl status flame-executor-manager
+sudo systemctl status flame-object-cache
+sudo journalctl -u flame-session-manager -n 50
+```
 
-2. **Worker Cannot Join**:
-   - Verify network connectivity: `nc -zv <control-plane-ip> 8080`
-   - Check firewall rules allow traffic on port 8080 (Session Manager) and 9090 (Executor Manager)
-   - Ensure `leader_address` in `flm.conf` is correct and reachable
+Client cannot connect:
 
-3. **Job Submission Fails**:
-   - Check if Session Manager is running: `systemctl status flame-session-manager`
-   - Verify client connectivity to Session Manager port 8080
+```bash
+flmping
+flmctl list --application
+```
+
+Then verify `FLAME_ENDPOINT`, `FLAME_CACHE_ENDPOINT`, and network access to ports `8080` and `9090`.
+
+Runner cannot start services:
+
+```bash
+flmctl list --application
+```
+
+Confirm the `flmrun` template appears. If not, check that the session manager started with the expected installation prefix and configuration.

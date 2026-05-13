@@ -1,59 +1,49 @@
 ---
 layout: docs
 title: XFLOPS/Flame Overview
-description: Welcome to the XFLOPS! Learn about Flame, a distributed engine for AI Agents and Quant.
+description: Flame is a distributed engine for AI workloads, agents, reinforcement learning, and other elastic task-heavy systems.
 ---
 
-# Welcome to XFLOPS!
+# Flame Overview
 
-XFLOPS is a vibrant community focused on empowering members to build serverless platforms for elastic workloads, including AI/Agent systems, Big Data, and quantitative computing. Every project within XFLOPS is founded on decades of expertise in both batch and elastic workload management, ensuring robust and scalable solutions.
+Flame is a distributed engine for AI workloads. It provides the runtime pieces commonly needed by agents, reinforcement learning, generated-code execution, and other elastic workloads: sessions, task scheduling, executor reuse, object caching, secure runtime isolation, and multi-language service integration.
 
-## What's Flame
+## Why Flame
 
-**Flame** is a distributed engine for AI Agents and Quant, designed to handle the most demanding elastic workloads with unprecedented efficiency and scalability.
+AI applications often create many short tasks rather than a single long-running batch job. Flame gives those tasks a shared execution model:
 
-### Key Features of Flame
+- **Scale**: Run work across multiple nodes while sharing resources fairly across tenants and sessions.
+- **Performance**: Reuse executors inside a session to reduce cold starts and improve throughput.
+- **Security**: Isolate session runtime environments and use mTLS between Flame components.
+- **Flexibility**: Integrate services through gRPC and shims, with Rust, Go, Python, and other application code.
 
-- **Elastic**: Scale the workloads dynamically based on demand with auto-scaling capabilities and resource optimization.
-- **Security**: Session-based authentication and authorization for secure access to your elastic workloads.
-- **Cost Effective**: Advanced scheduling algorithms that optimize resource utilization and workload distribution across the infrastructure.
-- **Heterogeneous**: Support for various hardware configurations including GPUs, TPUs, and specialized accelerators.
-- **High Performance**: Optimized for maximum throughput and performance.
-- **Bare Metal Native**: Designed for bare metal environments to squeeze every bit of performance.
+## Core Concepts
 
-## Quick Start
+- **Session**: A group of related tasks with scheduling and isolation boundaries. Clients can submit tasks until the session is closed.
+- **Task**: A unit of work submitted to a session.
+- **Executor**: A runtime environment that hosts application services for one session.
+- **Shim**: The protocol adapter used by an executor to manage an application service.
+- **Object cache**: Shared storage for common data, Runner packages, Runner contexts, and incremental object updates.
 
-If you're ready to dive in immediately, here's a quick overview of what you'll need:
+## Architecture
 
-1. **Prerequisites**: Linux, Rust, Python 3
-2. **Installation**: Deploy Flame using `flmadm`
-3. **Configuration**: Set up your first `flm.conf`
-4. **Deployment**: Launch your first distributed AI workload
+![Flame architecture](/images/flame-arch.jpg)
 
-## Architecture Overview
+Flame accepts client requests through the session manager, schedules session resources, and has executors connect back over gRPC to pull and run tasks. Services can react to session bind and unbind events, reuse data while the session is active, and release resources when the session closes.
 
-Flame follows a distributed architecture designed for high-performance computing:
+## Quick Start Paths
 
-![](/images/flame-arch.jpg)
+1. Use Docker Compose for a first local cluster.
+2. Use `flmadm install --all --enable` for a local or single-node systemd installation.
+3. Use `flmadm` profiles for multi-node deployments: `--control-plane`, `--worker`, `--cache`, and `--client`.
+4. Use `flamepy.runner.Runner` to turn Python functions, classes, or instances into remote services.
 
 ## Getting Help
 
-- **Issues**: If you find errors or have suggestions, please [open an issue](https://github.com/xflops/flame/issues) on GitHub
-- **Community Support**: Join our [Slack community](http://xflops.slack.com) for real-time help
-- **Email Support**: Contact us at [support@xflops.io](mailto:support@xflops.io)
+- Issues: [github.com/xflops/flame/issues](https://github.com/xflops/flame/issues)
+- Community: [https://xflops.slack.com](https://xflops.slack.com)
+- Email: [support@xflops.io](mailto:support@xflops.io)
 
-## Contributing
+## Next
 
-We welcome contributions from the community! Whether it's improving documentation, reporting bugs, or contributing code, every contribution helps make Flame better for everyone.
-
-- **Documentation**: Submit pull requests to improve our docs
-- **Code**: Contribute to the [Flame project](https://github.com/xflops/flame)
-- **Feedback**: Share your experiences and suggestions
-
-## What's Next?
-
-Ready to get started? We recommend beginning with the [Getting Started](/docs/getting-started/) guide, which will walk you through your first Flame deployment.
-
----
-
-*Last updated: {{ site.time | date: "%B %d, %Y" }}*
+Start with [Getting Started](/docs/getting-started/), then read the [Runner Guide](/docs/runner/) for Python service examples.

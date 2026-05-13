@@ -39,7 +39,7 @@ According to the description above, it's straight forward to approximate the val
 1. Continue step-1 and step-2 according to program's arguments, e.g. $10^7$.
 1. Approximate the value of `π` by $4*circle/square$, the square is the input of program's argument.
 
-Thanks to Rust `rand` model, it's easy to generate coordinates randomly; so the value of `π` is approximated as followss, the full source code can be downloaded from [Flame repo](../../examples/pi/src/local/).
+Thanks to the Rust `rand` crate, it is easy to generate coordinates randomly, so the value of `π` can be approximated as follows. The current source code is available in the [Flame Pi examples](https://github.com/xflops/flame/tree/main/examples/pi).
 
 ```rust
     let mut area = 0.0;

@@ -1,134 +1,86 @@
 # XFLOPS Website
 
-This repository contains the official website for XFLOPS, featuring comprehensive documentation for the Flame project - our distributed engine for AI Agents.
-
-## About XFLOPS
-
-[XFLOPS](http://github.com/xflops) is an organization that helps customers build cloud-native platforms for high-performance workloads including AI, BigData, and HPC. Our platform is built upon decades of experience in both batch and elastic workload management.
+This repository contains the public website for XFLOPS and the documentation mirror for [Flame](https://github.com/xflops/flame).
 
 ## About Flame
 
-**Flame** is our flagship distributed engine for AI Agents, designed to handle the most demanding AI workloads with unprecedented efficiency and scalability. It provides the infrastructure and tools needed to deploy, manage, and scale AI applications across distributed environments.
+Flame is a distributed engine for AI workloads. It provides mechanisms that show up repeatedly in agents, reinforcement learning, generated-code execution, and other elastic AI systems: sessions, task scheduling, executor reuse, object caching, secure runtime isolation, and multi-language service integration.
 
-### Key Features
-
-- **Distributed AI Training**: Scale your AI model training across multiple nodes and clusters
-- **Agent Orchestration**: Manage complex AI agent workflows and interactions
-- **Resource Optimization**: Intelligent resource allocation for maximum efficiency
-- **Fault Tolerance**: Built-in resilience and recovery mechanisms
-- **Multi-Cloud Support**: Deploy across different cloud providers seamlessly
-- **Heterogeneous Device Support**: Utilize GPUs, TPUs, and specialized accelerators
+The website should stay aligned with the Flame repository. When product positioning, install commands, Runner behavior, or example paths change in `xflops/flame`, update the corresponding pages here.
 
 ## Website Structure
 
-This website is built with Jekyll and includes:
+This site is built with Jekyll and includes:
 
-- **Homepage**: Introduction to XFLOPS and Flame project
-- **Documentation**: Comprehensive guides and references
-  - Getting Started Guide
-  - Use Cases and Examples
-  - User Guide and Best Practices
-  - API Reference
-  - Ecosystem Information
-- **Blog**: Latest news, updates, and insights
-- **Community**: Links to GitHub, Slack, and support channels
+- **Homepage**: Flame positioning, capabilities, and recent posts.
+- **Documentation**:
+  - Overview
+  - Getting Started
+  - Installation Guide
+  - User Guide
+  - Runner Guide
+- **Blog**: Technical walkthroughs and release-adjacent examples.
 
 ## Local Development
 
 ### Prerequisites
 
 - Ruby 2.7 or later
-- Jekyll 4.0 or later
 - Bundler
 
 ### Setup
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/xflops/xflops.github.io.git
-   cd xflops.github.io
-   ```
+```bash
+git clone https://github.com/xflops/xflops.github.io.git
+cd xflops.github.io
+bundle install
+bundle exec jekyll serve
+```
 
-2. Install dependencies:
-   ```bash
-   bundle install
-   ```
+Open `http://localhost:4000`.
 
-3. Start the development server:
-   ```bash
-   bundle exec jekyll serve
-   ```
-
-4. Open your browser and navigate to `http://localhost:4000`
-
-### Building for Production
+### Build
 
 ```bash
 bundle exec jekyll build
 ```
 
-The built site will be in the `_site` directory.
+The generated site is written to `_site/`.
 
 ## Project Structure
 
-```
+```text
 .
-├── _config.yml          # Jekyll configuration
-├── _layouts/            # HTML layouts
-├── _docs/               # Documentation pages
-├── _blog/               # Blog posts
-├── assets/              # CSS, JavaScript, and other assets
-├── images/              # Images and logos
-├── blog/                # Blog listing page
-├── index.html           # Homepage
-├── sitemap.xml          # Sitemap for SEO
-├── robots.txt           # Robots file for crawlers
-└── README.md            # This file
+├── _config.yml
+├── _layouts/
+├── _docs/
+├── _blog/
+├── assets/
+├── images/
+├── blog/
+├── index.html
+├── sitemap.xml
+└── README.md
 ```
 
-## Contributing
+## Content Guidelines
 
-We welcome contributions to improve the website and documentation:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-### Documentation Guidelines
-
-- Use clear, concise language
-- Include code examples where appropriate
-- Follow the existing style and format
-- Test your changes locally before submitting
-
-### Blog Post Guidelines
-
-- Write informative, engaging content
-- Include relevant tags and categories
-- Use proper markdown formatting
-- Add appropriate images and diagrams
+- Keep public claims consistent with the current [Flame README](https://github.com/xflops/flame/blob/main/README.md).
+- Prefer links to current upstream files under `https://github.com/xflops/flame/tree/main/...` or `blob/main/...`.
+- Use `flamepy.runner.Runner` for Python scaling examples unless the page is intentionally documenting a lower-level API.
+- Use `flmadm` profile flags explicitly: `--all`, `--control-plane`, `--worker`, `--cache`, or `--client`.
+- Refer to current cluster configuration as `flame-cluster.yaml`.
 
 ## Deployment
 
-The website is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+The website is deployed by GitHub Pages from the main branch.
 
-## Contact and Support
+## Contact
 
-- **Email**: [support@xflops.io](mailto:support@xflops.io)
-- **GitHub**: [http://github.com/xflops](http://github.com/xflops)
-- **Slack**: [http://xflops.slack.com](http://xflops.slack.com)
+- Email: [support@xflops.io](mailto:support@xflops.io)
+- GitHub: [https://github.com/xflops](https://github.com/xflops)
+- Slack: [https://xflops.slack.com](https://xflops.slack.com)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Built with [Jekyll](https://jekyllrb.com/)
-- Styled with modern CSS and responsive design
-- Icons and graphics from various open-source sources
-
----
-
-*Ready to explore Flame? Check out our [Getting Started Guide](/docs/getting-started/) and join our [community](http://xflops.slack.com)!*
+This project is licensed under the MIT License. See [LICENSE](LICENSE).

@@ -1,130 +1,156 @@
 ---
 layout: docs
 title: Installation Guide
-description: Detailed instructions for installing Flame on bare metal or VMs using flmadm.
+description: Install Flame with Docker Compose or flmadm profiles for control-plane, worker, cache, and client nodes.
 ---
 
 # Installation Guide
 
-Flame is designed to run on bare metal servers or virtual machines. The primary tool for managing Flame installations is `flmadm`.
+Flame can run as a local Docker Compose cluster or as installed services on bare metal or virtual machines. `flmadm` is the administrator CLI for source builds, installation profiles, systemd services, and uninstall safety.
 
 ## Prerequisites
 
-Before installing Flame, ensure your environment meets the following requirements:
+- Linux for systemd-based installations.
+- Rust toolchain when building from source.
+- Git when cloning from GitHub.
+- `uv` for Python SDK installation.
+- Root privileges for system-wide installs with systemd.
 
-- **Operating System**: Linux (Ubuntu 20.04+, CentOS 8+, etc.)
-- **Root Privileges**: Required for system-wide installation and service management.
-- **Dependencies**:
-  - `curl` (for downloading scripts)
-  - `git` (if building from source)
-  - `rust` toolchain (version 1.70 or later)
-  - `python3` & `pip` (for Python SDK)
+## Docker Compose
 
-## Installing flmadm
-
-The `flmadm` tool is the administrator CLI for Flame.
-
-### Build from Source
+For first-time local use:
 
 ```bash
-# Clone the repository
 git clone https://github.com/xflops/flame.git
 cd flame
-
-# Build flmadm
-cargo build --release -p flmadm
-
-# Install to system path
-sudo cp target/release/flmadm /usr/local/bin/
+docker compose up -d
+docker compose exec flame-console /bin/bash
+flmping
 ```
 
-## Installing Flame Cluster
+## Build flmadm
 
-Once `flmadm` is installed, you can use it to install the Flame components.
+From the Flame source tree:
 
-### Single Node Installation (All-in-One)
+```bash
+cargo build --release -p flmadm
+sudo install -m 755 target/release/flmadm /usr/local/bin/
+```
 
-For development or testing, you can install all components (Control Plane + Worker) on a single machine.
+## Install Profiles
+
+`flmadm install` requires at least one profile flag:
+
+- `--all`: control plane, worker, cache, client tools, and Python SDK.
+- `--control-plane`: `flame-session-manager`, `flmctl`, and `flmadm`.
+- `--worker`: `flame-executor-manager`, built-in services, and `flamepy`.
+- `--cache`: standalone `flame-object-cache`.
+- `--client`: `flmctl`, `flmping`, `flmexec`, and `flamepy`.
+
+Single-node installation:
 
 ```bash
 sudo flmadm install --all --enable
+source /usr/local/flame/sbin/flmenv.sh
 ```
 
-This command will:
-1. Install all binaries to `/usr/local/flame/bin`.
-2. Generate configuration files in `/usr/local/flame/conf`.
-3. Create systemd services for `flame-session-manager` and `flame-executor-manager`.
-4. Start and enable the services.
+Install from a local checkout:
 
-### Multi-Node Installation
+```bash
+sudo flmadm install --all --src-dir /path/to/flame --enable
+```
 
-For a production cluster, you should separate the Control Plane and Workers.
-
-#### 1. Control Plane Node
-
-On the machine designated as the Control Plane:
+Multi-node control plane:
 
 ```bash
 sudo flmadm install --control-plane --enable
 ```
 
-#### 2. Worker Nodes
-
-On each worker machine:
+Worker with local cache:
 
 ```bash
-sudo flmadm install --worker --enable
+sudo flmadm install --worker --cache --enable
 ```
 
-### Client Installation
-
-For machines that only need to submit jobs (no services running):
+Client-only machine:
 
 ```bash
 flmadm install --client --prefix ~/flame --no-systemd
 ```
 
-> **Note**: After installation, add `export PATH=$PATH:~/flame/bin` to your shell profile (e.g., `~/.bashrc` or `~/.zshrc`) to make the client tools available in your terminal.
+## Configuration
 
-## Verifying Installation
+`flmadm` writes cluster configuration to:
 
-After installation, check the status of the services:
-
-```bash
-# Check services
-sudo systemctl status flame-session-manager
-sudo systemctl status flame-executor-manager
+```text
+/usr/local/flame/conf/flame-cluster.yaml
 ```
 
-You can also use `flmctl` to check the cluster status:
+A local development configuration includes the session endpoint, resource policy, executor shim, object cache endpoint, and cache storage:
+
+```yaml
+---
+cluster:
+  name: flame
+  endpoint: "http://127.0.0.1:8080"
+  resreq: "cpu=1,mem=2g"
+  policies:
+    - priority
+    - drf
+    - gang
+  storage: "fs:///usr/local/flame/data"
+  executors:
+    shim: host
+cache:
+  endpoint: "grpc://127.0.0.1:9090"
+  storage: "/usr/local/flame/data/cache"
+```
+
+Restart services after changing this file.
+
+## Service Management
 
 ```bash
-# Add flmctl to PATH if needed
-export PATH=$PATH:/usr/local/flame/bin
+sudo systemctl status flame-session-manager
+sudo systemctl status flame-executor-manager
+sudo systemctl status flame-object-cache
 
-# Check cluster status by listing sessions
-flmctl list -s
+sudo journalctl -u flame-session-manager -f
+tail -f /usr/local/flame/logs/fsm.log
+tail -f /usr/local/flame/logs/fem.log
+```
+
+Verify the cluster:
+
+```bash
+flmping
+flmctl list --application
+flmctl list --session
+```
+
+## Uninstall
+
+Default uninstall creates a backup:
+
+```bash
+sudo flmadm uninstall
+```
+
+Complete removal without a backup:
+
+```bash
+sudo flmadm uninstall --no-backup --force
+```
+
+Preserve data and configuration:
+
+```bash
+sudo flmadm uninstall --preserve-data --preserve-config
 ```
 
 ## Troubleshooting
 
-If you encounter issues during installation or verification, check the following:
-
-### Common Issues
-
-- **`flmadm: command not found`**: Ensure that `/usr/local/bin` is in your `$PATH`. You may need to add `export PATH=$PATH:/usr/local/bin` to your `.bashrc` or `.zshrc`.
-- **Build Failures**: If `cargo build` fails, ensure you have the required build dependencies installed (e.g., `build-essential`, `libssl-dev`, `pkg-config`).
-- **Service Failures**: If `systemctl status` shows services as `failed`, check the logs using `journalctl -u flame-session-manager` or `journalctl -u flame-executor-manager` for error details.
-
-## Uninstallation
-
-To remove Flame from your system:
-
-```bash
-# Uninstall with backup (default)
-# Backups are stored in /var/backups/flame/ by default.
-sudo flmadm uninstall
-
-# Uninstall without backup (WARNING: This will permanently delete all data!)
-sudo flmadm uninstall --no-backup --force
-```
+- If `flmadm` cannot build Flame, rerun with `--verbose` and inspect `/tmp/flame-install-build.log`.
+- If services fail, check the matching `systemctl status`, `journalctl`, and `/usr/local/flame/logs/` files.
+- If clients cannot connect, verify `FLAME_ENDPOINT`, `FLAME_CACHE_ENDPOINT`, and open ports `8080` and `9090`.
+- If Runner cannot find `flmrun`, confirm `flmctl list --application` shows the built-in template.

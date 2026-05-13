@@ -232,7 +232,7 @@ a:hover {
     height: 120px;
     margin: 0 auto;
     display: block;
-    border-radius: 12px;
+    border-radius: 8px;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
     transition: transform 0.3s ease;
     object-fit: cover;
@@ -318,7 +318,7 @@ a:hover {
 .feature-card {
     background: #ffffff;
     padding: 2rem;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid #e5e7eb;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -334,7 +334,7 @@ a:hover {
     width: 60px;
     height: 60px;
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    border-radius: 12px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -459,7 +459,7 @@ a:hover {
 .blog-category {
     background-color: #f3f4f6;
     padding: 0.25rem 0.75rem;
-    border-radius: 20px;
+    border-radius: 999px;
     font-size: 0.875rem;
 }
 
@@ -543,7 +543,7 @@ a:hover {
 .related-posts {
     background-color: #f9fafb;
     padding: 2rem;
-    border-radius: 12px;
+    border-radius: 8px;
 }
 
 .related-posts h3 {
@@ -672,7 +672,7 @@ a:hover {
 .flame-diagram {
     background: #f9fafb;
     padding: 2rem;
-    border-radius: 12px;
+    border-radius: 8px;
     text-align: center;
     min-height: 300px;
     display: flex;
@@ -1273,7 +1273,7 @@ ol code {
 
 .blog-card {
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
     border: 1px solid #e5e7eb;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -1318,7 +1318,7 @@ ol code {
     background: #2563eb;
     color: white;
     padding: 0.25rem 0.75rem;
-    border-radius: 20px;
+    border-radius: 999px;
     font-size: 0.875rem;
     font-weight: 500;
 }
@@ -1398,7 +1398,7 @@ ol code {
     gap: 0.5rem;
     padding: 1.5rem;
     background: #f3f4f6;
-    border-radius: 12px;
+    border-radius: 8px;
     text-decoration: none;
     color: #374151;
     transition: all 0.2s ease;

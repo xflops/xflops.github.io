@@ -130,6 +130,6 @@ _Note: Your actual numbers may vary due to randomness and available hardware, bu
 ## References
 
 - [Flame Github](https://github.com/xflops/flame)
-- [RFE280 - Simplify the Python API of Flame](https://github.com/xflops/flame/blob/main/docs/designs/FRE280-runner/RFE280-runner.md)
+- [RFE280 - Simplify the Python API of Flame](https://github.com/xflops/flame/blob/main/docs/designs/RFE280-runner/RFE280-runner.md)
 - [Pi Runner example](https://github.com/xflops/flame/tree/main/examples/pi/python)
 - [Tutorial: Runner setup](https://github.com/xflops/flame/blob/main/docs/tutorials/runner-setup.md)

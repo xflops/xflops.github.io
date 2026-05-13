@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Close mobile menu when clicking outside
     document.addEventListener('click', function(event) {
-        if (!event.target.closest('.main-nav') && !event.target.closest('.mobile-menu-toggle')) {
+        if (mainNav && mobileMenuToggle && !event.target.closest('.main-nav') && !event.target.closest('.mobile-menu-toggle')) {
             mainNav.classList.remove('active');
             mobileMenuToggle.classList.remove('active');
         }
@@ -41,7 +41,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     navLinks.forEach(link => {
         const linkPath = link.getAttribute('href');
-        if (linkPath && currentPath.includes(linkPath.replace('/', ''))) {
+        if (!linkPath || linkPath.startsWith('http')) {
+            return;
+        }
+
+        const normalizedLinkPath = new URL(linkPath, window.location.origin).pathname;
+        if (normalizedLinkPath === '/') {
+            if (currentPath === '/') {
+                link.classList.add('active');
+            }
+            return;
+        }
+
+        if (currentPath === normalizedLinkPath || currentPath.startsWith(normalizedLinkPath)) {
             link.classList.add('active');
         }
     });

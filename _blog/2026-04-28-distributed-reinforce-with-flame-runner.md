@@ -51,7 +51,7 @@ Flame Runner is responsible for remote task scheduling and result collection; po
 
 ## Core implementation (`flamepy.runner`)
 
-**Excerpt — learner control path.** The listing below is abbreviated from upstream [`examples/rl/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/main.py); the learner-side loss and optimizer step are omitted for brevity.
+**Excerpt — learner control path.** The listing below is abbreviated from upstream [`examples/rl/basic/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/basic/main.py); the learner-side loss and optimizer step are omitted for brevity.
 
 ```python
 from functools import partial
@@ -148,7 +148,7 @@ episodes = rr.get(futures)
 
 ### `rr.put_object(value)`
 
-Publishes a payload on the active `Runner` session and yields a reference suitable for remote task arguments. Upstream training uses the policy `state_dict()` as the published value ([`examples/rl/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/main.py)):
+Publishes a payload on the active `Runner` session and yields a reference suitable for remote task arguments. Upstream training uses the policy `state_dict()` as the published value ([`examples/rl/basic/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/basic/main.py)):
 
 ```python
 weights_ref = rr.put_object(policy.state_dict())
@@ -316,5 +316,5 @@ The following items are reflected in the current `main` branch layout:
 
 - Flame: [Add RL example — PR #424](https://github.com/xflops/flame/pull/424)
 - Flame repository: [xflops/flame](https://github.com/xflops/flame)
-- Reference code: [`examples/rl/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/main.py)
-- Reference documentation: [`examples/rl/README.md`](https://github.com/xflops/flame/blob/main/examples/rl/README.md)
+- Reference code: [`examples/rl/basic/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/basic/main.py)
+- Reference documentation: [`examples/rl/basic/README.md`](https://github.com/xflops/flame/blob/main/examples/rl/basic/README.md)

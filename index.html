@@ -3,185 +3,128 @@ layout: default
 title: Home
 ---
 
-<!-- Hero Section -->
 <section class="hero">
     <div class="container">
         <div class="hero-logo">
             <img src="/images/flame-logo.jpg" alt="Flame Logo" class="hero-flame-logo">
         </div>
-        <h1>Serverless Runtime with <span class="flame-gradient-text">Flame</span> for Security, Performance and Cost </h1>
+        <h1>Flame: a distributed engine for AI workloads</h1>
         <p>
-            XFLOPS empowers enterprises to build serverless platforms with Flame, delivering a secure, cost-effective, and
-            high-performance runtime environment.
-            Flame is engineered from decades of expertise in elastic workload management, enabling it to handle the most
-            demanding elastic workloads with exceptional efficiency and scalability, e.g. AI agents, Quant, etc.
+            Flame helps teams run elastic AI workloads across distributed infrastructure. It brings sessions,
+            task scheduling, executor reuse, object caching, and secure runtime isolation into one runtime for
+            agents, reinforcement learning, generated-code execution, and more.
         </p>
         <div class="hero-buttons">
             <a href="/docs/getting-started/" class="btn btn-primary">Get Started</a>
-            <a href="https://github.com/xflops/flame" class="btn btn-secondary" target="_blank" rel="noopener">View on
-                GitHub</a>
+            <a href="https://github.com/xflops/flame" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
 <section class="features">
     <div class="container">
-        <h2>Key Features</h2>
+        <h2>What Flame Provides</h2>
         <div class="features-grid">
-
             <div class="feature-card">
-                <!-- <div class="feature-icon">⚡</div> -->
-                <h3>Elastic</h3>
-                <p>Scale your workloads dynamically based on demand with auto-scaling capabilities and resource
-                    optimization.</p>
+                <h3>Scale</h3>
+                <p>Run many short-lived tasks across multiple nodes while keeping resource sharing fair across tenants and sessions.</p>
             </div>
 
             <div class="feature-card">
-                <!-- <div class="feature-icon">🚀</div> -->
+                <h3>Performance</h3>
+                <p>Reuse executors inside sessions, reduce startup overhead, and improve throughput for elastic task-heavy workloads.</p>
+            </div>
+
+            <div class="feature-card">
                 <h3>Security</h3>
-                <p>Session-based authentication and authorization for secure access to your elastic workloads which are
-                    running in microVMs, e.g. AI agents, Quant, etc.</p>
+                <p>Use session-dedicated runtime environments and mTLS between Flame components to reduce data leakage risk.</p>
             </div>
 
             <div class="feature-card">
-                <!-- <div class="feature-icon">🧠</div> -->
-                <h3>Cost Effective</h3>
-                <p>Advanced scheduling algorithms that optimize resource utilization and workload distribution across
-                    your infrastructure.</p>
+                <h3>Runner API</h3>
+                <p>Package Python projects and expose functions, classes, or instances as remote services with <code>flamepy.runner</code>.</p>
             </div>
 
             <div class="feature-card">
-                <!-- <div class="feature-icon">🔧</div> -->
-                <h3>Heterogeneous</h3>
-                <p>Support for various hardware configurations including GPUs, TPUs, and specialized accelerators for elastic
-                    workloads.</p>
+                <h3>Object Cache</h3>
+                <p>Share common data, Runner contexts, and incremental object updates without repeatedly copying full payloads.</p>
             </div>
 
             <div class="feature-card">
-                <!-- <div class="feature-icon">📈</div> -->
-                <h3>High Performance</h3>
-                <p>Optimized for maximum throughput and performance, ensuring your elastic workloads run at peak
-                    efficiency.</p>
-            </div>
-
-            <div class="feature-card">
-                <!-- <div class="feature-icon">🌐</div> -->
-                <h3>Cloud Native</h3>
-                <p>Designed by Cloud Native architecture, make it possible to be deployed on any cloud platform or
-                    on-premise.</p>
+                <h3>Flexible Services</h3>
+                <p>Integrate applications through gRPC and service shims, with support for Rust, Go, Python, and more.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Flame Project Section -->
 <section class="flame-project">
     <div class="container">
         <div class="flame-text">
-            <h2>Introducing Flame</h2>
-            <p><strong>Flame</strong> is our flagship distributed engine for elastic workloads, designed to handle the most
-                demanding elastic workloads with unprecedented efficiency and scalability, e.g. AI agents, Quant, etc.</p>
-
-            <h3>What is Flame?</h3>
-            <p>Flame is a distributed system designed for elastic workloads, providing a comprehensive suite of
-                mechanisms commonly required by various classes of elastic workloads, including AI/ML, HPC, Big Data,
-                and more. Built upon over a decade and a half of experience running diverse high-performance workloads
-                at scale across multiple systems and platforms, Flame incorporates best-of-breed ideas and practices
-                from the open source community.</p>
+            <h2>How Flame Works</h2>
+            <p>
+                A Flame session groups related tasks. The session scheduler allocates resources, executors connect
+                back to Flame over gRPC, and services pull work for the session they are bound to. Executors can be
+                reused while the session is active, which is especially useful for agents and reinforcement-learning
+                workloads that issue many small tasks.
+            </p>
 
             <div class="diagram-image">
-                <img src="/images/flame-arch.jpg" alt="Flame Architecture Diagram" style="max-width:100%;height:auto;">
+                <img src="/images/flame-arch.jpg" alt="Flame architecture diagram">
             </div>
 
-            <h3>Key Capabilities</h3>
+            <h3>Core Concepts</h3>
             <ul>
-                <li><strong>Scale:</strong> Unlike applications running on a single node, Flame scales workloads across
-                    multiple nodes to maximize performance acceleration while ensuring fair resource sharing across
-                    multiple tenants and sessions.</li>
-                <li><strong>Performance:</strong> Elastic workloads typically involve tens of thousands of short tasks.
-                    Flame leverages cutting-edge features to improve roundtrip times and throughput in large-scale
-                    environments, while intelligently sharing runtime within sessions to minimize startup time.</li>
-                <li><strong>Security:</strong> Flame utilizes microVM as a runtime for enhanced security, with each
-                    runtime environment (executor) dedicated to a single session to prevent data leakage. All Flame
-                    components communicate using mTLS for secure inter-component communication.</li>
-                <li><strong>Flexibility:</strong> Flame defines a comprehensive set of general APIs to support multiple
-                    user scenarios. Additionally, Flame supports applications across multiple programming languages
-                    through gRPC, including Rust, Go, and Python.</li>
+                <li><strong>Session:</strong> A group of related tasks with scheduling, resource, and isolation boundaries.</li>
+                <li><strong>Task:</strong> A unit of work submitted by a client and executed by a service in an executor.</li>
+                <li><strong>Executor:</strong> A runtime environment that hosts application services for a session.</li>
+                <li><strong>Object cache:</strong> A shared data layer used by Runner, common data, and incremental object updates.</li>
             </ul>
         </div>
         <div class="flame-actions">
-            <a href="/docs/getting-started/" class="btn btn-primary">Get Started with Flame</a>
-            <a href="/docs/user-guide/" class="btn btn-secondary">View User Guide</a>
+            <a href="/docs/getting-started/" class="btn btn-primary">Start a Local Cluster</a>
+            <a href="/docs/runner/" class="btn btn-secondary">Use Runner</a>
         </div>
     </div>
-
 </section>
 
-<!-- Hot Blogs Section -->
 <section class="hot-blogs">
     <div class="container">
-        <h2>Latest from Our Blog</h2>
-        <p>Stay updated with the latest insights, tutorials, and announcements from the XFLOPS team.</p>
+        <h2>Latest from the Blog</h2>
+        <p>Technical walkthroughs and examples from the Flame project.</p>
 
         <div class="blogs-grid">
+            {% assign sorted_posts = site.blog | sort: 'date' | reverse %}
+            {% for post in sorted_posts limit: 3 %}
             <article class="blog-card">
                 <div class="blog-card-image">
-                    <img src="/images/gymnasium-logo.svg" alt="Gymnasium logo for RL example" class="blog-thumbnail">
+                    {% if post.categories contains "RL" %}
+                        <img src="/images/gymnasium-logo.svg" alt="Reinforcement learning example" class="blog-thumbnail">
+                    {% else %}
+                        <img src="/images/flame-logo.png" alt="Flame blog post" class="blog-thumbnail">
+                    {% endif %}
                 </div>
                 <div class="blog-card-content">
                     <div class="blog-meta">
-                        <span class="blog-category">Runner</span>
-                        <span class="blog-date">May 12, 2026</span>
+                        {% if post.categories and post.categories.size > 0 %}
+                            <span class="blog-category">{{ post.categories | first }}</span>
+                        {% endif %}
+                        <span class="blog-date">{{ post.date | date: "%B %d, %Y" }}</span>
                     </div>
                     <h3 class="blog-title">
-                        <a href="/blog/distributed-replay-buffer-with-flame-runner/">Distributed Replay Buffer with Flame Runner</a>
+                        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
                     </h3>
                     <p class="blog-excerpt">
-                        A technical blog on patch_object delta updates, parallel replay-buffer sampling, and Flame's handler-plus-data model.
+                        {% if post.description %}
+                            {{ post.description }}
+                        {% else %}
+                            {{ post.content | strip_html | truncate: 150 }}
+                        {% endif %}
                     </p>
-                    <a href="/blog/distributed-replay-buffer-with-flame-runner/" class="read-more">Read More →</a>
+                    <a href="{{ post.url | relative_url }}" class="read-more">Read More &rarr;</a>
                 </div>
             </article>
-
-            <article class="blog-card">
-                <div class="blog-card-image">
-                    <img src="/images/gymnasium-logo.svg" alt="Gymnasium logo for RL example" class="blog-thumbnail">
-                </div>
-                <div class="blog-card-content">
-                    <div class="blog-meta">
-                        <span class="blog-category">Runner</span>
-                        <span class="blog-date">April 28, 2026</span>
-                    </div>
-                    <h3 class="blog-title">
-                        <a href="/blog/distributed-reinforce-with-flame-runner/">Distributed REINFORCE with Flame Runner</a>
-                    </h3>
-                    <p class="blog-excerpt">
-                        A technical blog on the merged RL example: distributed actor-learner design with <code>flamepy.runner</code>, core interfaces, and Ant-v5 throughput results.
-                    </p>
-                    <a href="/blog/distributed-reinforce-with-flame-runner/" class="read-more">Read More →</a>
-                </div>
-            </article>
-
-            <article class="blog-card">
-                <div class="blog-card-image">
-                    <img src="/images/flame-logo.png" alt="Flame Runner Parameter Server" class="blog-thumbnail">
-                </div>
-                <div class="blog-card-content">
-                    <div class="blog-meta">
-                        <span class="blog-category">Runner</span>
-                        <span class="blog-date">April 3, 2026</span>
-                    </div>
-                    <h3 class="blog-title">
-                        <a href="/blog/flame-runner-parameter-server/">Running a Parameter Server with Runner</a>
-                    </h3>
-                    <p class="blog-excerpt">
-                        Train a tiny MNIST model with a synchronous Parameter Server pattern using Flame Runner: object cache, remote services, and futures.
-                    </p>
-                    <a href="/blog/flame-runner-parameter-server/" class="read-more">Read More →</a>
-                </div>
-            </article>
-
+            {% endfor %}
         </div>
 
         <div class="blogs-cta">
@@ -190,11 +133,10 @@ title: Home
     </div>
 </section>
 
-<!-- Community Section -->
 <section class="community">
     <div class="container">
         <h2>Join the XFLOPS Community</h2>
-        <p>Connect with developers, share experiences, and contribute to the future of distributed AI computing.</p>
+        <p>Discuss Flame, report issues, and contribute examples or runtime improvements.</p>
 
         <div class="community-links">
             <a href="https://github.com/xflops" class="community-link" target="_blank" rel="noopener">
@@ -208,10 +150,8 @@ title: Home
                 <span>GitHub</span>
             </a>
 
-            <a href="http://xflops.slack.com" class="community-link" target="_blank" rel="noopener">
+            <a href="https://xflops.slack.com" class="community-link" target="_blank" rel="noopener">
                 <span class="community-icon">
-                    <!-- Slack logo SVG -->
-                    <!-- Slack logo SVG -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 512 512"
                         fill="currentColor" aria-hidden="true">
                         <g>
@@ -231,7 +171,6 @@ title: Home
 
             <a href="mailto:support@xflops.io" class="community-link">
                 <span class="community-icon">
-                    <!-- Outlook logo SVG -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 48 48"
                         fill="currentColor" aria-hidden="true">
                         <g>
