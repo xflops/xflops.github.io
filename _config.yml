@@ -1,6 +1,6 @@
 # Site settings
 title: 'xflops'
-description: "Flame is a distributed engine for AI workloads, agents, and reinforcement learning."
+description: "XFLOPS is an open source community for building AI applications, with Flame as its core distributed engine."
 url: 'https://xflops.io'
 baseurl: ''
 

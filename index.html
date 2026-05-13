@@ -6,13 +6,13 @@ title: Home
 <section class="hero">
     <div class="container">
         <div class="hero-logo">
-            <img src="/images/flame-logo.jpg" alt="Flame Logo" class="hero-flame-logo">
+            <img src="/images/xflops-logo.jpg" alt="XFLOPS Logo" class="hero-flame-logo">
         </div>
-        <h1>Flame: a distributed engine for AI workloads</h1>
+        <h1>XFLOPS: an open source community for AI applications</h1>
         <p>
-            Flame helps teams run elastic AI workloads across distributed infrastructure. It brings sessions,
-            task scheduling, executor reuse, object caching, and secure runtime isolation into one runtime for
-            agents, reinforcement learning, generated-code execution, and more.
+            XFLOPS helps enterprises build AI applications with open tools, frameworks, and best practices.
+            Flame is the community's core project: a distributed engine for secure, cost-effective, and
+            high-performance elastic AI workloads.
         </p>
         <div class="hero-buttons">
             <a href="/docs/getting-started/" class="btn btn-primary">Get Started</a>
@@ -23,36 +23,36 @@ title: Home
 
 <section class="features">
     <div class="container">
-        <h2>What Flame Provides</h2>
+        <h2>What XFLOPS Focuses On</h2>
         <div class="features-grid">
             <div class="feature-card">
-                <h3>Scale</h3>
-                <p>Run many short-lived tasks across multiple nodes while keeping resource sharing fair across tenants and sessions.</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>Performance</h3>
-                <p>Reuse executors inside sessions, reduce startup overhead, and improve throughput for elastic task-heavy workloads.</p>
+                <h3>Elastic</h3>
+                <p>Scale AI workloads dynamically based on demand with runtime-aware scheduling and resource optimization.</p>
             </div>
 
             <div class="feature-card">
                 <h3>Security</h3>
-                <p>Use session-dedicated runtime environments and mTLS between Flame components to reduce data leakage risk.</p>
+                <p>Use session-based access, isolated runtime environments, and secure component communication for elastic workloads.</p>
             </div>
 
             <div class="feature-card">
-                <h3>Runner API</h3>
-                <p>Package Python projects and expose functions, classes, or instances as remote services with <code>flamepy.runner</code>.</p>
+                <h3>Cost Effective</h3>
+                <p>Optimize resource utilization and workload distribution so AI systems can run efficiently at scale.</p>
             </div>
 
             <div class="feature-card">
-                <h3>Object Cache</h3>
-                <p>Share common data, Runner contexts, and incremental object updates without repeatedly copying full payloads.</p>
+                <h3>Heterogeneous</h3>
+                <p>Support varied infrastructure, including CPU, GPU, and accelerator-backed environments.</p>
             </div>
 
             <div class="feature-card">
-                <h3>Flexible Services</h3>
-                <p>Integrate applications through gRPC and service shims, with support for Rust, Go, Python, and more.</p>
+                <h3>High Performance</h3>
+                <p>Improve throughput and roundtrip time for task-heavy AI systems through distributed execution.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>Cloud Native</h3>
+                <p>Build portable runtime infrastructure for cloud, on-premise, and hybrid deployments.</p>
             </div>
         </div>
     </div>
@@ -61,19 +61,18 @@ title: Home
 <section class="flame-project">
     <div class="container">
         <div class="flame-text">
-            <h2>How Flame Works</h2>
+            <h2>Core Project: Flame</h2>
             <p>
-                A Flame session groups related tasks. The session scheduler allocates resources, executors connect
-                back to Flame over gRPC, and services pull work for the session they are bound to. Executors can be
-                reused while the session is active, which is especially useful for agents and reinforcement-learning
-                workloads that issue many small tasks.
+                Flame is the core XFLOPS project for elastic AI workloads. It provides the distributed runtime
+                mechanisms behind sessions, task scheduling, executor reuse, object caching, and secure service
+                integration for agents, reinforcement learning, generated-code execution, and more.
             </p>
 
             <div class="diagram-image">
                 <img src="/images/flame-arch.jpg" alt="Flame architecture diagram">
             </div>
 
-            <h3>Core Concepts</h3>
+            <h3>How Flame Works</h3>
             <ul>
                 <li><strong>Session:</strong> A group of related tasks with scheduling, resource, and isolation boundaries.</li>
                 <li><strong>Task:</strong> A unit of work submitted by a client and executed by a service in an executor.</li>
@@ -82,7 +81,7 @@ title: Home
             </ul>
         </div>
         <div class="flame-actions">
-            <a href="/docs/getting-started/" class="btn btn-primary">Start a Local Cluster</a>
+            <a href="/docs/getting-started/" class="btn btn-primary">Start with Flame</a>
             <a href="/docs/runner/" class="btn btn-secondary">Use Runner</a>
         </div>
     </div>
@@ -90,8 +89,8 @@ title: Home
 
 <section class="hot-blogs">
     <div class="container">
-        <h2>Latest from the Blog</h2>
-        <p>Technical walkthroughs and examples from the Flame project.</p>
+        <h2>Latest from the XFLOPS Blog</h2>
+        <p>Technical walkthroughs and examples from the XFLOPS community and Flame project.</p>
 
         <div class="blogs-grid">
             {% assign sorted_posts = site.blog | sort: 'date' | reverse %}
