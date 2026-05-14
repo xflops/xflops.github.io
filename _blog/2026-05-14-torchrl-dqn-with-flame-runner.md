@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "TorchRL DQN with Flame Runner and Sharded Replay"
-date: 2026-05-15
+date: 2026-05-14
 author: "Klaus Ma"
 description: "A technical blog on the TorchRL DQN example in Flame, covering distributed collectors, Flame-backed TorchRL replay storage, sharded sampling, and an Apple M4 Podman test run."
 categories: ["Runner", "Flame", "RL"]
