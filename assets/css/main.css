@@ -1299,6 +1299,13 @@ ol code {
     transition: transform 0.3s ease;
 }
 
+.blog-thumbnail-contain {
+    object-fit: contain;
+    box-sizing: border-box;
+    padding: 2.5rem;
+    background: #ffffff;
+}
+
 .blog-card:hover .blog-thumbnail {
     transform: scale(1.05);
 }
