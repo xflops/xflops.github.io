@@ -23,15 +23,20 @@ With session-based isolation:
 
 This makes it straightforward for agent frameworks like LangChain and CrewAI to support multi-tenancy and data isolation using Flame.
 
-The following code demonstrates creating a session and submitting a task to it. When creating a session via `flame.create_session`, the client identifies the application (agent) to use and provides common data shared by all tasks in the session. We’ll introduce how to build and deploy an application in Flame in the following section.
+The following code demonstrates creating a service session and submitting a task to it. When creating a session via `flamepy.service.Session`, the client identifies the application (agent) to use and provides common data shared by all tasks in the session. We’ll introduce how to build and deploy an application in Flame in the following section.
 
 ```python
+from flamepy.service import Session
+from apis import MyContext, Question
+
 # Each session is completely isolated
-session = await flame.create_session("openai-agent", b"You are a weather forecaster.")
+session = Session("openai-agent", ctx=MyContext(prompt="You are a weather forecaster."))
 
 # First task of the session
-task = await session.invoke(b"Who are you?")
-print(task.output)
+output = session.invoke(Question(question="Who are you?"))
+print(output.answer)
+
+session.close()
 ```
 
 ### 2. Zero Cold Starts
@@ -42,47 +47,57 @@ In addition to mapping one session to a single executor instance, Flame can scal
 
 ### 3. Elegantly Simple Python API
 
-Flame’s Python SDK is designed with developer experience in mind. Building an AI agent typically boils down to three methods that map to session lifecycle events:
+Flame’s Python SDK is designed with developer experience in mind. Building an AI agent typically starts with a `service.FlameInstance`, a typed entrypoint, and optional access to session context:
 
 ```python
-class MyAgent(flame.FlameService):
-    async def on_session_enter(self, context: flame.SessionContext):
-        # Initialize your agent (runs once per session)
-        pass
-    
-    async def on_task_invoke(self, context: flame.TaskContext) -> flame.TaskOutput:
-        # Process individual tasks
-        pass
-    
-    async def on_session_leave(self):
-        # Clean up resources
-        pass
+from flamepy import service
+
+ins = service.FlameInstance()
+
+@ins.entrypoint
+def my_agent(request: Question) -> Answer:
+    ctx = ins.context()
+    # Process the request with the session context.
+    ...
+    if ctx is not None:
+        ins.update_context(ctx)
+    return Answer(answer="...")
+
+if __name__ == "__main__":
+    ins.run()
 ```
 
 API overview:
-- **`on_session_enter`**: Ideal for expensive, once-per-session initialization
-- **`on_task_invoke`**: Handles individual requests with full session context (session ID, task ID, credentials/delegations)
-- **`on_session_leave`**: Cleans up resources when a session ends
+- **`service.FlameInstance`**: Owns the service process and entrypoint registration
+- **`@ins.entrypoint`**: Handles individual requests with typed inputs and outputs
+- **`ins.context()` / `ins.update_context()`**: Reads and updates session-scoped common data
+- **`Session.invoke()` / `Session.run()`**: Sends work to the service synchronously or as a future with task notifications
 
-Client-side APIs are equally simple. In addition to the synchronous example above, Flame supports asynchronous APIs. With a callback-based informer, the client receives state change notifications (e.g., pending, running).
+Client-side APIs are equally simple. With a callback-based informer, the client receives state change notifications (e.g., pending, running).
 
 ```python
-class MyAgentTaskInformer(flame.TaskInformer):
-    def on_update(self, task: flame.Task):
+import flamepy
+from flamepy.service import Session
+
+class MyAgentTaskInformer(flamepy.TaskInformer):
+    def on_update(self, task: flamepy.Task):
         pass
     
     def on_error(self):
         pass
 
 # Each session is completely isolated
-session = await flame.create_session("openai-agent", b"You are a weather forecaster.")
+session = Session("openai-agent", ctx=MyContext(prompt="You are a weather forecaster."))
 
 informer = MyAgentTaskInformer()
 
-await session.invoke(b"Who are you?", informer)
+future = session.run(Question(question="Who are you?"), informer)
+output = future.result()
+
+session.close()
 ```
 
-As a distributed system, Flame schedules tasks onto executors according to the scheduler’s algorithm. Client calls like `flame.create_session` and `session.invoke` enqueue work and don’t synchronously trigger server-side execution. Executors pick up work when scheduled.
+As a distributed system, Flame schedules tasks onto executors according to the scheduler’s algorithm. Client calls like `Session.invoke` and `Session.run` enqueue work for the matching application. Executors pick up work when scheduled.
 
 ### 4. Universal Integration: Framework-Agnostic
 
@@ -90,20 +105,29 @@ Flame’s general-purpose APIs integrate seamlessly with existing AI frameworks 
 
 ```python
 # LangChain Integration Example
-from langchain.agents import create_openai_functions_agent, AgentExecutor
-from langchain.chat_models import ChatOpenAI
+from flamepy import service
+from langchain.agents import create_agent
+from langchain.messages import HumanMessage, SystemMessage
+from langchain_deepseek import ChatDeepSeek
 
-class LangChainAgent(FlameService):
-    async def on_session_enter(self, context: SessionContext):
-        llm = ChatOpenAI(temperature=0)
-        self.agent = create_openai_functions_agent(llm, tools, prompt)
-        self.agent_executor = AgentExecutor(agent=self.agent, tools=tools)
-    
-    async def on_task_invoke(self, context: TaskContext) -> TaskOutput:
-        result = await self.agent_executor.ainvoke({
-            "input": context.input.decode("utf-8")
-        })
-        return TaskOutput(data=result["output"].encode("utf-8"))
+ins = service.FlameInstance()
+
+llm = ChatDeepSeek(model="deepseek-chat", temperature=0, max_retries=2)
+agent = create_agent(model=llm)
+
+@ins.entrypoint
+def my_agent(q: Question) -> Answer:
+    messages = []
+
+    ctx = ins.context()
+    if ctx is not None and isinstance(ctx, SysPrompt):
+        messages.append(SystemMessage(content=ctx.prompt))
+
+    messages.append(HumanMessage(content=q.question))
+    output = agent.invoke({"messages": messages})
+    answer = output["messages"][-1].content
+
+    return Answer(answer=answer)
 ```
 
 This flexibility means:
@@ -117,50 +141,71 @@ Let’s walk through a complete example that demonstrates Flame’s capabilities
 
 ### The Agent Implementation
 
-This example uses the OpenAI Python SDK to chat with DeepSeek:
-- In `on_session_enter`, it reads the API key and creates a client for DeepSeek; the session’s common data acts as the system prompt
-- In `on_task_invoke`, it combines the system prompt with the task input (user prompt), calls DeepSeek, and returns the response as the task output
-- In `on_session_leave`, no cleanup is required for this example
+This example uses the OpenAI Agents SDK with a DeepSeek-compatible client:
+- The service process creates a `service.FlameInstance` and registers a typed entrypoint
+- The session’s common data provides the agent instructions and conversation history
+- The entrypoint calls `ins.context()` before running the agent and `ins.update_context()` after the custom session has captured new messages
 
-Flame guarantees that `on_task_invoke` runs only after a successful `on_session_enter`. If `on_session_enter` fails (after retries), the session fails. Similarly, a task fails if `on_task_invoke` raises an error. Clients receive task status notifications, and a failed task does not affect other tasks in the session.
+Flame guarantees that each task enters the registered entrypoint with the right session context. If the entrypoint raises an error, that task fails while other tasks and sessions remain isolated.
 
 ```python
 import os
-import asyncio
-import flame
-from flame import FlameService, SessionContext, TaskContext, TaskOutput
-from openai import OpenAI
+from typing_extensions import TypedDict
+from openai import AsyncOpenAI
+from agents import (
+    Agent,
+    Runner,
+    function_tool,
+    set_default_openai_api,
+    set_default_openai_client,
+    set_tracing_disabled,
+)
+from flamepy import service
+from apis import MyContext, Question, Answer, MyCustomSession
 
-class OpenAIAgent(FlameService):
-    def __init__(self):
-        self.client = None
-        self.system_prompt = None
+ds_client = AsyncOpenAI(
+    base_url="https://api.deepseek.com",
+    api_key=os.getenv("DEEPSEEK_API_KEY"),
+)
+set_default_openai_client(ds_client)
+set_tracing_disabled(True)
+set_default_openai_api("chat_completions")
 
-    async def on_session_enter(self, context: SessionContext):
-        # Initialize OpenAI client once per session
-        self.client = OpenAI(
-            api_key=os.getenv("DEEPSEEK_API_KEY"),
-            base_url="https://api.deepseek.com"
-        )
-        self.system_prompt = context.common_data.decode("utf-8")
+ins = service.FlameInstance()
 
-    async def on_task_invoke(self, context: TaskContext) -> TaskOutput:
-        response = self.client.chat.completions.create(
-            model="deepseek-chat",
-            messages=[
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": context.input.decode("utf-8")}
-            ]
-        )
-        return TaskOutput(data=response.choices[0].message.content.encode("utf-8"))
+class Location(TypedDict):
+    lat: float
+    long: float
 
-    async def on_session_leave(self):
-        # Clean up if needed
-        pass
+@function_tool
+async def fetch_weather(location: Location) -> str:
+    return "sunny"
+
+agent = Agent(
+    name="openai-agent-example",
+    model="deepseek-chat",
+    tools=[fetch_weather],
+)
+
+@ins.entrypoint
+async def my_agent(q: Question) -> Answer:
+    ctx = ins.context()
+
+    if ctx is not None and isinstance(ctx, MyContext):
+        session = MyCustomSession(ctx)
+        agent.instructions = ctx.prompt
+
+        result = await Runner.run(agent, q.question, session=session)
+        ctx.messages = session.history()
+        ins.update_context(ctx)
+    else:
+        result = await Runner.run(agent, q.question)
+
+    return Answer(answer=result.final_output)
 
 # Run the agent
 if __name__ == "__main__":
-    asyncio.run(flame.run(OpenAIAgent()))
+    ins.run()
 ```
 
 ### Deploy the Agent
@@ -177,7 +222,7 @@ spec:
   command: /usr/bin/uv
   arguments:
     - run
-    - /opt/examples/agents/openai/main.py
+    - /opt/examples/agents/openai/agent.py
   environments:
     DEEPSEEK_API_KEY: sk-xxxxxxxxxxxxxxxxx
 ```
@@ -188,10 +233,10 @@ Another benefit of `uv` is streamlined Python dependency management. `uv` suppor
 # /// script
 # dependencies = [
 #   "openai",
-#   "flame",
+#   "flamepy",
 # ]
 # [tool.uv.sources]
-# flame = { path = "/usr/local/flame/sdk/python" }
+# flamepy = { path = "/usr/local/flame/sdk/python" }
 # ///
 
 # ... your script code ...
@@ -214,28 +259,30 @@ openai-agent        Grpc      Enabled     03:36:56       /usr/bin/uv
 With the agent deployed, build a simple client to verify it. In this client, we create a session that asks the agent to act as a weather forecaster, then send a prompt asking the agent to introduce itself.
 
 ```python
-import flame
-import asyncio
+from flamepy.service import Session
+from apis import MyContext, Question
 
-async def main():
+def main():
     # Create a session with initial context
-    session = await flame.create_session(
+    session = Session(
         "openai-agent",
-        b"You are a weather forecaster."
+        ctx=MyContext(prompt="You are a weather forecaster."),
     )
     
     # Send a task to the same session
-    task1 = await session.invoke(b"Who are you?")
-    print(task1.output.decode("utf-8"))
+    output = session.invoke(Question(question="Who are you?"))
+    print(output.answer)
+
+    session.close()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
 ```
 
 Run this client in a virtual environment on your desktop. You should see a response similar to the following:
 
 ```shell
-(agent_example) $ python3 ./examples/agents/client.py 
+(agent_example) $ python3 ./examples/agents/openai/client.py -m "Who are you?"
 I’m your friendly weather forecaster assistant! 🌦️ I can help you check current weather conditions, forecasts, or answer any weather-related questions you have—whether it’s about rain, snow, storms, or just deciding if you need a jacket today.  
  
 Want a forecast for your location or somewhere else? Just let me know! (Note: For real-time data, I may need you to enable location access or specify a place.)  

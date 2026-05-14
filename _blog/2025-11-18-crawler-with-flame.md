@@ -13,18 +13,22 @@ To address this, agents often leverage RAG (Retrieval-Augmented Generation) tech
 This "new data" includes not only internal enterprise information, such as IT processes and contracts, but also real-time information from the internet, such as stock prices and company announcements.
 For internet data, web crawlers are needed to fetch and store it in vector databases, facilitating subsequent retrieval and utilization by agents.
 
-With Flame v0.5's new Python API, we can easily build a high-concurrency web crawler to efficiently obtain the required internet information. Additionally, we can use Flame's command-line tools to monitor the execution progress and results of crawling tasks in real-time.
+With FlamePy's service API, we can easily build a high-concurrency web crawler to efficiently obtain the required internet information. Additionally, we can use Flame's command-line tools to monitor the execution progress and results of crawling tasks in real-time.
 
 ## Crawler Server Code
 
-In Flame v0.5, a new `FlameInstance` interface has been added. Using this interface and its Python decorator (`FlameInstance.entrypoint`), we can explicitly specify the application's entry function. When a client initiates a request, Flame automatically schedules the request (task) to an appropriate application instance based on the cluster's current resource utilization, achieving efficient resource allocation and task processing.
+The `flamepy.service.FlameInstance` interface and its Python decorator (`FlameInstance.entrypoint`) let us explicitly specify the application's entry function. When a client initiates a request, Flame automatically schedules the request (task) to an appropriate application instance based on the cluster's current resource utilization, achieving efficient resource allocation and task processing.
 
 ```python
-ins = flamepy.FlameInstance()
+from flamepy import service
+
+ins = service.FlameInstance()
 
 @ins.entrypoint
-def crawler(wp: WebPage) -> Answer:
-    text = requests.get(wp.url, headers=headers).text
+def crawler_app(wp: WebPage) -> Summary:
+    response = requests.get(wp.url, headers=headers)
+    response.raise_for_status()
+    text = response.text
 
     md = markitdown.MarkItDown()
     stream = io.BytesIO(text.encode("utf-8"))
@@ -32,26 +36,28 @@ def crawler(wp: WebPage) -> Answer:
 
     ...
     
-    return Answer(answer=f"Crawled {wp.url}")
+    return Summary(links=links, content=result)
 ```
 
-By creating an instance `ins` with `flamepy.FlameInstance`, we can use it to define the application's entry function (`def crawler(wp: WebPage) -> Answer`). This entry function, upon receiving a web page request, downloads the content of the specified URL and converts it into a Markdown-formatted document. The converted Markdown content can then be stored in a shared directory or vector database, facilitating subsequent retrieval by agents.
+By creating an instance `ins` with `service.FlameInstance`, we can use it to define the application's entry function (`def crawler_app(wp: WebPage) -> Summary`). This entry function, upon receiving a web page request, downloads the content of the specified URL, verifies the HTTP response, converts the page into a Markdown-formatted document, and returns the discovered links together with the content. The converted Markdown content can then be stored in a shared directory or vector database, facilitating subsequent retrieval by agents.
 
 ## Crawler Client Code
 
-In Flame v0.5, the client's Python interface remains unchanged. The client creates a session with the application using `flamepy.create_session`, then submits requests (tasks) to the application through the session.
-Since `flamepy` uses `asyncio`, the client can asynchronously submit multiple requests (tasks) and wait for all tasks to complete using `asyncio.gather`.
+The client creates a session with the application using `flamepy.create_session`, then submits requests (tasks) to the application through the session. The example uses `run()` with a `TaskInformer`, so each task can write its output as soon as Flame marks it completed, while the caller waits on the returned futures.
 
 ```python
-crawler = await flamepy.create_session("crawler-app")
+from concurrent.futures import wait
 
-tasks = []
-for url in urls:
-    tasks.append(crawler.invoke(WebPage(url=url)))
+crawler = flamepy.create_session("crawler-app")
 
-await asyncio.gather(*tasks)
+futures = [
+    crawler.run(web_page, CrawlerInformer())
+    for web_page in web_pages
+]
 
-await crawler.close()
+wait(futures)
+
+crawler.close()
 ```
 
 ## Execution Results
@@ -156,10 +162,9 @@ Events:
 
 ## Summary
 
-Flame v0.5's Python API greatly simplifies the development process and enables efficient integration with third-party libraries. By leveraging Flame's excellent scheduling and high-concurrency capabilities, users can easily build applications capable of handling large-scale requests.
+FlamePy's service API greatly simplifies the development process and enables efficient integration with third-party libraries. By leveraging Flame's excellent scheduling and high-concurrency capabilities, users can easily build applications capable of handling large-scale requests.
 
 ## References
 
 * Flame: [http://github.com/xflops/flame](http://github.com/xflops/flame)
 * Markitdown: [https://github.com/microsoft/markitdown](https://github.com/microsoft/markitdown)
-

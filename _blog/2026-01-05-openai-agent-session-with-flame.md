@@ -92,40 +92,49 @@ class MyCustomSession(SessionABC):
 ### Agent Client
 
 
-In the agent client, a new session is created with the system prompt in `MyContext` if no session ID is provided; otherwise, an existing session is opened. After sending a question to the agent and receiving an answer, the code retrieves the common data (i.e., `MyContext`) using the `session.common_data()` API. Finally, it prints out the session's conversation history for review.
+In the agent client, FlamePy's service `Session` creates a new session with the system prompt in `MyContext` if no session ID is provided; otherwise, it opens an existing session by ID. After sending a question to the agent and receiving an answer, the code retrieves the common data (i.e., `MyContext`) using `session.context()`. Finally, it prints out the session's conversation history for review.
 
 ```python
-    if ssn_id:
-        session = await flamepy.open_session(ssn_id)
-    else:
-        session = await flamepy.create_session(
-            OPENAI_APP_NAME, MyContext(prompt="You are a weather forecaster."))
+from typing import Optional
+from flamepy.service import Session
 
-    output = await session.invoke(Question(question=message))
+def main(message: str, ssn_id: Optional[str] = None):
+    if ssn_id:
+        session = Session(session_id=ssn_id)
+    else:
+        sys_prompt = """You are a weather forecaster.
+        If you are asked to fetch the weather, you should use the fetch_weather tool after confirming the location with the user.
+        """
+        session = Session(OPENAI_APP_NAME, ctx=MyContext(prompt=sys_prompt))
+
+    output = session.invoke(Question(question=message))
 
     print(output.answer)
 
-    cxt = session.common_data()
+    ctx = session.context()
     print(f"{'=' * 30}")
-    print(f"Session History")
+    print("Session History")
     print(f"{'=' * 30}")
-    if cxt is not None and isinstance(cxt, MyContext) and cxt.messages is not None:
-        for msg in cxt.messages:
-            print(f"{msg}")
+    if getattr(ctx, "messages", None) is not None:
+        for msg in ctx.messages:
+            print(msg)
     else:
         print("No history!")
+
+    session.close()
 ```
 
 
 ### Agent service
 
-As with most Flame-powered agents, we initialize our agent service using `flamepy.FlameInstance()`, which handles the entrypoint registration. Within the agent's function, we obtain the current session context by calling `ins.context()`, which retrieves any existing common data (cached by Flame). We then initialize a `MyCustomSession` using this `MyContext`, allowing us to keep track of conversation history and agent instructions. After running the agent logic, we update the context with any new messages or state by calling `ins.update_context()`, ensuring session continuity across future interactions.
+As with most Flame-powered agents, we initialize our agent service using `service.FlameInstance()`, which handles the entrypoint registration. Within the agent's function, we obtain the current session context by calling `ins.context()`, which retrieves any existing common data (cached by Flame). We then initialize a `MyCustomSession` using this `MyContext`, allowing us to keep track of conversation history and agent instructions. After running the agent logic, we update the context with any new messages or state by calling `ins.update_context()`, ensuring session continuity across future interactions.
 
 
 ```python
 ...
+from flamepy import service
 
-ins = flamepy.FlameInstance()
+ins = service.FlameInstance()
 
 ...
 
@@ -147,9 +156,9 @@ async def my_agent(q: Question) -> Answer:
 
         logger.info(f"Update context: {ctx}")
         ins.update_context(ctx)
-        logger.info(f"Update context done")
+        logger.info("Update context done")
     else:
-        logger.info(f"Run agent without session")
+        logger.info("Run agent without session")
         result = await Runner.run(agent, q.question)
 
     return Answer(answer=result.final_output)
@@ -185,7 +194,11 @@ root@4d73c0737bf2:/opt/examples/agents/openai# flmctl register -f openai-agent.y
 
 ```shell
 root@4d73c0737bf2:/opt/examples/agents/openai# uv run -- client.py -m "who are you?"
-I am an AI assistant created by DeepSeek, designed to help answer questions, provide information, and assist with various tasks. If you have any questions or need assistance, feel free to ask! 😊
+==============================
+Conversation <openai-agent-J1E9PE>
+==============================
+User: who are you?
+Agent: I am an AI assistant created by DeepSeek, designed to help answer questions, provide information, and assist with various tasks. If you have any questions or need assistance, feel free to ask!
 ==============================
 Session History
 ==============================
@@ -207,12 +220,11 @@ root@4d73c0737bf2:/opt/examples/agents/openai# flmctl list -s
 
 ```shell
 root@4d73c0737bf2:/opt/examples/agents/openai# uv run -- client.py -m "How about the weather of Beijing?" -s "openai-agent-J1E9PE"
-Uninstalled 1 package in 23ms
-warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
-         If the cache and target directories are on different filesystems, hardlinking may not be supported.
-         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
-Installed 1 package in 62ms
-As an AI, I don't have real-time data access, but I can give you general information about Beijing's weather patterns:
+==============================
+Conversation <openai-agent-J1E9PE>
+==============================
+User: How about the weather of Beijing?
+Agent: As an AI, I don't have real-time data access, but I can give you general information about Beijing's weather patterns:
 
 **Typical Climate:**
 - **Spring (Mar–May):** Mild, windy, occasional sandstorms.

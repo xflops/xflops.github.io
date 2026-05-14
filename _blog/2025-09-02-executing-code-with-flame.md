@@ -81,11 +81,13 @@ def send_messages(messages):
 
 #### 3. Create a Flame Session
 
-Initialize a Flame session for executing the generated code as follow. The `flmexec` is a build-in application of Flame to execute script, it support Python and Shell for now.
+Initialize a Flame service session for executing the generated code as follows. The `flmexec` service is a built-in Flame application for executing scripts; it supports Python and shell scripts for now.
 
 ```python
-async def main():
-    session = await flame.create_session("flmexec")
+from flamepy.service import Session
+
+def main():
+    session = Session("flmexec")
 ```
 
 #### 4. Generate and Execute Code
@@ -114,12 +116,14 @@ messages.append(message)
 
 # Step 3: Execute with Flame
 input = tool.function.arguments.encode("utf-8")
-task = await session.invoke(input)
+result = session.invoke(input)
 
 # Step 4: Process results
-messages.append({"role": "tool", "tool_call_id": tool.id, "content": task.output.decode("utf-8")})
+messages.append({"role": "tool", "tool_call_id": tool.id, "content": result.decode("utf-8")})
 message = send_messages(messages)
 print(f"Model>\t {message.content}")
+
+session.close()
 ```
 
 ## Running the Example
@@ -171,7 +175,7 @@ scripts = [
 
 ### Interactive Code Execution
 Create an interactive environment where users can iteratively refine generated code.
-As the session keep open, there also zero startup time for the Agent which gets a better performance.
+As the service session stays open, subsequent invocations can reuse the same Flame runtime and avoid startup overhead.
 
 ```python
 # Allow users to modify generated code
