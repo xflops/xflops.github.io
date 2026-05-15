@@ -382,6 +382,31 @@ a:hover {
     color: #2563eb;
 }
 
+.docs-nav-sublist {
+    list-style: none;
+    margin: 0.25rem 0 0.75rem 1rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid #e5e7eb;
+}
+
+.docs-nav-subitem {
+    margin-bottom: 0.25rem;
+}
+
+.docs-nav-sublink {
+    display: block;
+    padding: 0.45rem 0.75rem;
+    color: #6b7280;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.docs-nav-sublink:hover {
+    background-color: #f3f4f6;
+    color: #2563eb;
+}
+
 .docs-content {
     max-width: 100%;
 }

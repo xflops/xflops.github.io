@@ -107,6 +107,7 @@ python hello_runner.py
 
 ## Next Steps
 
-- Read the [Runner Guide](/docs/runner/) for functions, classes, instances, object futures, and package storage.
+- Read the [`flamepy.runner` Guide](/docs/flamepy/runner/) for functions, classes, instances, object futures, and package storage.
+- Read the [FlamePy Guide](/docs/flamepy/) for the Python SDK overview.
 - Read the [User Guide](/docs/user-guide/) for `flmctl`, application registration, and cluster operations.
 - Browse the [Flame examples](https://github.com/xflops/flame/tree/main/examples).

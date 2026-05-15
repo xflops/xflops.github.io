@@ -46,4 +46,4 @@ Flame accepts client requests through the session manager, schedules session res
 
 ## Next
 
-Start with [Getting Started](/docs/getting-started/), then read the [Runner Guide](/docs/runner/) for Python service examples.
+Start with [Getting Started](/docs/getting-started/), then read the [FlamePy Guide](/docs/flamepy/) for Python APIs and service examples.

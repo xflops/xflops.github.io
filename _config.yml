@@ -56,8 +56,8 @@ nav:
         url: /docs/getting-started/
       - title: User Guide
         url: /docs/user-guide/
-      - title: Runner Guide
-        url: /docs/runner/
+      - title: FlamePy Guide
+        url: /docs/flamepy/
   - title: Blog
     url: /blog/
   - title: GitHub
