@@ -92,12 +92,17 @@ a:hover {
     align-items: center;
 }
 
+.logo a {
+    display: flex;
+    align-items: center;
+    color: #111827;
+}
+
 .logo-img {
     width: 40px;
     height: 28px;
     border-radius: 8px;
     margin-right: 12px;
-    margin-top: 12px;
     transition: transform 0.2s ease;
     object-fit: cover;
 }
@@ -130,8 +135,7 @@ a:hover {
 .logo-text {
     font-size: 1.5rem;
     font-weight: 700;
-    height: inherit;
-    line-height: 1.2px;
+    line-height: 1.2;
     color: #111827;
 }
 
