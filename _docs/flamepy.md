@@ -91,11 +91,9 @@ contexts:
       endpoint: "http://127.0.0.1:8080"
     cache:
       endpoint: "grpc://127.0.0.1:9090"
-    runner:
-      template: "flmrun"
 ```
 
-`flamepy.runner` also uses the `package` section when deciding where to upload application packages.
+`flamepy.runner` can also use the `package` section when deciding where to upload application packages. The default Runner template does not need to be configured.
 
 ## Next
 

@@ -6,24 +6,14 @@ description: Use flamepy.runner to package Python code and expose functions, cla
 
 # flamepy.runner Guide
 
-`flamepy.runner.Runner` packages the current Python project, registers a temporary Flame application from the `flmrun` template, and exposes Python functions, classes, or instances as remote services.
+`flamepy.runner.Runner` packages the current Python project, registers a temporary Flame application, and exposes Python functions, classes, or instances as remote services.
 
 Use Runner when you want to scale local Python code, generate service code dynamically, or submit task-oriented work without writing an application YAML or a dedicated service entrypoint.
 
 ## Requirements
 
 - A running Flame cluster with session manager, executor manager, and object cache.
-- The built-in `flmrun` application registered in Flame.
 - A Python environment that can import `flamepy`.
-
-Verify the template:
-
-```python
-import flamepy
-
-if flamepy.get_application("flmrun") is None:
-    raise RuntimeError("flmrun application is not registered")
-```
 
 ## Configuration
 
@@ -43,8 +33,6 @@ contexts:
         - "*.log"
         - "*.pkl"
         - "*.tmp"
-    runner:
-      template: "flmrun"
 ```
 
 `package.storage` is optional. If it is omitted, Runner uploads packages to the Flame object cache through `cache.endpoint`.
@@ -178,6 +166,34 @@ with Runner("cpu-app") as runner:
 Runner packages the current working directory into `dist/<name>.tar.gz`.
 
 Default exclusions include virtual environments, Python caches, `.git`, `node_modules`, bytecode files, and common test caches. Additional `package.excludes` patterns from `~/.flame/flame.yaml` are merged with those defaults.
+
+## Advanced Template Configuration
+
+Runner uses the standard built-in Runner template by default. Most users should not configure `runner.template`.
+
+Only set `runner.template` when an administrator has registered a custom Runner application template:
+
+```yaml
+---
+current-context: flame
+contexts:
+  - name: flame
+    cluster:
+      endpoint: "http://127.0.0.1:8080"
+    cache:
+      endpoint: "grpc://127.0.0.1:9090"
+    runner:
+      template: "custom-flmrun"
+```
+
+If you are debugging a cluster installation or a custom template, verify the template application explicitly:
+
+```python
+import flamepy
+
+if flamepy.get_application("flmrun") is None:
+    raise RuntimeError("flmrun application is not registered")
+```
 
 ## Cleanup
 
