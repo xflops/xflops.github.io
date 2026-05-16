@@ -37,6 +37,7 @@ Flame accepts client requests through the session manager, schedules session res
 2. Use `flmadm install --all --enable` for a local or single-node systemd installation.
 3. Use `flmadm` profiles for multi-node deployments: `--control-plane`, `--worker`, `--cache`, and `--client`.
 4. Use `flamepy.runner.Runner` to turn Python functions, classes, or instances into remote services.
+5. Use `flame-rs` to build native Rust clients and Rust service binaries.
 
 ## Getting Help
 
@@ -46,4 +47,4 @@ Flame accepts client requests through the session manager, schedules session res
 
 ## Next
 
-Start with [Getting Started](/docs/getting-started/), then read the [FlamePy Guide](/docs/flamepy/) for Python APIs and service examples.
+Start with [Getting Started](/docs/getting-started/), then read the [FlamePy Guide](/docs/flamepy/) for Python APIs or the [flame-rs Guide](/docs/flame-rs/) for Rust clients and services.

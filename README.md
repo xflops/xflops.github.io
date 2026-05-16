@@ -22,6 +22,9 @@ This site is built with Jekyll and includes:
   - flamepy.runner Guide
   - flamepy.service Guide
   - flamepy.core Guide
+  - flame-rs Guide
+  - flame_rs::client Guide
+  - flame_rs::service Guide
 - **Blog**: Technical walkthroughs and release-adjacent examples.
 
 ## Local Development
@@ -71,6 +74,7 @@ The generated site is written to `_site/`.
 - Keep public claims consistent with the current [Flame README](https://github.com/xflops/flame/blob/main/README.md).
 - Prefer links to current upstream files under `https://github.com/xflops/flame/tree/main/...` or `blob/main/...`.
 - Use `flamepy.runner.Runner` for Python scaling examples unless the page is intentionally documenting `flamepy.service` or `flamepy.core`.
+- Use `flame-rs` for Rust client and service examples.
 - Use `flmadm` profile flags explicitly: `--all`, `--control-plane`, `--worker`, `--cache`, or `--client`.
 - Refer to current cluster configuration as `flame-cluster.yaml`.
 

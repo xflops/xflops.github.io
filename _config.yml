@@ -58,6 +58,8 @@ nav:
         url: /docs/user-guide/
       - title: FlamePy Guide
         url: /docs/flamepy/
+      - title: flame-rs Guide
+        url: /docs/flame-rs/
   - title: Blog
     url: /blog/
   - title: GitHub

@@ -79,7 +79,7 @@ flmctl update --application app.yaml
 flmctl unregister --application <app-name>
 ```
 
-Most Python users should start with [`flamepy.runner`](/docs/flamepy/runner/), which packages the current project and registers a temporary application from the built-in `flmrun` template.
+Most Python users should start with [`flamepy.runner`](/docs/flamepy/runner/), which packages the current project and registers a temporary application for task-oriented Python code. Rust users can use [`flame-rs`](/docs/flame-rs/) for native clients and service binaries.
 
 ## Client Configuration
 
