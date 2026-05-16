@@ -1,12 +1,12 @@
 ---
 layout: docs
-title: FlamePy Guide
-description: Use FlamePy to build Python applications on Flame, from high-level Runner services to lower-level service and core APIs.
+title: flamepy Guide
+description: Use flamepy to build Python applications on Flame, from high-level Runner services to lower-level service and core APIs.
 ---
 
-# FlamePy Guide
+# flamepy Guide
 
-FlamePy is the Python SDK for Flame. It lets Python programs create Flame sessions, submit work, host service entrypoints, share objects through the Flame object cache, and package local Python code as distributed services.
+flamepy is the Python SDK for Flame. It lets Python programs create Flame sessions, submit work, host service entrypoints, share objects through the Flame object cache, and package local Python code as distributed services.
 
 Most task-oriented Python applications should start with `flamepy.runner`. Use `flamepy.service` when services are predefined, versioned, deployed, and managed by an administrator. Use `flamepy.core` when you need low-level APIs for integrations or third-party libraries.
 
@@ -73,7 +73,7 @@ session.close()
 
 ## Configuration
 
-FlamePy reads the same client configuration across these layers. The simplest local setup uses environment variables:
+flamepy reads the same client configuration across these layers. The simplest local setup uses environment variables:
 
 ```bash
 export FLAME_ENDPOINT=http://127.0.0.1:8080

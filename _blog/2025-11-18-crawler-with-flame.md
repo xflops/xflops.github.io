@@ -13,7 +13,7 @@ To address this, agents often leverage RAG (Retrieval-Augmented Generation) tech
 This "new data" includes not only internal enterprise information, such as IT processes and contracts, but also real-time information from the internet, such as stock prices and company announcements.
 For internet data, web crawlers are needed to fetch and store it in vector databases, facilitating subsequent retrieval and utilization by agents.
 
-With FlamePy's service API, we can easily build a high-concurrency web crawler to efficiently obtain the required internet information. Additionally, we can use Flame's command-line tools to monitor the execution progress and results of crawling tasks in real-time.
+With flamepy's service API, we can easily build a high-concurrency web crawler to efficiently obtain the required internet information. Additionally, we can use Flame's command-line tools to monitor the execution progress and results of crawling tasks in real-time.
 
 ## Crawler Server Code
 
@@ -162,7 +162,7 @@ Events:
 
 ## Summary
 
-FlamePy's service API greatly simplifies the development process and enables efficient integration with third-party libraries. By leveraging Flame's excellent scheduling and high-concurrency capabilities, users can easily build applications capable of handling large-scale requests.
+flamepy's service API greatly simplifies the development process and enables efficient integration with third-party libraries. By leveraging Flame's excellent scheduling and high-concurrency capabilities, users can easily build applications capable of handling large-scale requests.
 
 ## References
 

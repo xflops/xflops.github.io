@@ -150,7 +150,7 @@ For large or frequently updated state, consider storing the main data explicitly
 
 ## When to Use Runner Instead
 
-Use [`flamepy.runner`](/docs/flamepy/runner/) if you want FlamePy to package the current project, register a temporary application, and expose Python functions or classes directly. Use `flamepy.service` when deployment, registration, versions, and application identity are managed as part of the service contract.
+Use [`flamepy.runner`](/docs/flamepy/runner/) if you want flamepy to package the current project, register a temporary application, and expose Python functions or classes directly. Use `flamepy.service` when deployment, registration, versions, and application identity are managed as part of the service contract.
 
 ## Related Examples
 

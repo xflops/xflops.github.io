@@ -92,7 +92,7 @@ class MyCustomSession(SessionABC):
 ### Agent Client
 
 
-In the agent client, FlamePy's service `Session` creates a new session with the system prompt in `MyContext` if no session ID is provided; otherwise, it opens an existing session by ID. After sending a question to the agent and receiving an answer, the code retrieves the common data (i.e., `MyContext`) using `session.context()`. Finally, it prints out the session's conversation history for review.
+In the agent client, flamepy's service `Session` creates a new session with the system prompt in `MyContext` if no session ID is provided; otherwise, it opens an existing session by ID. After sending a question to the agent and receiving an answer, the code retrieves the common data (i.e., `MyContext`) using `session.context()`. Finally, it prints out the session's conversation history for review.
 
 ```python
 from typing import Optional

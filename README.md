@@ -18,7 +18,7 @@ This site is built with Jekyll and includes:
   - Getting Started
   - Installation Guide
   - User Guide
-  - FlamePy Guide
+  - flamepy Guide
   - flamepy.runner Guide
   - flamepy.service Guide
   - flamepy.core Guide

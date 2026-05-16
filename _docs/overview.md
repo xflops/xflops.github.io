@@ -47,4 +47,4 @@ Flame accepts client requests through the session manager, schedules session res
 
 ## Next
 
-Start with [Getting Started](/docs/getting-started/), then read the [FlamePy Guide](/docs/flamepy/) for Python APIs or the [flame-rs Guide](/docs/flame-rs/) for Rust clients and services.
+Start with [Getting Started](/docs/getting-started/), then read the [flamepy Guide](/docs/flamepy/) for Python APIs or the [flame-rs Guide](/docs/flame-rs/) for Rust clients and services.

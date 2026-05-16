@@ -56,7 +56,7 @@ nav:
         url: /docs/getting-started/
       - title: User Guide
         url: /docs/user-guide/
-      - title: FlamePy Guide
+      - title: flamepy Guide
         url: /docs/flamepy/
       - title: flame-rs Guide
         url: /docs/flame-rs/

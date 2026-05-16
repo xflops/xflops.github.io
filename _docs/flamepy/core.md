@@ -189,7 +189,7 @@ ref = patch_object(ref, [{"obs": 2, "reward": 1.0}])
 print(get_object(ref, deserializer=merge_batches))
 ```
 
-Without a `deserializer`, `get_object(ref)` returns the base object for backward compatibility. With a deserializer, FlamePy combines the base object and patch list into the materialized value.
+Without a `deserializer`, `get_object(ref)` returns the base object for backward compatibility. With a deserializer, flamepy combines the base object and patch list into the materialized value.
 
 ## Common Types
 
@@ -203,4 +203,4 @@ Without a `deserializer`, `get_object(ref)` returns the base object for backward
 
 ## Higher-Level APIs
 
-Use [`flamepy.service`](/docs/flamepy/service/) if your core payloads are Python objects handled by a typed, administrator-managed service entrypoint. Use [`flamepy.runner`](/docs/flamepy/runner/) if you want FlamePy to package and register task-oriented Python code automatically.
+Use [`flamepy.service`](/docs/flamepy/service/) if your core payloads are Python objects handled by a typed, administrator-managed service entrypoint. Use [`flamepy.runner`](/docs/flamepy/runner/) if you want flamepy to package and register task-oriented Python code automatically.
