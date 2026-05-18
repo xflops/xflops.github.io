@@ -93,42 +93,25 @@ title: Home
         <p>Technical walkthroughs and examples from the XFLOPS community and Flame project.</p>
 
         <div class="blogs-grid">
+            {% assign featured_blog_url = "/blog/deploy-candle-application-with-flame/" %}
+            {% assign featured_post = site.blog | where: "url", featured_blog_url | first %}
             {% assign sorted_posts = site.blog | sort: 'date' | reverse %}
-            {% for post in sorted_posts limit: 3 %}
-            <article class="blog-card">
-                <div class="blog-card-image">
-                    {% if post.thumbnail %}
-                        {% assign thumbnail_class = "blog-thumbnail" %}
-                        {% if post.thumbnail_fit == "contain" %}
-                            {% assign thumbnail_class = "blog-thumbnail blog-thumbnail-contain" %}
-                        {% endif %}
-                        <img src="{{ post.thumbnail | relative_url }}" alt="{{ post.thumbnail_alt | default: post.title }}" class="{{ thumbnail_class }}">
-                    {% elsif post.categories contains "RL" %}
-                        <img src="/images/gymnasium-logo.svg" alt="Reinforcement learning example" class="blog-thumbnail">
-                    {% else %}
-                        <img src="/images/flame-logo.png" alt="Flame blog post" class="blog-thumbnail">
-                    {% endif %}
-                </div>
-                <div class="blog-card-content">
-                    <div class="blog-meta">
-                        {% if post.categories and post.categories.size > 0 %}
-                            <span class="blog-category">{{ post.categories | first }}</span>
-                        {% endif %}
-                        <span class="blog-date">{{ post.date | date: "%B %d, %Y" }}</span>
-                    </div>
-                    <h3 class="blog-title">
-                        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-                    </h3>
-                    <p class="blog-excerpt">
-                        {% if post.description %}
-                            {{ post.description }}
-                        {% else %}
-                            {{ post.content | strip_html | truncate: 150 }}
-                        {% endif %}
-                    </p>
-                    <a href="{{ post.url | relative_url }}" class="read-more">Read More &rarr;</a>
-                </div>
-            </article>
+
+            {% if featured_post %}
+                {% include home-blog-card.html post=featured_post %}
+            {% endif %}
+
+            {% if featured_post %}
+                {% assign remaining_limit = 2 %}
+            {% else %}
+                {% assign remaining_limit = 3 %}
+            {% endif %}
+            {% assign remaining_count = 0 %}
+            {% for post in sorted_posts %}
+                {% if post.url != featured_blog_url and remaining_count < remaining_limit %}
+                    {% include home-blog-card.html post=post %}
+                    {% assign remaining_count = remaining_count | plus: 1 %}
+                {% endif %}
             {% endfor %}
         </div>
 
