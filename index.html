@@ -93,25 +93,9 @@ title: Home
         <p>Technical walkthroughs and examples from the XFLOPS community and Flame project.</p>
 
         <div class="blogs-grid">
-            {% assign featured_blog_url = "/blog/flame-v0-6/" %}
-            {% assign featured_post = site.blog | where: "url", featured_blog_url | first %}
             {% assign sorted_posts = site.blog | sort: 'date' | reverse %}
-
-            {% if featured_post %}
-                {% include home-blog-card.html post=featured_post %}
-            {% endif %}
-
-            {% if featured_post %}
-                {% assign remaining_limit = 2 %}
-            {% else %}
-                {% assign remaining_limit = 3 %}
-            {% endif %}
-            {% assign remaining_count = 0 %}
-            {% for post in sorted_posts %}
-                {% if post.url != featured_blog_url and remaining_count < remaining_limit %}
-                    {% include home-blog-card.html post=post %}
-                    {% assign remaining_count = remaining_count | plus: 1 %}
-                {% endif %}
+            {% for post in sorted_posts limit: 3 %}
+                {% include home-blog-card.html post=post %}
             {% endfor %}
         </div>
 
