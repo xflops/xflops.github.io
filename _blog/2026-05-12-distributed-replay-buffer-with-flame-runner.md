@@ -1,36 +1,41 @@
 ---
 layout: blog
-title: "Distributed Replay Buffer with Flame Runner"
+title: "Distributed Replay Buffer with Flame App"
 date: 2026-05-12
 author: "Klaus Ma"
 description: "A technical blog on Flame's replay-buffer example, covering patch_object delta updates, parallel sampling, and the handler-plus-data programming model."
-categories: ["Runner", "Flame", "RL"]
-tags: ["flame", "flamepy", "runner", "replay-buffer", "reinforcement-learning", "patch-object", "distributed-training"]
+categories: ["Flame", "RL"]
+tags: ["flame", "flamepy", "app", "replay-buffer", "reinforcement-learning", "patch-object", "distributed-training"]
 ---
 
-This blog reviews the replay-buffer example in [`examples/rl/replay_buffer`](https://github.com/xflops/flame/tree/main/examples/rl/replay_buffer). The example demonstrates how Flame can manage an append-heavy reinforcement-learning data structure by combining `flamepy.core.patch_object`, versioned object reads, and `flamepy.runner` services.
+This blog reviews the replay-buffer example in [`examples/rl/replay_buffer`](https://github.com/xflops/flame/tree/main/examples/rl/replay_buffer). The example demonstrates how Flame can manage an append-heavy reinforcement-learning data structure by combining `flamepy.core.patch_object`, versioned object reads, and `flamepy.app` services.
 
 The example is not intended to evaluate an RL algorithm. It uses random Gymnasium actions, so reward quality is outside the scope here. The relevant question is whether the replay-buffer data path can support distributed collection and repeated sampling without forcing every operation through full-buffer copies.
+
+The measurements below came from the original Runner-based example. The code
+excerpts describe the current App implementation; its performance has not been
+re-measured for this post.
 
 ## Executive summary
 
 | Item | Finding |
 |---|---|
-| Artifact | Distributed replay buffer implemented with `flamepy.runner`, Flame object cache, and Gymnasium collectors. |
+| Artifact | Distributed replay buffer implemented with `flamepy.app`, Flame object cache, and Gymnasium collectors. |
 | Primary write path | Collectors append transition batches through `flamepy.core.patch_object`, so writes send only deltas instead of replacing the full buffer. |
 | Primary read path | Replay-buffer service instances use `get_object(..., deserializer=...)` to materialize state from a base object plus patches. With cached versions, reads can apply only newly observed patch batches. |
-| Sampling model | `--sample-parallelism N` creates `N` replay-buffer service instances and issues `N` sample requests, allowing batch sampling work to run in parallel over the same shared replay-buffer object. |
+| Sampling model | `--sample-parallelism N` issues up to `N` sample requests; the buffer service starts with two warm instances and can scale with demand. |
 | Differentiation | Flame separates handler and data: multiple handlers can serve parallel `sample()` calls while the buffer data remains in one shared `ObjectRef`. |
 | Programming model | The example separates handler and data: `ReplayBuffer` carries behavior and an `ObjectRef`; the buffer contents live in Flame's object cache. |
 | Performance interpretation | The example run shows incremental distributed reads substantially outperforming forced full reads. Local in-memory execution can still be faster for cheap environments because it avoids Flame runtime overhead. |
 
 ## Scope
 
-The implementation under review consists of three files:
+The implementation under review consists of four files:
 
 | File | Role |
 |---|---|
-| [`main.py`](https://github.com/xflops/flame/blob/main/examples/rl/replay_buffer/main.py) | Creates the `Runner`, starts collector and replay-buffer services, coordinates collection, and issues sample requests. |
+| [`main.py`](https://github.com/xflops/flame/blob/main/examples/rl/replay_buffer/main.py) | Creates service handles, coordinates collection, and issues sample requests. |
+| [`distributed.py`](https://github.com/xflops/flame/blob/main/examples/rl/replay_buffer/distributed.py) | Initializes the app and declares collector and buffer services. |
 | [`collector.py`](https://github.com/xflops/flame/blob/main/examples/rl/replay_buffer/collector.py) | Steps a Gymnasium environment, accumulates transitions, and calls `buffer.push(...)`. |
 | [`replay_buffer.py`](https://github.com/xflops/flame/blob/main/examples/rl/replay_buffer/replay_buffer.py) | Owns the shared `ObjectRef`, appends patches, materializes state, merges patches, and samples transitions. |
 
@@ -38,19 +43,20 @@ The example covers data movement and service orchestration. It does not implemen
 
 ## System architecture
 
-The distributed path begins by creating a shared cached object and registering two service types:
+The distributed path imports two service declarations and creates a shared cached object:
 
 ```python
-with Runner(f"replay-buffer-{env_name.lower()}") as rr:
-    buffer = ReplayBuffer(rr, force_full_get=force_full_get)
-    buffer_svc = rr.service(buffer, warmup=sample_parallelism)
-    collector = rr.service(Collector(env_name), autoscale=True)
+from distributed import BufferService, CollectorService
+
+buffer = ReplayBuffer(force_full_get=force_full_get)
+buffer_service = BufferService()
+collector_service = CollectorService()
 ```
 
-`ReplayBuffer(rr)` initializes the cache object:
+`ReplayBuffer` initializes the cache object:
 
 ```python
-self.buffer_ref = rr.put_object({"transitions": [], "total_added": 0})
+self.buffer_ref = app.put({"transitions": [], "total_added": 0})
 ```
 
 From that point forward, the replay buffer is represented by two parts:
@@ -64,10 +70,10 @@ The collection loop fans out environment work and lets each collector append dir
 
 ```python
 collect_futures = [
-    collector.collect(buffer, steps_per_collection)
+    collector_service.collect(env_name, buffer, steps_per_collection)
     for _ in range(num_collections)
 ]
-collect_results = rr.get(collect_futures)
+collect_results = app.get(collect_futures)
 ```
 
 ## Finding 1: Delta updates reduce write amplification
@@ -137,21 +143,21 @@ DEFAULT_SAMPLE_PARALLELISM = 2
 ```python
 sample_request_sizes = _sample_request_sizes(batch_size, sample_parallelism)
 sample_futures = [
-    buffer_svc.sample(request_size)
+    buffer_service.sample(buffer, request_size)
     for request_size in sample_request_sizes
 ]
-batches = rr.get(sample_futures)
+batches = app.get(sample_futures)
 ```
 
-The service is created with `warmup=sample_parallelism`, so Flame starts a fixed set of replay-buffer service instances. For example, `--batch-size 64 --sample-parallelism 2` creates two sample requests whose returned batches sum to 64 transitions.
+`BufferService` is declared with `@app.service(warmup=2)`. For example, `--batch-size 64 --sample-parallelism 2` creates two sample requests whose returned batches sum to 64 transitions. The request count does not set the warm instance count.
 
-This does not add threads inside a single replay-buffer instance. It creates multiple service instances and lets Flame schedule sample requests across them. Each instance maintains its own materialized view of the shared cached object; the shared `ObjectRef` is the source of truth.
+This does not add threads inside a single replay-buffer instance. Flame schedules sample requests across service instances. Each instance retains a materialized view per buffer reference; the shared `ObjectRef` is the source of truth.
 
 The expected benefit depends on workload shape. Parallel sampling is most useful when the buffer is large enough, sampling is frequent enough, or the learner can overlap sampling with other distributed work.
 
-The important differentiation is the ownership model. The replay-buffer data lives in the object cache, while `ReplayBuffer` service instances are handlers around the same `ObjectRef`. Increasing `--sample-parallelism` increases the number of sampling handlers without changing the logical ownership of the data.
+The important differentiation is the ownership model. The replay-buffer data lives in the object cache, while `BufferService` instances are handlers around the same `ObjectRef`. Increasing `--sample-parallelism` increases the number of sample requests without changing the logical ownership of the data.
 
-That makes parallel sampling a direct expression of Flame's handler-plus-data model. The application asks for more sample handlers; Flame keeps the buffer data in shared cache and lets each handler materialize the patches it needs.
+That makes parallel sampling a direct expression of Flame's handler-plus-data model. The application issues more sample requests; Flame keeps the buffer data in shared cache and lets each handler materialize the patches it needs.
 
 ## Finding 4: Handler plus data is the general model
 
@@ -202,7 +208,7 @@ Relevant distributed flags:
 | `--collections` | Collector calls per iteration | `20` |
 | `--steps-per-collection` | Environment steps per collector call | `500` |
 | `--batch-size` | Total sampled batch size per iteration | `64` |
-| `--sample-parallelism` | Replay-buffer service instances and distributed sample requests | `2` |
+| `--sample-parallelism` | Distributed sample requests per batch | `2` |
 | `--metrics-json` | Write per-iteration metrics | off |
 | `--force-full-get` | Force full replay-buffer reads for baseline measurement | off |
 | `--merge-every` | Compact patches every N iterations | mode-dependent |
@@ -259,7 +265,7 @@ The replay-buffer example demonstrates a practical Flame pattern for append-heav
 
 1. Use `flamepy.core.patch_object` to append transition batches as deltas.
 2. Use versioned `get_object` plus a deserializer to materialize only newly observed patches on repeated reads.
-3. Use `flamepy.runner` services to issue sample requests in parallel over the same shared replay-buffer object when the buffer is large enough to justify it.
+3. Use `flamepy.app` services to issue sample requests in parallel over the same shared replay-buffer object when the buffer is large enough to justify it.
 4. Model shared state as handler plus data: Python behavior around an `ObjectRef`, with the data stored and evolved in Flame's cache.
 
 The broader result is a programming model that keeps application code small while giving Flame room to optimize data movement and service placement.

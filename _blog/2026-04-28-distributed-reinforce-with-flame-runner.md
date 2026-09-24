@@ -1,19 +1,22 @@
 ---
 layout: blog
-title: "Distributed REINFORCE with Flame Runner"
+title: "Distributed REINFORCE with Flame App"
 date: 2026-04-28
 author: "Klaus Ma"
-categories: ["Runner", "Flame", "RL"]
-tags: ["flame", "runner", "reinforce", "gymnasium", "mujoco", "distributed-training", "uv"]
+categories: ["Flame", "RL"]
+tags: ["flame", "app", "reinforce", "gymnasium", "mujoco", "distributed-training", "uv"]
 ---
 
 This report describes the reinforcement-learning example merged in [PR #424](https://github.com/xflops/flame/pull/424), summarizes its design against current upstream sources, and presents single-run throughput and reward metrics for `Ant-v5` and `CartPole-v1`. **Test hardware and the Podman-based Flame cluster (1 FSM / 3 FEM / 1 FOC) are spelled out in the executive summary**; runs were not on a datacenter or Linux-only rig—treat all timings as indicative, not universal baselines. Reference implementation: [`examples/rl/`](https://github.com/xflops/flame/tree/main/examples/rl) in the Flame repository.
+
+The code excerpts below follow the current App API. The measurements are from
+the original Runner-based runs and have not been repeated with App.
 
 ## Executive summary
 
 | Item | Finding |
 |---|---|
-| Artifact | Distributed REINFORCE training using `flamepy.runner`; discrete and continuous Gymnasium environments. |
+| Artifact | Distributed REINFORCE training using `flamepy.app`; discrete and continuous Gymnasium environments. |
 | Test environment | **Host:** Apple M4 MacBook Pro (8 CPU cores, 24 GB unified memory). **VM:** Podman Machine (5 vCPU, 8 GB RAM). **Flame on Podman Compose:** 1× FSM, 3× FEM, 1× FOC (same-machine cluster; not a datacenter or bare-metal Linux farm). |
 | `Ant-v5` (10000 episodes) | Distributed 29.8 eps/sec vs local 20.8 eps/sec; relative throughput gain approximately 43.3%. |
 | `CartPole-v1` (10000 episodes) | Distributed 19.3 eps/sec vs local 8.1 eps/sec; relative throughput gain approximately 138.3%. |
@@ -21,7 +24,7 @@ This report describes the reinforcement-learning example merged in [PR #424](htt
 
 ## Scope and motivation
 
-The primary objective is to assess whether Flame Runner reduces rollout bottlenecks in policy-gradient training. In RL pipelines, episode collection is typically the dominant wall-clock cost and is naturally parallelizable because episodes are independent. The example adopts an actor-learner structure:
+The primary objective is to assess whether Flame reduces rollout bottlenecks in policy-gradient training. In RL pipelines, episode collection is typically the dominant wall-clock cost and is naturally parallelizable because episodes are independent. The example adopts an actor-learner structure:
 
 - Remote executors collect trajectories.
 - A centralized learner computes gradients and updates policy weights.
@@ -47,38 +50,42 @@ The training loop follows a distributed actor-learner flow:
 4. The learner computes discounted returns and policy gradients.
 5. Updated weights are broadcast for the next iteration.
 
-Flame Runner is responsible for remote task scheduling and result collection; policy optimization remains in a single local learner loop.
+Flame App handles remote task scheduling and result collection; policy optimization remains in a single local learner loop.
 
-## Core implementation (`flamepy.runner`)
+## Core implementation (`flamepy.app`)
 
 **Excerpt — learner control path.** The listing below is abbreviated from upstream [`examples/rl/basic/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/basic/main.py); the learner-side loss and optimizer step are omitted for brevity.
 
 ```python
-from functools import partial
-from flamepy.runner import Runner
+import flamepy.app as app
+from distributed import collect_episode
 
-collect_fn = partial(collect_episode, env_name=env_name)
-
-with Runner(f"rl-{env_name}") as rr:
-    collector = rr.service(collect_fn)
-
+try:
     for iteration in range(num_iterations):
-        weights_ref = rr.put_object(policy.state_dict())
+        weights_ref = app.put(policy.state_dict())
 
-        futures = [collector(weights_ref) for _ in range(episodes_per_iteration)]
-        episodes = rr.get(futures)
+        futures = [
+            collect_episode(env_name, weights_ref)
+            for _ in range(episodes_per_iteration)
+        ]
+        episodes = app.get(futures)
 
         # ... policy loss, backward(), optimizer.step()
+finally:
+    app.destroy()
 ```
 
-**Excerpt — remote worker.** The worker callable matches the upstream structure: third-party and framework modules are imported inside the function body so execution environments resolve them at task run time (see upstream file for the full rollout loop).
+**Excerpt — remote worker.** Importing `distributed.py` initializes the app and declares the service; local mode does not import it. See the upstream file for the full rollout loop.
 
 ```python
-def collect_episode(weights, env_name: str) -> dict:
-    import gymnasium as gym
-    import torch
+import flamepy.app as app
+import gymnasium as gym
+from model import ENV_CONFIGS, create_policy
 
-    from model import ENV_CONFIGS, create_policy
+app.init("rl-basic")
+
+@app.service()
+def collect_episode(env_name: str, weights) -> dict:
 
     env_config = ENV_CONFIGS[env_name]
     model = create_policy(env_config)
@@ -95,70 +102,29 @@ def collect_episode(weights, env_name: str) -> dict:
     }
 ```
 
-**Parallelism.** Each invocation of `collector(...)` may execute on a distinct remote executor, yielding concurrent episode collection subject to cluster capacity and scheduling policy.
+**Parallelism.** Each invocation of `collect_episode(...)` may execute on a distinct remote executor, subject to cluster capacity and scheduling policy.
 
-## `flamepy.runner` interface notes
+## `flamepy.app` interface notes
 
-### `Runner(name)`
+`app.init("rl-basic")` initializes the process-wide application before
+`@app.service()` declares the remote `collect_episode` function. The learner
+imports that declaration only for distributed mode.
 
-`Runner` is the lifecycle container for a distributed run:
-
-```python
-with Runner("rl-ant") as rr:
-    ...
-```
-
-- Initializes a named runner context.
-- Manages runner/session connectivity during execution.
-- Releases resources on context exit.
-
-### `rr.service(callable)`
-
-Registers a callable as a runner service and returns an invokable handle:
+Each call returns a future. The learner publishes policy weights once per
+iteration and passes the reference to all rollout calls:
 
 ```python
-collector = rr.service(collect_fn)
+weights_ref = app.put(policy.state_dict())
+futures = [
+    collect_episode(env_name, weights_ref)
+    for _ in range(episodes_per_iteration)
+]
+episodes = app.get(futures)
 ```
 
-- Accepts a function or callable class implementing remote work.
-- Returns a handle that is invoked like a local function.
-- Each call schedules remote execution and returns a future-like object.
-
-### Remote invocation and futures
-
-The training loop fans out episode jobs:
-
-```python
-futures = [collector(weights_ref) for _ in range(episodes_per_iteration)]
-```
-
-- Calls are asynchronous.
-- Pattern: fan-out task submission, then fan-in result collection.
-
-### `rr.get(futures)`
-
-Waits for completion and returns resolved outputs:
-
-```python
-episodes = rr.get(futures)
-```
-
-- Typical pattern: submit batch -> resolve batch -> run learner update.
-- Preserves clear separation between collection and optimization.
-
-### `rr.put_object(value)`
-
-Publishes a payload on the active `Runner` session and yields a reference suitable for remote task arguments. Upstream training uses the policy `state_dict()` as the published value ([`examples/rl/basic/main.py`](https://github.com/xflops/flame/blob/main/examples/rl/basic/main.py)):
-
-```python
-weights_ref = rr.put_object(policy.state_dict())
-episodes = rr.get([collector(weights_ref) for _ in range(episodes_per_iteration)])
-```
-
-- Publication is scoped to the runner instance (`rr.put_object`); earlier variants that used a module-level `put_object` with explicit string keys are not required here.
-- Workers observe a resolved `state_dict` where the runtime maps the reference to materialized data (per upstream docstring on `weights`).
-
-**Summary.** The listed APIs suffice for an actor-learner layout with localized changes relative to a single-process trainer.
+Flame resolves the weight reference for the worker. `app.get` collects the
+trajectories before the local optimizer step. The distributed training function
+uses `app.destroy()` in `finally` for cleanup.
 
 ## Reproduction procedure
 
@@ -174,7 +140,7 @@ docker compose up -d
 
 ```bash
 docker compose exec -it flame-console /bin/bash
-cd /opt/examples/rl
+cd /opt/examples/rl/basic
 ```
 
 ### Commands exercised in this report
@@ -302,7 +268,7 @@ Operational parameters suggested by the example and measured runs:
 
 ## Conclusion
 
-Within the two single-run configurations documented here—and **only on the stated M4 host and Podman-backed Flame cluster**—Flame Runner–backed distributed rollout increased episode throughput relative to local rollout for both `Ant-v5` and `CartPole-v1`. Terminal reward favored local training in the Ant trial and distributed training in the CartPole trial, underscoring that throughput and policy quality should be evaluated on separate criteria and, where reward matters, with multi-seed statistical replication.
+Within the two original single-run configurations documented here—and **only on the stated M4 host and Podman-backed Flame cluster**—Flame-backed distributed rollout increased episode throughput relative to local rollout for both `Ant-v5` and `CartPole-v1`. Terminal reward favored local training in the Ant trial and distributed training in the CartPole trial, underscoring that throughput and policy quality should be evaluated on separate criteria and, where reward matters, with multi-seed statistical replication. The current App implementation has not been re-benchmarked here.
 
 ## Implementation status (upstream `examples/rl/`)
 
@@ -310,7 +276,7 @@ The following items are reflected in the current `main` branch layout:
 
 - Shared policy and environment configuration in `model.py` to stabilize imports on remote workers.
 - Discounted return computation implemented with linear-time reverse indexing.
-- Weight publication via `Runner.put_object(policy.state_dict())` (session-scoped object handle).
+- Weight publication via `app.put(policy.state_dict())` (application-shared object reference).
 
 ## References
 

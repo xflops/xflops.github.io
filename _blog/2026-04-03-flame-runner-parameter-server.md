@@ -1,13 +1,13 @@
 ---
 layout: blog
-title: "Running a Parameter Server with Runner"
+title: "Running a Parameter Server with Flame App"
 date: 2026-04-03
 author: "Klaus Ma"
-categories: ["Runner", "Flame", "ML"]
-tags: ["runner", "parameter-server", "distributed-training", "pytorch", "flamepy"]
+categories: ["Flame", "ML"]
+tags: ["app", "parameter-server", "distributed-training", "pytorch", "flamepy"]
 ---
 
-In AI-related distributed workloads, large amounts of data often need to move between many worker nodes. Flame provides an **object cache** to help pass data objects across nodes. This walkthrough uses a simple **Parameter Server** (ps–worker) pattern to show how **Flame Runner** fits a training-style workflow. Later posts in the series will cover internal mechanics and optimizations for different scenarios.
+In AI-related distributed workloads, large amounts of data often need to move between many worker nodes. Flame provides an **object cache** to help pass data objects across nodes. This walkthrough uses a simple **Parameter Server** (ps–worker) pattern to show how **Flame App** fits a training-style workflow. Later posts in the series will cover internal mechanics and optimizations for different scenarios.
 
 ## Overview
 
@@ -17,7 +17,7 @@ The ps–worker pattern is a classic distributed training architecture:
 - Multiple **workers** compute gradients on different data batches in parallel.
 - Each worker fetches the latest weights, computes gradients, and sends them back to the Parameter Server.
 
-This example uses Flame’s **`flamepy.runner.Runner`** to orchestrate distributed services and handle communication between them.
+This example uses **`flamepy.app`** to declare distributed services and handle communication between them.
 
 ## Architecture
 
@@ -43,7 +43,7 @@ This example uses Flame’s **`flamepy.runner.Runner`** to orchestrate distribut
 
 ## Files
 
-- `main.py` — Entry point: sets up Runner and the training loop.
+- `main.py` — Entry point: initializes the app, declares services, and runs the training loop.
 - `ps.py` — Model, parameter server, and data workers.
 - `pyproject.toml` — Dependencies and project metadata.
 
@@ -95,15 +95,31 @@ In this simplified run, accuracy usually rises from about **10%** (random guessi
 
 ## Key concepts
 
-### 1. Creating services with Runner
+### 1. Declaring services with Flame App
 
 ```python
-with Runner("ps-example") as rr:
-    ps_svc = rr.service(ParameterServer(1e-2))
-    workers_svc = [rr.service(DataWorker) for _ in range(2)]
+import flamepy.app as app
+from ps import DataWorker, ParameterServer
+
+app.init("ps-example")
+
+@app.service(autoscale=False, warmup=1)
+class ParameterServerService(ParameterServer):
+    def __init__(self):
+        super().__init__(1e-2)
+
+@app.service(warmup=2)
+class DataWorkerService(DataWorker):
+    pass
+
+ps_svc = ParameterServerService()
+worker_svc = DataWorkerService()
+workers_svc = [worker_svc, worker_svc]
 ```
 
-Runner creates and manages distributed services. A service can be built from any Python class.
+The decorators register the two service types. The parameter server uses one
+fixed instance; worker calls can run on warm worker instances. The full
+example calls `app.destroy()` in a `finally` block.
 
 ### 2. Asynchronous remote calls
 
@@ -128,20 +144,25 @@ for i in range(20):
 
 This is a **synchronous** parameter server: each iteration waits for all workers.
 
-For more on Runner lifecycle (packaging, registration, cleanup), see [Running Monte Carlo Pi with Flame Runner (Python)](/blog/estimating-pi-with-runner/).
+For the App lifecycle, see [Running Monte Carlo Pi with Flame App (Python)](/blog/estimating-pi-with-runner/).
 
 ## Customization
 
 **Change the number of workers** in `main.py`:
 
 ```python
-workers_svc = [rr.service(DataWorker) for _ in range(4)]  # four workers
+@app.service(warmup=4)
+class DataWorkerService(DataWorker):
+    pass
 ```
 
 **Change the learning rate** when constructing the parameter server:
 
 ```python
-ps_svc = rr.service(ParameterServer(1e-3))  # lower learning rate
+@app.service(autoscale=False, warmup=1)
+class ParameterServerService(ParameterServer):
+    def __init__(self):
+        super().__init__(1e-3)
 ```
 
 **Train for more iterations** by changing the loop bound in `main.py` from `range(20)` to e.g. `range(50)`.
@@ -170,5 +191,4 @@ If something goes wrong:
 - [Flame on GitHub](https://github.com/xflops/flame)
 - [Parameter Server example (`examples/ps`)](https://github.com/xflops/flame/tree/main/examples/ps)
 - Mu Li *et al.*, [Scaling Distributed Machine Learning with the Parameter Server](https://www.usenix.org/system/files/conference/osdi14/osdi14-paper-li_mu.pdf) (OSDI ’14)
-- [RFE280 — Runner design](https://github.com/xflops/flame/blob/main/docs/designs/RFE280-runner/RFE280-runner.md)
-- [Runner setup tutorial](https://github.com/xflops/flame/blob/main/docs/tutorials/runner-setup.md)
+- [App setup tutorial](https://github.com/xflops/flame/blob/main/docs/tutorials/app-setup.md)

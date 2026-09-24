@@ -1,11 +1,11 @@
 ---
 layout: blog
-title: "TorchRL DQN with Flame Runner and Sharded Replay"
+title: "TorchRL DQN with Flame App and Sharded Replay"
 date: 2026-05-14
 author: "Klaus Ma"
 description: "A technical blog on the TorchRL DQN example in Flame, covering distributed collectors, Flame-backed TorchRL replay storage, sharded sampling, and an Apple M4 Podman test run."
-categories: ["Runner", "Flame", "RL"]
-tags: ["flame", "flamepy", "runner", "torchrl", "dqn", "replay-buffer", "reinforcement-learning", "distributed-training"]
+categories: ["Flame", "RL"]
+tags: ["flame", "flamepy", "app", "torchrl", "dqn", "replay-buffer", "reinforcement-learning", "distributed-training"]
 thumbnail: "/images/pytorch-logo.svg"
 thumbnail_alt: "PyTorch logo"
 thumbnail_fit: "contain"
@@ -13,15 +13,18 @@ thumbnail_fit: "contain"
 
 This post reviews the TorchRL DQN example in [`examples/rl/torchrl_dqn`](https://github.com/xflops/flame/tree/main/examples/rl/torchrl_dqn), then summarizes one sharded-replay test on an Apple M4 MacBook Pro using a Podman-backed Flame cluster.
 
-The example adapts a conventional TorchRL DQN loop to Flame Runner. The learner remains local. Flame distributes rollout collection, stores replay data through a TorchRL-compatible storage layer backed by Flame objects, and exposes replay buffers as Runner services for sampling.
+The timings below are from the original Runner-based run. The architecture
+description follows the current App example; no new benchmark is claimed.
+
+The example adapts a conventional TorchRL DQN loop to Flame App. The learner remains local. Flame distributes rollout collection, stores replay data through a TorchRL-compatible storage layer backed by Flame objects, and exposes a replay sampler as an App service.
 
 ## Summary
 
 | Item | Finding |
 |---|---|
-| Artifact | TorchRL DQN training on discrete Gymnasium environments using Flame Runner collectors and Flame-backed TorchRL replay buffers. |
-| Main pattern | `collector services -> ReplayBuffer(FlameObjectStorage) services -> DQNLoss -> local optimizer`. |
-| Replay modes | `simple` uses one shared replay buffer; `sharded` creates multiple replay-buffer services and distributes collector writes across them. |
+| Artifact | TorchRL DQN training on discrete Gymnasium environments using Flame App collectors and Flame-backed TorchRL replay buffers. |
+| Main pattern | `CollectorService -> ReplayBuffer(FlameObjectStorage) shards -> ReplaySamplerService -> DQNLoss -> local optimizer`. |
+| Replay modes | `simple` uses one shared replay buffer; `sharded` creates multiple object-backed replay buffers and distributes collector writes across them. |
 | Test environment | **Host:** Apple M4 MacBook Pro, 8 CPU cores, 24 GB unified memory. **VM:** Podman Machine, 5 vCPU, 8 GB RAM. **Flame on Podman Compose:** 1 FSM, 3 FEM, 1 FOC. |
 | Workload measured | `CartPole-v1`, 20 iterations, 4 collections per iteration, 100 frames per collection, 8000 total frames, `--replay sharded --replay-shards 4 --sample-work 4096`. |
 | Primary comparison | `--sample-parallelism 4` completed in 10.16s at 787.3 frames/sec; `--sample-parallelism 1` completed in 16.27s at 491.8 frames/sec. |
@@ -34,7 +37,8 @@ The implementation under review consists of the following upstream files:
 | File | Role |
 |---|---|
 | [`main.py`](https://github.com/xflops/flame/blob/main/examples/rl/torchrl_dqn/main.py) | CLI, distributed training loop, local training loop, metrics, and sampling plan. |
-| [`collector.py`](https://github.com/xflops/flame/blob/main/examples/rl/torchrl_dqn/collector.py) | Stateful rollout worker used as a Flame Runner service. |
+| [`collector.py`](https://github.com/xflops/flame/blob/main/examples/rl/torchrl_dqn/collector.py) | Stateful rollout worker used by the App collector service. |
+| [`distributed.py`](https://github.com/xflops/flame/blob/main/examples/rl/torchrl_dqn/distributed.py) | Initializes the app and declares collector and sampler services. |
 | [`replay_buffer.py`](https://github.com/xflops/flame/blob/main/examples/rl/torchrl_dqn/replay_buffer.py) | TorchRL storage implementations, Flame object-backed replay storage, local replay storage, and sharding helpers. |
 | [`model.py`](https://github.com/xflops/flame/blob/main/examples/rl/torchrl_dqn/model.py) | Environment inspection, Q-value policy construction, TorchRL `DQNLoss`, and transition conversion helpers. |
 | [`pyproject.toml`](https://github.com/xflops/flame/blob/main/examples/rl/torchrl_dqn/pyproject.toml) | Runtime dependencies: Gymnasium, TensorDict, PyTorch, and TorchRL. |
@@ -45,9 +49,9 @@ The example is a DQN integration and data-path benchmark vehicle. It should not 
 
 The training loop keeps the learner local and distributes the work that naturally fans out:
 
-![TorchRL DQN with Flame Runner architecture](/images/torchrl-dqn-flame-architecture.svg)
+![TorchRL DQN with Flame App architecture](/images/torchrl-dqn-flame-architecture.svg)
 
-At a high level, the learner publishes policy weights through `Runner.put_object()`, Flame schedules collector services, collectors write TensorDict transition batches into sharded replay buffers, and the learner samples those replay services before running the local `DQNLoss` and optimizer step.
+At a high level, the learner publishes policy weights through `app.put()`, Flame schedules `CollectorService` calls, collectors write TensorDict transition batches into sharded replay buffers, and the learner calls `ReplaySamplerService` before running the local `DQNLoss` and optimizer step.
 
 The collector is stateful. Each service instance owns a Gymnasium environment and a policy object, loads the latest learner weights for each collection call, steps the environment, and writes a TensorDict transition batch into the replay buffer.
 
@@ -66,8 +70,8 @@ The example exposes two distributed replay layouts:
 
 | Mode | Behavior |
 |---|---|
-| `--replay simple` | Creates one `ReplayBuffer(FlameObjectStorage)` service path. This is the baseline distributed replay mode. |
-| `--replay sharded` | Creates multiple replay-buffer services, spreads collector writes across shards, and samples shards independently. |
+| `--replay simple` | Creates one `ReplayBuffer(FlameObjectStorage)` and samples it through `ReplaySamplerService`. This is the baseline distributed replay mode. |
+| `--replay sharded` | Creates multiple object-backed replay buffers, spreads collector writes across shards, and samples shards through `ReplaySamplerService`. |
 
 The sharded mode is the relevant mode for the measurement here. With `--replay-shards 4`, collector writes are distributed across four Flame-backed replay buffers. With `--sample-parallelism 4`, the learner sends four sample requests per optimization step, each targeting a shard selected by the sampling plan.
 
@@ -92,7 +96,7 @@ uv run main.py \
   --sample-parallelism 4
 ```
 
-Single-sample-service comparison:
+Single-sample-request comparison:
 
 ```shell
 uv run main.py \
@@ -183,11 +187,11 @@ The workload was intentionally shaped so sampling mattered:
 1. `CartPole-v1` keeps collection cheap.
 2. `--sample-work 4096` adds deterministic CPU work to each sampled transition.
 3. `--replay sharded --replay-shards 4` gives sampling a layout that can be parallelized.
-4. `--sample-parallelism 4` lets the learner issue concurrent sample requests to different replay-buffer services.
+4. `--sample-parallelism 4` lets the learner issue concurrent `ReplaySamplerService` requests against different shards.
 
 Under those conditions, Flame's service model gives the replay stage useful concurrency. The collector path does not change materially between the two runs, and optimizer time is small. The throughput gain therefore maps directly to reduced sampling latency.
 
-The result also clarifies a boundary: sample parallelism helps when sample work is real enough and when the replay layout has enough shards to serve independent requests. For cheap single-shard sampling, the overhead of extra services and requests may not pay for itself.
+The result also clarifies a boundary: sample parallelism helps when sample work is real enough and when the replay layout has enough shards to serve independent requests. For cheap single-shard sampling, the overhead of extra requests may not pay for itself.
 
 ## Operational notes
 
@@ -211,7 +215,7 @@ For larger experiments, increase `--collections`, `--frames-per-collection`, and
 
 ## Conclusion
 
-The TorchRL DQN example demonstrates that Flame can wrap a familiar TorchRL learner without replacing the learning stack. TorchRL still owns the Q-value actor, TensorDict batches, `ReplayBuffer` interface, `DQNLoss`, and optimizer step. Flame supplies the distributed runtime around it: collector services, object-backed replay storage, sharded replay services, and concurrent sample requests.
+The TorchRL DQN example demonstrates that Flame can wrap a familiar TorchRL learner without replacing the learning stack. TorchRL still owns the Q-value actor, TensorDict batches, `ReplayBuffer` interface, `DQNLoss`, and optimizer step. Flame supplies the distributed runtime around it: collector and sampler services, object-backed replay storage, and concurrent sample requests.
 
 On the measured Apple M4 Podman setup, the sharded replay test shows the expected effect. With a sampling-heavy workload, increasing sample parallelism from 1 to 4 improved throughput from 491.8 to 787.3 frames/sec and cut sample time from 8.415s to 2.301s. The evidence is narrow but useful: when replay sampling is the bottleneck, sharding the Flame-backed TorchRL replay path gives the learner a practical way to reduce sampling latency.
 

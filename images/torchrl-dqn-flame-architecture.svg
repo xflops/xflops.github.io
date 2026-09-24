@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" role="img" aria-labelledby="title desc">
-  <title id="title">TorchRL DQN with Flame Runner architecture</title>
-  <desc id="desc">A local TorchRL learner publishes policy weights through Flame Runner, collector services gather transitions, replay-buffer shard services store TensorDict batches in Flame object storage, and sampled batches return to the learner for DQN optimization.</desc>
+  <title id="title">TorchRL DQN with Flame App architecture</title>
+  <desc id="desc">A local TorchRL learner publishes policy weights through Flame App, collector services gather transitions, replay buffer shards store TensorDict batches in Flame object storage, and sampler service calls return batches to the learner for DQN optimization.</desc>
   <defs>
     <marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
       <path d="M2,2 L10,6 L2,10 Z" fill="#2563eb"/>
@@ -15,7 +15,7 @@
       .bg { fill: #f8fafc; }
       .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 14; }
       .learner { fill: #eff6ff; stroke: #3b82f6; }
-      .runner { fill: #f8fafc; stroke: #64748b; }
+      .app { fill: #f8fafc; stroke: #64748b; }
       .collector { fill: #ecfdf5; stroke: #10b981; }
       .replay { fill: #fffbeb; stroke: #f59e0b; }
       .cache { fill: #fdf2f8; stroke: #db2777; }
@@ -32,7 +32,7 @@
   </defs>
 
   <rect class="bg" width="1180" height="720"/>
-  <text class="title" x="40" y="46">TorchRL DQN with Flame Runner and Sharded Replay</text>
+  <text class="title" x="40" y="46">TorchRL DQN with Flame App and Sharded Replay</text>
   <text class="small" x="40" y="72">The learner stays local; Flame distributes collection, replay storage, and sample requests.</text>
 
   <rect class="panel learner" x="44" y="118" width="250" height="230" rx="14"/>
@@ -44,11 +44,11 @@
   <rect class="panel" x="70" y="288" width="198" height="44" rx="8"/>
   <text class="label" x="93" y="315">Adam optimizer</text>
 
-  <rect class="panel runner" x="382" y="128" width="214" height="150" rx="14"/>
-  <text class="section" x="421" y="164">Flame Runner</text>
-  <text class="small" x="414" y="194">put_object(policy)</text>
+  <rect class="panel app" x="382" y="128" width="214" height="150" rx="14"/>
+  <text class="section" x="434" y="164">Flame App</text>
+  <text class="small" x="414" y="194">app.put(policy)</text>
   <text class="small" x="414" y="218">service scheduling</text>
-  <text class="small" x="414" y="242">rr.get(futures)</text>
+  <text class="small" x="414" y="242">app.get(futures)</text>
 
   <rect class="panel collector" x="705" y="100" width="360" height="245" rx="14"/>
   <text class="section" x="733" y="136">Collector Services</text>
@@ -67,7 +67,7 @@
   <text class="tiny" x="921" y="300">env + policy</text>
 
   <rect class="panel replay" x="126" y="455" width="505" height="188" rx="14"/>
-  <text class="section" x="156" y="492">ReplayBuffer Services</text>
+  <text class="section" x="156" y="492">Replay Shards and Sampler Service</text>
   <text class="small" x="156" y="516">TorchRL ReplayBuffer backed by FlameObjectStorage</text>
   <rect class="panel" x="156" y="540" width="92" height="64" rx="8"/>
   <text class="label" x="174" y="565">Shard 0</text>
