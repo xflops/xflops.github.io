@@ -6,6 +6,10 @@ author: "Klaus Ma"
 description: "How Flame simplifies Search-R1 training with Python services, warm GPU executors, elastic rollouts, gang-scheduled trainers, and incremental weight transfer, demonstrated in a 100-step run."
 categories: ["Flame", "Reinforcement Learning", "AI"]
 tags: ["flame", "flamepy", "search-r1", "grpo", "vllm", "object-cache", "gang-scheduling"]
+# Logo source: https://github.com/PeterGriffinJin/Search-R1/blob/main/public/logo.png
+thumbnail: "/images/search-r1-logo.png"
+thumbnail_alt: "Search-R1 logo"
+thumbnail_fit: "contain"
 ---
 
 An agent that can call a search tool still has to learn when to search, what to ask, and when it has enough information to answer. Training that behavior creates a distributed loop: generate several attempts, retrieve evidence along the way, score the answers, update the policy, and send the new weights back to the generators.
