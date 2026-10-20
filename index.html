@@ -90,7 +90,11 @@ title: Home
 <section class="hot-blogs">
     <div class="container">
         <h2>Latest from the XFLOPS Blog</h2>
-        <p>Technical walkthroughs and examples from the XFLOPS community and Flame project.</p>
+        <p>
+            Technical walkthroughs and examples from the XFLOPS community and Flame project.
+            Explore <a href="/blog/training-search-r1-with-flame/">Search-R1 training with Flame</a>
+            using warm GPU services, elastic rollouts, gang-scheduled trainers, and incremental weight sync.
+        </p>
 
         <div class="blogs-grid">
             {% assign sorted_posts = site.blog | sort: 'date' | reverse %}
