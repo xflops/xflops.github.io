@@ -54,8 +54,8 @@ layout: default
                     <h3>Related Posts</h3>
                     <ul class="related-posts-list">
                         {% assign primary_category = page.categories | first %}
-                        {% assign related_posts = site.blog | where_exp: "post", "post.categories contains primary_category" | where_exp: "post", "post.url != page.url" | limit: 3 %}
-                        {% for post in related_posts %}
+                        {% assign related_posts = site.blog | where_exp: "post", "post.categories contains primary_category" | where_exp: "post", "post.url != page.url" | sort: 'date' | reverse %}
+                        {% for post in related_posts limit: 3 %}
                             <li>
                                 <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
                                 <span class="post-date">{{ post.date | date: "%B %d, %Y" }}</span>
