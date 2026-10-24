@@ -6,6 +6,10 @@ author: "Klaus Ma"
 description: "How prefix placement, batching, and an asynchronous adapter brought Flame within 1 percent of standalone vLLM median throughput on two B200 GPUs."
 categories: ["Flame", "Inference", "Benchmarks"]
 tags: ["flamepy", "vllm", "inference", "prefix-caching"]
+# Logo source: https://github.com/vllm-project/media-kit/blob/main/vLLM-Full-Logo.svg
+thumbnail: "/images/vllm-logo.svg"
+thumbnail_alt: "vLLM logo"
+thumbnail_fit: "contain"
 ---
 
 An assistant answering several questions about one document repeatedly processes the same prefix. Keeping that prefix on one GPU can avoid rebuilding its attention keys and values. A serving framework also has to admit enough requests to keep the inference engine busy.
