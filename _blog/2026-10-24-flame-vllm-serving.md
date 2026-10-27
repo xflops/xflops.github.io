@@ -19,7 +19,16 @@ An assistant answering several questions about one document repeatedly processes
 
 In a controlled two-GPU document-reuse workload, **Flame's experimental data-aware scheduling (DAS), with LRU cold placement, delivered 16.8% higher throughput than two prefix-caching vLLM replicas behind round-robin routing**. Six fresh paired runs all favored Flame. The paired 95% bootstrap interval was **+16.0% to +17.8%**.
 
-This is a placement advantage: Flame embeds the same vLLM inference engine. Native vLLM with an equally cache-aware external router was approximately level with Flame in descriptive pilots. We retain that control, the unfavorable random-placement result, and the earlier adapter experiments below.
+Flame embeds the same vLLM inference engine. Two cases answer different questions: how much the Flame serving path costs when both systems get similar cache locality, and what DAS can gain by improving placement.
+
+| Case | Placement control | What it measures | Observed result |
+| --- | --- | --- | --- |
+| Matched prefix placement | Prefix matching routes native vLLM to stable replicas and Flame to persistent worker sessions | Net Flame serving-path overhead with locality controlled | Flame median throughput **0.55% lower without reuse and 0.86% lower with reuse**, five fresh pairs per workload |
+| DAS placement under cache pressure | Flame uses live KV-residency attributes and cold-LRU selection; native vLLM uses round-robin job routing | Benefit of data-aware placement across jobs | Flame paired throughput **16.8% higher**, six fresh pairs |
+
+The matched-prefix client simulates cache-local placement using a prefix-to-worker map. It does not observe live KV eviction events. The small residual difference measures the whole serving path under those configurations; isolating DAS's own scheduling cost would require a separate ablation.
+
+Native vLLM with an equally cache-aware external router was approximately level with Flame in the cache-pressure pilots. We retain that control and the unfavorable random-placement result below. The two cases have different workloads and admission settings, so comparisons belong within each case.
 
 ## A DAS advantage under cache pressure
 
@@ -96,11 +105,13 @@ All 30 cases across the random exploration and fresh LRU confirmation passed req
 
 [Download the paired scores, pilot controls, configuration, and provenance](/assets/data/flame-vllm-das-20261027.json). Full raw request and journal archives remain retained locally; the download is a curated score summary. Its settings and throughput values belong to this experiment and should not be compared directly with the earlier burst measurements below.
 
-## Earlier adapter tuning: within 1% on finite bursts
+## Matched prefix placement: low Flame serving overhead
 
 Before the cache-pressure diagnostic, we compared standalone vLLM with a Flame Python service that embeds vLLM. After tuning the Flame adapter, its median completion throughput was **0.55% below standalone vLLM without document reuse and 0.86% below with prefix reuse**. Both met our target of at least 99% of the reference throughput across five fresh pairs per workload. Two reuse pairs missed that target; the worst was 2.03% lower. These are results for short, finite bursts, rather than a general 1% overhead guarantee.
 
-Persistent worker placement improved cache reuse in both systems. Larger batches, asynchronous engine admission, and lossless input compression then brought Flame closer to a fixed vLLM reference. These earlier adapter measurements did not exercise eviction-aware DAS placement.
+In this case, we give native vLLM an explicit prefix-matching router to simulate the locality that cache-aware scheduling seeks to provide. Flame uses the same affinity rule to choose persistent worker sessions. Holding placement consistent lets us examine the additional cost of serving through Flame once both systems can reuse their prefixes.
+
+Larger batches, asynchronous engine admission, and lossless input compression brought that net serving-path difference below 1% at the median in both traces. It includes routing, task and RPC handling, serialization, admission, and worker behavior, together with their tuning benefits. These measurements did not exercise eviction-aware DAS placement, so the 0.55% and 0.86% figures should be read as observed end-to-end differences rather than a measurement of DAS alone.
 
 Both paths use two B200 GPUs, two single-GPU vLLM engines, the same model weights and token inputs, and the same principal engine settings. Standalone vLLM receives individual HTTP requests through a client that keeps each prefix on a stable replica. Flame receives batches through its task path into two persistent worker sessions.
 
@@ -156,7 +167,7 @@ These earlier measurements use batch limit 32 and three repetitions per configur
 
 On the reuse trace, affinity raises median throughput by 77.5% for vLLM and 73.4% for Flame. Both reach 74.86% cached input tokens. Flame still trails sticky vLLM by 8.1%, which motivates investigating admission after matching locality.
 
-In these earlier burst comparisons, Flame's core data-aware scheduler remains enabled and unchanged, with affinity hints and publication disabled. The placement improvement comes from the explicit client map and persistent session bindings. A single session with two workers does not itself ensure that every request sharing a prefix reaches the same worker.
+In this matched-placement case, Flame's core data-aware scheduler remains enabled and unchanged, with affinity hints and publication disabled. The placement improvement comes from the explicit client map and persistent session bindings. A single session with two workers does not itself ensure that every request sharing a prefix reaches the same worker.
 
 ### Admit enough work to the engine
 
@@ -202,7 +213,9 @@ These are individual trials. The original Flame service uses vLLM 0.31.0 while t
 
 ## What the two experiments establish
 
-The new cache-pressure diagnostic demonstrates a repeatable placement advantage: the experimental Flame DAS + LRU path exceeds round-robin native vLLM throughput by 16.8% across six fresh pairs. Native cache-aware pilots recover similar locality, so the gain is specific to the routing baseline and workload. The earlier finite-burst experiments show that a tuned Flame adapter can also reach at least 99% of standalone vLLM's median completion throughput in those two traces.
+With matched prefix placement, the tuned Flame serving path stays within 1% of native vLLM's median completion throughput in the two finite-burst traces. That is the low-overhead case: an external prefix router gives both systems comparable locality before we measure the remaining serving-path difference.
+
+With placement left to DAS in the cache-pressure diagnostic, the experimental Flame DAS + LRU path exceeds round-robin native vLLM throughput by 16.8% across six fresh pairs. That is the placement-benefit case. Native cache-aware pilots recover similar locality, so the gain is specific to the routing baseline and workload. Together, the cases show why low serving overhead and effective data-aware placement matter separately.
 
 In the earlier burst tests, the native client measures completion latency from burst release, while Flame measures from each submission, including batch formation and queueing. Together with batch-level outputs, that difference prevents a claim of equivalent streaming latency. Sustained arrivals, longer and variable answers, hot-prefix queueing, eviction under concurrent load, worker restarts, and startup cost need separate measurements.
 
