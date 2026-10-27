@@ -1,0 +1,730 @@
+{
+  "updated": "2026-10-27",
+  "feature": "Flame data-aware scheduling (DAS)",
+  "scope": "Controlled low-arrival synthetic document-reuse diagnostic; not maximum serving capacity or MLPerf.",
+  "runtime": {
+    "model": "unsloth/Meta-Llama-3.1-8B-Instruct",
+    "model_revision": "a2856192dd7c25b842431f39c179a6c2c2f627d1",
+    "vllm": "0.28.0",
+    "torch": "2.13.0+cu130",
+    "gpu_model": "NVIDIA B200",
+    "gpu_count": 2,
+    "cpu_limit": 20,
+    "tensor_parallel_size": 1,
+    "dtype": "bfloat16",
+    "eager": true,
+    "attention_backend": "TRITON_ATTN",
+    "prefix_caching": true,
+    "async_scheduling": false,
+    "gpu_memory_utilization": 0.45,
+    "max_num_seqs": 64,
+    "max_num_batched_tokens": 8192,
+    "max_model_len": 16384,
+    "kv_blocks_per_gpu": 4096,
+    "block_size": 16,
+    "kv_capacity_tokens_per_gpu": 65536,
+    "output_tokens_per_request": 16,
+    "flame_session_storage": "none",
+    "flame_object_cache_storage": "filesystem",
+    "flame_object_cache_budget": "1G",
+    "instrumented_kv_journal": true
+  },
+  "lru_confirmation": {
+    "arms": {
+      "flame-das-lru-job": {
+        "requests_s": 3.931024324811148,
+        "seconds": 48.84718019887805,
+        "cached_token_fraction": 0.9678504114611765,
+        "requests_s_range": [
+          3.886327665117543,
+          4.001866855442401
+        ],
+        "runs": 6
+      },
+      "vllm-round-robin": {
+        "requests_s": 3.3644160079517063,
+        "seconds": 57.06976903695613,
+        "cached_token_fraction": 0.9056008157127702,
+        "requests_s_range": [
+          3.325286978492705,
+          3.3875882926104697
+        ],
+        "runs": 6
+      }
+    },
+    "comparison": {
+      "pairs": 6,
+      "paired_ratios": [
+        1.1565415895055506,
+        1.1558330714577625,
+        1.1774110861920106,
+        1.1795120545445688,
+        1.1851624962307479,
+        1.1561729866049264
+      ],
+      "geometric_mean_ratio": 1.1683723364821847,
+      "percentile_bootstrap_95_ci": [
+        1.1596338235907293,
+        1.1781147042764109
+      ],
+      "bootstrap_samples": 20000,
+      "bootstrap_seed": 639,
+      "method": "Paired run-level nonparametric percentile bootstrap of log throughput ratios",
+      "interpretation": "Small-n controlled job diagnostic; not maximum-throughput or streaming capacity",
+      "prespecified_primary": true,
+      "supports_gain_in_this_diagnostic": true,
+      "secondary_descriptive_only": false
+    },
+    "pairs": [
+      {
+        "repetition": 0,
+        "arms": {
+          "flame-das-lru-job": {
+            "requests_s": 3.9178867485261066,
+            "seconds": 49.00601072050631,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.3875882926104697,
+            "seconds": 56.677489534020424,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1565415895055506
+      },
+      {
+        "repetition": 1,
+        "arms": {
+          "flame-das-lru-job": {
+            "requests_s": 3.8959075201422277,
+            "seconds": 49.28248399309814,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.370648942609526,
+            "seconds": 56.96232484281063,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1558330714577625
+      },
+      {
+        "repetition": 2,
+        "arms": {
+          "flame-das-lru-job": {
+            "requests_s": 3.961941083686379,
+            "seconds": 48.46109418198466,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.3649598939144614,
+            "seconds": 57.0586295388639,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1774110861920106
+      },
+      {
+        "repetition": 3,
+        "arms": {
+          "flame-das-lru-job": {
+            "requests_s": 3.9222160759522318,
+            "seconds": 48.95191806927323,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.325286978492705,
+            "seconds": 57.73937745578587,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1795120545445688
+      },
+      {
+        "repetition": 4,
+        "arms": {
+          "flame-das-lru-job": {
+            "requests_s": 4.001866855442401,
+            "seconds": 47.97760818526149,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.3766398010144667,
+            "seconds": 56.86126188002527,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1851624962307479
+      },
+      {
+        "repetition": 5,
+        "arms": {
+          "flame-das-lru-job": {
+            "requests_s": 3.886327665117543,
+            "seconds": 49.403966043144464,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.3613721390686084,
+            "seconds": 57.1195309702307,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1561729866049264
+      }
+    ],
+    "declaration": {
+      "scope": "Independent LRU confirmation: low-arrival cache-placement diagnostic with amplified synthetic long documents and deliberate 65536-token KV budget/GPU; one active four-turn job per wave; not maximum server capacity, streaming SLO, or MLPerf",
+      "documents": 6,
+      "repetitions": 8,
+      "requests": 192,
+      "jobs_per_wave": 1,
+      "prefix_copies_prepended": 1,
+      "prefix_copy_tokens": 7936,
+      "output_tokens": 16,
+      "model_max_len": 16384,
+      "kv_blocks": 4096,
+      "block_size": 16,
+      "order_seed": 639,
+      "rounds": 6,
+      "planned_cases": 12,
+      "primary_comparison": "flame-das-lru-job_over_vllm-round-robin",
+      "selection": "LRU selected following the six descriptive capacity16 pilots and random confirmations: random repetition4 clustered requests160/32 and fell to3.127req/s with89.13% reuse. All twelve confirmation cases are fresh; no prior case enters this interval.",
+      "prior_experiment": "capacity16-confirmation-r1 remains unchanged and retained, including unfavorable random placements",
+      "core_lru": "Actual cache overlap first; least recently updated idle executor only for nonempty-affinity zero-overlap ties; positive-score and empty-affinity ties retain ID",
+      "geometry_replan": "Same16K geometry, trace, engine settings and candidate binaries as capacity16-confirmation-r1; only policy and fresh fixed order change",
+      "original_neutral_report": "../comparison-r1/report.md"
+    }
+  },
+  "random_confirmation": {
+    "arms": {
+      "flame-das-random-job": {
+        "requests_s": 3.7700915854304395,
+        "seconds": 51.28472089301795,
+        "cached_token_fraction": 0.9525231822410816,
+        "requests_s_range": [
+          3.1272693379696235,
+          3.9524322706353723
+        ],
+        "runs": 6
+      },
+      "vllm-round-robin": {
+        "requests_s": 3.3640829997289647,
+        "seconds": 57.075158948389195,
+        "cached_token_fraction": 0.9056008157127702,
+        "requests_s_range": [
+          3.340224911317601,
+          3.390865179694238
+        ],
+        "runs": 6
+      }
+    },
+    "comparison": {
+      "pairs": 6,
+      "paired_ratios": [
+        1.1670118221729677,
+        1.1142441268596546,
+        1.17524832267675,
+        1.1508979786387075,
+        0.9331296720601117,
+        1.1832832745014996
+      ],
+      "geometric_mean_ratio": 1.1169716070174538,
+      "percentile_bootstrap_95_ci": [
+        1.035522102977608,
+        1.1711116145876341
+      ],
+      "bootstrap_samples": 20000,
+      "bootstrap_seed": 637,
+      "method": "Paired run-level nonparametric percentile bootstrap of log throughput ratios",
+      "interpretation": "Small-n controlled job diagnostic; not maximum-throughput or streaming capacity",
+      "prespecified_primary": true,
+      "supports_gain_in_this_diagnostic": true,
+      "secondary_descriptive_only": false
+    },
+    "pairs": [
+      {
+        "repetition": 0,
+        "arms": {
+          "flame-das-random-job": {
+            "requests_s": 3.9310966385392265,
+            "seconds": 48.841333005577326,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              64,
+              128
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.368514837510003,
+            "seconds": 56.9984130281955,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1670118221729677
+      },
+      {
+        "repetition": 1,
+        "arms": {
+          "flame-das-random-job": {
+            "requests_s": 3.7688461690197115,
+            "seconds": 50.94397366978228,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2959296,
+            "uncached_input_tokens": 147680,
+            "cached_token_fraction": 0.9524682520882041,
+            "requests_per_gpu": [
+              56,
+              136
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.3824240829895076,
+            "seconds": 56.76402346044779,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1142441268596546
+      },
+      {
+        "repetition": 2,
+        "arms": {
+          "flame-das-random-job": {
+            "requests_s": 3.938365215272227,
+            "seconds": 48.75119231082499,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.3510919686336513,
+            "seconds": 57.294756991788745,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.17524832267675
+      },
+      {
+        "repetition": 3,
+        "arms": {
+          "flame-das-random-job": {
+            "requests_s": 3.9025398811464758,
+            "seconds": 49.198728481307626,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              64,
+              128
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.390865179694238,
+            "seconds": 56.622717160731554,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1508979786387075
+      },
+      {
+        "repetition": 4,
+        "arms": {
+          "flame-das-random-job": {
+            "requests_s": 3.1272693379696235,
+            "seconds": 61.395415376871824,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2769152,
+            "uncached_input_tokens": 337824,
+            "cached_token_fraction": 0.8912691955135797,
+            "requests_per_gpu": [
+              32,
+              160
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.3513770182287876,
+            "seconds": 57.28988381661475,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 0.9331296720601117
+      },
+      {
+        "repetition": 5,
+        "arms": {
+          "flame-das-random-job": {
+            "requests_s": 3.9524322706353723,
+            "seconds": 48.57768251374364,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 3007088,
+            "uncached_input_tokens": 99888,
+            "cached_token_fraction": 0.9678504114611765,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          },
+          "vllm-round-robin": {
+            "requests_s": 3.340224911317601,
+            "seconds": 57.48115923255682,
+            "requests": 192,
+            "input_tokens": 3106976,
+            "cached_input_tokens": 2813680,
+            "uncached_input_tokens": 293296,
+            "cached_token_fraction": 0.9056008157127702,
+            "requests_per_gpu": [
+              96,
+              96
+            ]
+          }
+        },
+        "throughput_ratio": 1.1832832745014996
+      }
+    ],
+    "declaration": {
+      "scope": "Experimental low-arrival cache-placement diagnostic with amplified synthetic long documents and deliberate 65536-token KV budget/GPU; one active four-turn job per wave; not maximum server capacity, streaming SLO, or MLPerf",
+      "documents": 6,
+      "repetitions": 8,
+      "requests": 192,
+      "jobs_per_wave": 1,
+      "prefix_copies_prepended": 1,
+      "prefix_copy_tokens": 7936,
+      "output_tokens": 16,
+      "model_max_len": 16384,
+      "kv_blocks": 4096,
+      "block_size": 16,
+      "order_seed": 637,
+      "label_seed": 638,
+      "rounds": 6,
+      "planned_cases": 18,
+      "primary_comparison": "flame-das-random-job_over_vllm-round-robin",
+      "secondary_inference": "All six pilots descriptive only; no pilot selection or superiority claim",
+      "geometry_replan": "Before any comparator outcome: 64k feasibility runtime exceeded owned pod budget; amplified prefix copies reduced seven to one and matched context/cache scaled fourfold; old run retained invalid",
+      "native_random": "OS-random choice among eligible idle workers only when all overlap scores are zero and affinity is nonempty; actual cache hits primary, positive ties and empty affinity by ID; draw occurs once outside comparisons",
+      "native_cache_aware": "Maximum overlap of identical first-1024-token keys; least recently released only if all eligible overlap scores are zero; positive-score ties by worker ID; empty-affinity ties by ID",
+      "original_neutral_report": "../comparison-r1/report.md"
+    }
+  },
+  "descriptive_pilots": [
+    {
+      "arm": "flame-das-lru-job",
+      "requests_s": 3.9669226824596655,
+      "seconds": 48.40023750625551,
+      "cached_token_fraction": 0.9678504114611765
+    },
+    {
+      "arm": "vllm-cache-aware",
+      "requests_s": 4.018473902732118,
+      "seconds": 47.779332315549254,
+      "cached_token_fraction": 0.9678504114611765
+    },
+    {
+      "arm": "flame-das-off-job",
+      "requests_s": 3.0037334988744306,
+      "seconds": 63.920451022684574,
+      "cached_token_fraction": 0.8695117052722647
+    },
+    {
+      "arm": "vllm-round-robin",
+      "requests_s": 3.3624598619338535,
+      "seconds": 57.10105336084962,
+      "cached_token_fraction": 0.9056008157127702
+    },
+    {
+      "arm": "flame-das-random-job",
+      "requests_s": 3.9466728572368592,
+      "seconds": 48.64857234060764,
+      "cached_token_fraction": 0.9678504114611765
+    },
+    {
+      "arm": "vllm-cache-random",
+      "requests_s": 3.9414482844085126,
+      "seconds": 48.71305828355253,
+      "cached_token_fraction": 0.9678504114611765
+    }
+  ],
+  "earlier_8k_diagnostic": {
+    "scope": "Controlled two-job waves with prequeued known related turns; not maximum server capacity, streaming SLO or MLPerf",
+    "comparisons": {
+      "flame-das-on-job_over_flame-das-off-job": {
+        "pairs": 6,
+        "paired_ratios": [
+          1.0243048400969519,
+          0.9558604182480659,
+          1.043528002568737,
+          1.0103385819798687,
+          1.126197183119726,
+          0.994290770690167
+        ],
+        "geometric_mean_ratio": 1.024441347868295,
+        "percentile_bootstrap_95_ci": [
+          0.9861880466524074,
+          1.0695997530129928
+        ],
+        "bootstrap_samples": 20000,
+        "bootstrap_seed": 632,
+        "method": "Paired run-level nonparametric percentile bootstrap of log throughput ratios",
+        "interpretation": "Small-n controlled job diagnostic; not maximum-throughput or streaming capacity"
+      },
+      "flame-das-on-job_over_vllm-residency": {
+        "pairs": 6,
+        "paired_ratios": [
+          0.942438846964127,
+          0.8937643480915284,
+          0.9737385472651462,
+          0.8976163526358185,
+          1.0195542993588433,
+          0.9643443425171183
+        ],
+        "geometric_mean_ratio": 0.9475641841989207,
+        "percentile_bootstrap_95_ci": [
+          0.9145037281070312,
+          0.9834074589794618
+        ],
+        "bootstrap_samples": 20000,
+        "bootstrap_seed": 633,
+        "method": "Paired run-level nonparametric percentile bootstrap of log throughput ratios",
+        "interpretation": "Small-n controlled job diagnostic; not maximum-throughput or streaming capacity"
+      }
+    },
+    "confirmation_arms": {
+      "flame-das-on-job": {
+        "runs": 6,
+        "median_requests_s": 7.6085975690803345,
+        "requests_s_range": [
+          7.200334255472871,
+          8.209954976089653
+        ],
+        "median_full_phase_s": 16.826469815336168,
+        "median_wave_release_latency_s": {
+          "p50": 0.6698629441671073,
+          "p95": 1.1064723449293523,
+          "p99": 1.1113292941823603
+        },
+        "median_cached_token_fraction": 0.8718051784549578
+      },
+      "flame-das-off-job": {
+        "runs": 6,
+        "median_requests_s": 7.380775717240249,
+        "requests_s_range": [
+          7.196996881133566,
+          7.760995409992426
+        ],
+        "median_full_phase_s": 17.343430440872908,
+        "median_wave_release_latency_s": {
+          "p50": 0.6791977733373642,
+          "p95": 1.09554386427626,
+          "p99": 1.1030797546356916
+        },
+        "median_cached_token_fraction": 0.8194138971893155
+      },
+      "vllm-residency": {
+        "runs": 6,
+        "median_requests_s": 8.027248436848318,
+        "requests_s_range": [
+          7.958616152971407,
+          8.100792283970547
+        ],
+        "median_full_phase_s": 15.945845835842192,
+        "median_wave_release_latency_s": {
+          "p50": 0.6444272468797863,
+          "p95": 1.0857348704244942,
+          "p99": 1.0893817306030542
+        },
+        "median_cached_token_fraction": 0.8759992112488055
+      }
+    }
+  },
+  "provenance": {
+    "capacity16": {
+      "archive_sha256": "4e24d83185bf669df9d4c11860c0304a3d6055d05a4747d80ca3b94a4e75ee7e",
+      "archive_bytes": 34599473,
+      "completed_cases": 18,
+      "baseline_source_commit": "9f9203d46cafc30c77abac161a96121aa145020a",
+      "candidate_sources": {
+        "lru": {
+          "commit": "c6c99bf60cbb8bbef7fb404f0e7200a9b8c7face",
+          "binaryfilename": "flame-session-manager-lru",
+          "sha256": "a019c08a5e64c0570da7d314bbc3583cf11e4f8216a4e51ec36776897c521e45"
+        },
+        "random": {
+          "commit": "dff1e354e6043cd14fd2657a442e1a2a1d0cc738",
+          "binaryfilename": "flame-session-manager-random",
+          "sha256": "04a46b51a99acd5bb5633a15988f9e46e385b64f628945ee0c044d346adeeeb8"
+        }
+      }
+    },
+    "capacity16lru": {
+      "archive_sha256": "a6a8bfdf900b60bad342933cf7613b58de06ae812d94780c4a5020c3cd8797f1",
+      "archive_bytes": 22672060,
+      "completed_cases": 12,
+      "baseline_source_commit": "9f9203d46cafc30c77abac161a96121aa145020a",
+      "candidate_sources": {
+        "lru": {
+          "commit": "c6c99bf60cbb8bbef7fb404f0e7200a9b8c7face",
+          "binaryfilename": "flame-session-manager-lru",
+          "sha256": "a019c08a5e64c0570da7d314bbc3583cf11e4f8216a4e51ec36776897c521e45"
+        },
+        "random": {
+          "commit": "dff1e354e6043cd14fd2657a442e1a2a1d0cc738",
+          "binaryfilename": "flame-session-manager-random",
+          "sha256": "04a46b51a99acd5bb5633a15988f9e46e385b64f628945ee0c044d346adeeeb8"
+        }
+      }
+    }
+  },
+  "experimental_candidate": true,
+  "production_candidate_deployed": false,
+  "raw_archive_availability": "Retained locally; this public file contains curated scores and configuration, not raw request/journal archives."
+}
