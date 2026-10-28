@@ -1,11 +1,9 @@
 ---
 layout: docs
 title: Runner Guide
-description: The Runner Guide has moved under the flamepy guide.
+description: Migration from Runner to the current App API.
 ---
 
 # Runner Guide
 
-The Runner Guide is now part of the flamepy guide hierarchy.
-
-Read the current [`flamepy.runner` guide](/docs/flamepy/runner/).
+The former Runner API has been replaced by `flamepy.app`. Read the current [App guide](/docs/flamepy/runner/).

@@ -25,10 +25,10 @@ layout: default
                             <a href="/docs/flamepy/" class="docs-nav-link">flamepy Guide</a>
                             <ul class="docs-nav-sublist">
                                 <li class="docs-nav-subitem">
-                                    <a href="/docs/flamepy/runner/" class="docs-nav-sublink">flamepy.runner</a>
+                                    <a href="/docs/flamepy/runner/" class="docs-nav-sublink">flamepy.app</a>
                                 </li>
                                 <li class="docs-nav-subitem">
-                                    <a href="/docs/flamepy/service/" class="docs-nav-sublink">flamepy.service</a>
+                                    <a href="/docs/flamepy/service/" class="docs-nav-sublink">Service migration</a>
                                 </li>
                                 <li class="docs-nav-subitem">
                                     <a href="/docs/flamepy/core/" class="docs-nav-sublink">flamepy.core</a>
@@ -66,17 +66,20 @@ layout: default
 
                     <!-- Navigation -->
                     <nav class="docs-navigation">
-                        {% if page.previous %}
-                            <a href="{{ page.previous.url | relative_url }}" class="docs-nav-prev">
-                                ← {{ page.previous.title }}
-                            </a>
-                        {% endif %}
-                        
-                        {% if page.next %}
-                            <a href="{{ page.next.url | relative_url }}" class="docs-nav-next">
-                                {{ page.next.title }} →
-                            </a>
-                        {% endif %}
+                        {% for item in site.data.docs_navigation %}
+                            {% if item.url == page.url %}
+                                {% assign previous_index = forloop.index0 | minus: 1 %}
+                                {% assign next_index = forloop.index0 | plus: 1 %}
+                                {% unless forloop.first %}
+                                    {% assign previous_item = site.data.docs_navigation[previous_index] %}
+                                    <a href="{{ previous_item.url | relative_url }}" class="docs-nav-prev">← {{ previous_item.title }}</a>
+                                {% endunless %}
+                                {% unless forloop.last %}
+                                    {% assign next_item = site.data.docs_navigation[next_index] %}
+                                    <a href="{{ next_item.url | relative_url }}" class="docs-nav-next">{{ next_item.title }} →</a>
+                                {% endunless %}
+                            {% endif %}
+                        {% endfor %}
                     </nav>
                 </article>
             </main>

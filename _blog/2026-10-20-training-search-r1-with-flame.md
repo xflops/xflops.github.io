@@ -29,7 +29,7 @@ Search-R1 combines two scheduling patterns. Rollouts are independent tasks with 
 | Python service API and project packaging | `@app.service` exposes rollout and trainer classes; Flame packages the project and installs its declared dependencies on workers. | Keep the training driver in Python and launch remote services without a separate application manifest or manual project copy to each worker. |
 | Warm, stateful executors | Service instances retain vLLM engines, retrieval indexes, policy replicas, and optimizer state between calls. | Reuse expensive initialization across many tasks and training steps. |
 | Elastic sessions and resource requests | Rollouts request CPU, memory, and GPU resources and can add executors while calls are pending. | Size the initial pool with `warmup` and let demand drive additional rollout capacity when cluster resources permit. |
-| Gang scheduling | The fixed trainer session receives its minimum executor count together. | Avoid partial resource allocation that leaves a trainer waiting for an unscheduled collective partner. |
+| Gang scheduling | In the reported run, the fixed trainer session received its minimum executor count together. | Avoid partial resource allocation that leaves a trainer waiting for an unscheduled collective partner. |
 | Versioned object cache and incremental fetch | Trajectories and batches travel by reference; weight shards receive appended delta parts. | Keep large data out of task messages and let existing rollout executors fetch only the weight parts they have not seen. |
 
 The application still owns the search protocol, reward, policy update, and NCCL group. Flame supplies the execution and data-management mechanisms around them. This lets the example combine vLLM, PyTorch, and BM25 in ordinary Python services while sharing a common runtime for scheduling and object transfer.
@@ -55,7 +55,7 @@ The driver holds no model and needs no GPU. It samples questions, submits remote
 | `Rollout` | One vLLM engine, a BM25 index, and a CPU copy of published weights | Apply new weights and generate search-and-answer trajectories. |
 | `Trainer` | A full policy replica with fp32 master weights, Adam state, and a frozen reference model | Train on its batch slice and all-reduce gradients with the other replicas. |
 
-The service declarations express the different resource and scheduling needs. These excerpts come from the [rollout](https://github.com/xflops/flame/blob/main/examples/rl/search-r1/src/rollout.py) and [trainer](https://github.com/xflops/flame/blob/main/examples/rl/search-r1/src/trainer.py) modules:
+The service declarations express the different resource and scheduling needs. The following declarations are from the [rollout](https://github.com/xflops/flame/blob/1c00f3c6/examples/rl/search-r1/src/rollout.py) and [trainer](https://github.com/xflops/flame/blob/1c00f3c6/examples/rl/search-r1/src/trainer.py) modules used by the reported October 20 example:
 
 ```python
 @app.service(resreq="cpu=8,mem=64g,gpu=1", warmup=ROLLOUTS)
@@ -72,6 +72,8 @@ class Trainer:
 ```
 
 Rollouts can autoscale as calls accumulate. `warmup` sets their initial executor count; it is not a cap. The trainer group has a fixed size because its replicas must participate together in NCCL collectives.
+
+The [current trainer](https://github.com/xflops/flame/blob/main/examples/rl/search-r1/src/trainer.py) instead declares `@app.service(resreq="cpu=16,mem=128g,gpu=1", batch_size=TRAINERS)` without warmup. Pending trainer calls request the group together, while idle executors can be shared with rollouts. The measurements below describe the historical configuration, not a new run of this updated scheduler.
 
 These classes are long-lived service instances. A new rollout call reuses the executor's loaded model and index; a trainer update reuses its policy and optimizer. That reuse is particularly useful for an iterative workload: each step sends new work to already initialized services. The report does not isolate a cold-start speedup, but the implementation avoids rebuilding those objects for every task.
 
@@ -95,7 +97,7 @@ The corpus is built from the context paragraphs of the selected HotpotQA trainin
 
 ## Start the trainer group together
 
-With two trainers, `autoscale=False, warmup=2` gives the trainer session a minimum and maximum of two executors. Flame's gang scheduling binds the whole minimum together. This prevents one trainer from entering a collective while its partner remains unscheduled for lack of resources.
+In the reported run, with two trainers, `autoscale=False, warmup=2` gives the trainer session a minimum and maximum of two executors. Flame's gang scheduling binds the whole minimum together. This prevents one trainer from entering a collective while its partner remains unscheduled for lack of resources.
 
 After allocation, the trainers register their executor IDs and addresses in a shared cache object. Sorting those IDs assigns ranks, and rank 0 provides the NCCL rendezvous address. The driver chooses one rendezvous port for the entire group before issuing the join calls.
 
@@ -140,7 +142,7 @@ The sum of training-step times was 2,471 seconds, about 41 minutes. That figure 
 | Policy update, as seen by the driver | 9.5 s |
 | Complete step | 24.3 s |
 
-These timings also expose the main utilization limit. The loop is synchronous: trainers wait during generation, and rollout GPUs wait during the update. All 16 GPUs stay allocated, but the report estimates useful work at no more than roughly half of the available GPU-seconds. Overlapping generation with updates could reduce that idle time, while introducing policy lag; the demo has not tested that change.
+These timings also expose the main utilization limit. The loop is synchronous: trainers wait during generation, and rollout GPUs wait during the update. In that run, all 16 GPUs stayed allocated, but the report estimates useful work at no more than roughly half of the available GPU-seconds. Overlapping generation with updates could reduce that idle time, while introducing policy lag; the demo has not tested that change.
 
 ## Run the example
 

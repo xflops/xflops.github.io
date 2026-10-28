@@ -7,6 +7,9 @@ categories: ["AI Agent", "Flame", "Langchain"]
 tags: ["flame", "ai-agents", "distributed-computing"]
 ---
 
+> **Historical API:** This article describes the SDK available when it was written. Its `flamepy.service` examples do not work with the current SDK. See the [current Python guide](/docs/flamepy/) and [migration notes](/docs/flamepy/service/).
+
+
 As agent technology continues to evolve, enterprises and users are increasingly investing in developing and deploying agents to improve business efficiency.
 However, constrained by the timeliness of training datasets, large language models often struggle to obtain the latest data in a timely manner, making it difficult to fully meet the actual needs of agents.
 To address this, agents often leverage RAG (Retrieval-Augmented Generation) technology to store and retrieve "new data."

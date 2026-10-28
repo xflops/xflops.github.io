@@ -86,6 +86,8 @@ flmadm install --client --prefix ~/flame --no-systemd
 /usr/local/flame/conf/flame-cluster.yaml
 ```
 
+The following plaintext endpoints are for local development. Configure TLS for deployments that require encrypted, authenticated connections; see the upstream [server configuration](https://github.com/xflops/flame/blob/main/ci/docker/flame-cluster.yaml) and [client configuration](https://github.com/xflops/flame/blob/main/docs/api/index.md#authentication).
+
 A local development configuration includes the session endpoint, resource policy, executor shim, object cache endpoint, and cache storage:
 
 ```yaml
@@ -100,7 +102,7 @@ cluster:
     - gang
   storage: "fs:///usr/local/flame/data"
   executors:
-    shim: host
+    shims: [host]
 cache:
   endpoint: "grpc://127.0.0.1:9090"
   storage: "/usr/local/flame/data/cache"
@@ -153,4 +155,4 @@ sudo flmadm uninstall --preserve-data --preserve-config
 - If `flmadm` cannot build Flame, rerun with `--verbose` and inspect `/tmp/flame-install-build.log`.
 - If services fail, check the matching `systemctl status`, `journalctl`, and `/usr/local/flame/logs/` files.
 - If clients cannot connect, verify `FLAME_ENDPOINT`, `FLAME_CACHE_ENDPOINT`, and open ports `8080` and `9090`.
-- If Runner cannot find `flmrun`, confirm `flmctl list --application` shows the built-in template.
+- If App cannot find `flmrun`, confirm `flmctl list --application` shows the built-in template.

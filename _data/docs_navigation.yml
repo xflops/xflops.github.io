@@ -1,0 +1,22 @@
+- title: Overview
+  url: /docs/overview/
+- title: Getting Started
+  url: /docs/getting-started/
+- title: Installation Guide
+  url: /docs/installation/
+- title: User Guide
+  url: /docs/user-guide/
+- title: flamepy Guide
+  url: /docs/flamepy/
+- title: flamepy.app Guide
+  url: /docs/flamepy/runner/
+- title: Python Service Migration
+  url: /docs/flamepy/service/
+- title: flamepy.core Guide
+  url: /docs/flamepy/core/
+- title: flame-rs Guide
+  url: /docs/flame-rs/
+- title: flame_rs::client
+  url: /docs/flame-rs/client/
+- title: flame_rs::service
+  url: /docs/flame-rs/service/

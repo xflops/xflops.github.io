@@ -8,7 +8,7 @@ description: Use flamepy.core for direct Flame sessions, tasks, application regi
 
 `flamepy.core` is the lower-level Python API for Flame. It exposes the direct client model: connect to the session manager, register applications, create sessions, submit byte payloads as tasks, watch task state, and share cached objects with `ObjectRef`.
 
-Use this layer when you are building integrations, custom service protocols, advanced workflows, or third-party libraries that need more control than `flamepy.runner` or `flamepy.service`.
+Use this layer when you are building integrations, custom service protocols, advanced workflows, or third-party libraries that need more control than `flamepy.app`.
 
 ## Configuration
 
@@ -43,7 +43,7 @@ conn = connect("http://127.0.0.1:8080")
 
 ## Sessions and Tasks
 
-Core sessions work with bytes. Higher-level APIs such as `flamepy.service` add Python object serialization on top.
+Core sessions work with bytes. The higher-level `flamepy.app` API handles Python object serialization for its services.
 
 ```python
 from flamepy.core import create_session
@@ -51,14 +51,13 @@ from flamepy.core import create_session
 
 session = create_session("byte-service")
 try:
-    future = session.run(b"hello")
-    output = future.result()
+    output = session.run(b"hello")
     print(output)
 finally:
     session.close()
 ```
 
-Use `invoke()` for a synchronous one-shot call:
+Use `submit()` to start a task and obtain a future:
 
 ```python
 from flamepy.core import create_session
@@ -66,7 +65,8 @@ from flamepy.core import create_session
 
 session = create_session("byte-service")
 try:
-    output = session.invoke(b"hello")
+    future = session.submit(b"hello")
+    output = future.result()
 finally:
     session.close()
 ```
@@ -155,15 +155,13 @@ For ordinary operations, `flmctl register --file app.yaml` is often simpler.
 The object cache stores Python objects and returns `ObjectRef` handles. Keys use the `<application>/<session>` prefix format.
 
 ```python
-from flamepy.core import get_object, put_object, update_object
-
+from flamepy.core import get_object, put_object
 
 ref = put_object("training/shared", {"epoch": 0, "loss": 1.0})
 print(get_object(ref))
-
-ref = update_object(ref, {"epoch": 1, "loss": 0.8})
-print(get_object(ref))
 ```
+
+Use `put_object` for a new object and `patch_object` to append parts to an existing object.
 
 Set `ref.version = 0` before `get_object(ref)` to force a fresh full read instead of using the client-side cache.
 
@@ -175,10 +173,10 @@ Use `patch_object()` for append-heavy structures where writers should send delta
 from flamepy.core import get_object, patch_object, put_object
 
 
-def merge_batches(base, deltas):
-    merged = list(base)
-    for delta in deltas:
-        merged.extend(delta)
+def merge_batches(parts):
+    merged = []
+    for part in parts:
+        merged.extend(part)
     return merged
 
 
@@ -189,7 +187,7 @@ ref = patch_object(ref, [{"obs": 2, "reward": 1.0}])
 print(get_object(ref, deserializer=merge_batches))
 ```
 
-Without a `deserializer`, `get_object(ref)` returns the base object for backward compatibility. With a deserializer, flamepy combines the base object and patch list into the materialized value.
+Without a `deserializer`, `get_object(ref)` returns the latest part. A deserializer receives one list containing the base and patch parts and returns the materialized value.
 
 ## Common Types
 
@@ -203,4 +201,4 @@ Without a `deserializer`, `get_object(ref)` returns the base object for backward
 
 ## Higher-Level APIs
 
-Use [`flamepy.service`](/docs/flamepy/service/) if your core payloads are Python objects handled by a typed, administrator-managed service entrypoint. Use [`flamepy.runner`](/docs/flamepy/runner/) if you want flamepy to package and register task-oriented Python code automatically.
+Use [`flamepy.app`](/docs/flamepy/runner/) to package and run Python functions and classes as remote services.

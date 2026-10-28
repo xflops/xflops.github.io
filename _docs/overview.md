@@ -6,7 +6,7 @@ description: Flame is a distributed engine for AI workloads, agents, reinforceme
 
 # Flame Overview
 
-Flame is a distributed engine for AI workloads. It provides the runtime pieces commonly needed by agents, reinforcement learning, generated-code execution, and other elastic workloads: sessions, task scheduling, executor reuse, object caching, secure runtime isolation, and multi-language service integration.
+Flame is a distributed engine for AI workloads. It provides the runtime pieces commonly needed by agents, reinforcement learning, generated-code execution, and other elastic workloads: sessions, task scheduling, executor reuse, object caching, configurable execution environments, and multi-language service integration.
 
 ## Why Flame
 
@@ -14,16 +14,16 @@ AI applications often create many short tasks rather than a single long-running 
 
 - **Scale**: Run work across multiple nodes while sharing resources fairly across tenants and sessions.
 - **Performance**: Reuse executors inside a session to reduce cold starts and improve throughput.
-- **Security**: Isolate session runtime environments and use mTLS between Flame components.
+- **Security**: Configure TLS between Flame components and choose an execution environment appropriate to the workload. The host shim is not a sandbox boundary.
 - **Flexibility**: Integrate services through gRPC and shims, with Rust, Go, Python, and other application code.
 
 ## Core Concepts
 
-- **Session**: A group of related tasks with scheduling and isolation boundaries. Clients can submit tasks until the session is closed.
+- **Session**: A group of related tasks with a shared scheduling lifecycle. Clients can submit tasks until the session is closed.
 - **Task**: A unit of work submitted to a session.
 - **Executor**: A runtime environment that hosts application services for one session.
 - **Shim**: The protocol adapter used by an executor to manage an application service.
-- **Object cache**: Shared storage for common data, Runner packages, Runner contexts, and incremental object updates.
+- **Object cache**: Shared storage for common data, application packages, and incremental object updates.
 
 ## Architecture
 
@@ -36,7 +36,7 @@ Flame accepts client requests through the session manager, schedules session res
 1. Use Docker Compose for a first local cluster.
 2. Use `flmadm install --all --enable` for a local or single-node systemd installation.
 3. Use `flmadm` profiles for multi-node deployments: `--control-plane`, `--worker`, `--cache`, and `--client`.
-4. Use `flamepy.runner.Runner` to turn Python functions, classes, or instances into remote services.
+4. Use `flamepy.app` to turn Python functions and classes into remote services.
 5. Use `flame-rs` to build native Rust clients and Rust service binaries.
 
 ## Getting Help

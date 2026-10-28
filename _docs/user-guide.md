@@ -79,7 +79,7 @@ flmctl update --application app.yaml
 flmctl unregister --application <app-name>
 ```
 
-Most Python users should start with [`flamepy.runner`](/docs/flamepy/runner/), which packages the current project and registers a temporary application for task-oriented Python code. Rust users can use [`flame-rs`](/docs/flame-rs/) for native clients and service binaries.
+Most Python users should start with [`flamepy.app`](/docs/flamepy/runner/), which packages the current project and registers an application for task-oriented Python code. Rust users can use [`flame-rs`](/docs/flame-rs/) for native clients and service binaries.
 
 ## Client Configuration
 
@@ -116,7 +116,7 @@ Important fields include:
 - `cluster.endpoint`: session manager endpoint.
 - `cluster.resreq`: default task resource request.
 - `cluster.policies`: scheduler policy list.
-- `cluster.executors.shim`: executor shim selection.
+- `cluster.executors.shims`: enabled executor shims, for example `[host]`.
 - `cache.endpoint`: object cache endpoint.
 - `cache.storage`: object cache storage path.
 
@@ -142,7 +142,7 @@ flmctl list --application
 
 Then verify `FLAME_ENDPOINT`, `FLAME_CACHE_ENDPOINT`, and network access to ports `8080` and `9090`.
 
-Runner cannot start services:
+App cannot start services:
 
 ```bash
 flmctl list --application

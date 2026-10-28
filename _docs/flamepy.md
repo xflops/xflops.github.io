@@ -1,102 +1,41 @@
 ---
 layout: docs
 title: flamepy Guide
-description: Use flamepy to build Python applications on Flame, from high-level Runner services to lower-level service and core APIs.
+description: Build Python applications with Flame using the App and core APIs.
 ---
 
 # flamepy Guide
 
-flamepy is the Python SDK for Flame. It lets Python programs create Flame sessions, submit work, host service entrypoints, share objects through the Flame object cache, and package local Python code as distributed services.
+flamepy is the Python SDK for Flame. It provides distributed Python services, lower-level sessions and tasks, and APIs for agents and model serving.
 
-Most task-oriented Python applications should start with `flamepy.runner`. Use `flamepy.service` when services are predefined, versioned, deployed, and managed by an administrator. Use `flamepy.core` when you need low-level APIs for integrations or third-party libraries.
+| Module | Use it for |
+| --- | --- |
+| [`flamepy.app`](/docs/flamepy/runner/) | Package a Python project and run functions and classes as remote services. |
+| [`flamepy.core`](/docs/flamepy/core/) | Work directly with applications, sessions, byte tasks, and cached objects. |
+| `flamepy.agent` | Run agent workloads using Flame sessions and sandboxes. |
+| `flamepy.serving` | Integrate model serving with Flame. |
 
-## API Layers
+The former `flamepy.runner` and `flamepy.service` modules are not part of the current SDK. For application code, start with `flamepy.app`; for a custom service protocol use `flamepy.core`. See the [migration notes](/docs/flamepy/service/).
 
-| Module | Use it for | Typical user |
-| --- | --- | --- |
-| [`flamepy.runner`](/docs/flamepy/runner/) | Packaging local code or dynamic service code and exposing functions, classes, or instances as task-oriented remote services. | Python users scaling local code and submitting distributed tasks with minimal Flame boilerplate. |
-| [`flamepy.service`](/docs/flamepy/service/) | Calling predefined service applications and writing service entrypoints for administrator-managed deployment. | Teams where an admin manages service registration, deployment, versions, and runtime policy. |
-| [`flamepy.core`](/docs/flamepy/core/) | Working directly with sessions, tasks, applications, watchers, resource requests, and cached objects. | Integration authors and library builders who need low-level Flame APIs. |
-
-## Choosing an API
-
-Choose `flamepy.runner` when your application starts as ordinary Python code, dynamic service code, or task-oriented local logic:
+## First Service
 
 ```python
-from flamepy.runner import Runner
+import flamepy.app as app
+
+app.init("hello-app")
 
 
-def score(x: int) -> int:
-    return x * x
+@app.service()
+def hello(name: str) -> str:
+    return f"hello, {name}"
 
 
-with Runner("score-app") as runner:
-    score_service = runner.service(score)
-    print(score_service(7).get())
+try:
+    print(hello.remote("flame").get())
+finally:
+    app.destroy()
 ```
 
-Choose `flamepy.service` when the service has a stable application name, a dedicated service process, a typed request/response boundary, and an administrator-managed deployment lifecycle:
+App uses the configured session manager and object cache and packages the current working directory. See [Getting Started](/docs/getting-started/) for configuration and [`flamepy.app`](/docs/flamepy/runner/) for lifecycle and packaging details.
 
-```python
-from dataclasses import dataclass
-from flamepy import service
-
-
-@dataclass
-class Request:
-    text: str
-
-
-ins = service.FlameInstance()
-
-
-@ins.entrypoint
-def handle(req: Request) -> str:
-    return req.text.upper()
-
-
-if __name__ == "__main__":
-    ins.run()
-```
-
-Choose `flamepy.core` when you are building an integration or third-party library and need direct control over bytes, sessions, tasks, or cached object references:
-
-```python
-from flamepy.core import create_session
-
-
-session = create_session("byte-service")
-future = session.run(b"payload")
-print(future.result())
-session.close()
-```
-
-## Configuration
-
-flamepy reads the same client configuration across these layers. The simplest local setup uses environment variables:
-
-```bash
-export FLAME_ENDPOINT=http://127.0.0.1:8080
-export FLAME_CACHE_ENDPOINT=grpc://127.0.0.1:9090
-```
-
-For persistent configuration, use `~/.flame/flame.yaml`:
-
-```yaml
----
-current-context: flame
-contexts:
-  - name: flame
-    cluster:
-      endpoint: "http://127.0.0.1:8080"
-    cache:
-      endpoint: "grpc://127.0.0.1:9090"
-```
-
-`flamepy.runner` can also use the `package` section when deciding where to upload application packages. The default Runner template does not need to be configured.
-
-## Next
-
-- Read [`flamepy.runner`](/docs/flamepy/runner/) for the fastest path from Python functions to distributed services.
-- Read [`flamepy.service`](/docs/flamepy/service/) for explicit service applications.
-- Read [`flamepy.core`](/docs/flamepy/core/) for lower-level integration and cache APIs.
+For direct byte tasks, use [`flamepy.core`](/docs/flamepy/core/). The endpoint examples in these guides use plaintext for local development; configure TLS for deployments that require encrypted, authenticated connections.

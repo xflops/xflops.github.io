@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Getting Started with Flame
-description: Start a local Flame cluster, verify it with flmping, and run your first Runner service.
+description: Start a local Flame cluster, verify it with flmping, and run your first Python service.
 ---
 
 # Getting Started with Flame
@@ -61,7 +61,7 @@ export FLAME_ENDPOINT=http://127.0.0.1:8080
 export FLAME_CACHE_ENDPOINT=grpc://127.0.0.1:9090
 ```
 
-Runner can also read `~/.flame/flame.yaml`:
+Flame clients can also read `~/.flame/flame.yaml`:
 
 ```yaml
 ---
@@ -79,35 +79,46 @@ contexts:
         - "*.tmp"
 ```
 
-When `package.storage` is absent, Runner uploads packages to the Flame object cache through `cache.endpoint`.
+These plaintext endpoints are for local development. Configure TLS for deployments that require encrypted, authenticated connections.
 
-## First Runner Service
+When `package.storage` is absent, App uploads packages to the Flame object cache through `cache.endpoint`.
 
-Create `hello_runner.py` inside a Python project that can import `flamepy`:
+## First Python Service
+
+Install the SDK from the Flame checkout you intend to use, configure the endpoints above, and verify that the built-in `flmrun` application is registered. For example, from the Flame checkout:
+
+```bash
+python -m pip install -e ./sdk/python
+```
+
+App packages the current working directory, so create a separate project directory for this example and run it from there.
+
+Create `hello_app.py`:
 
 ```python
-from flamepy.runner import Runner
+import flamepy.app as app
+
+app.init("hello-app")
 
 
+@app.service()
 def hello(name: str) -> str:
     return f"hello, {name}"
 
 
-with Runner("hello-runner") as runner:
-    service = runner.service(hello)
-    result = service("flame")
-    print(result.get())
+try:
+    print(hello.remote("flame").get())
+finally:
+    app.destroy()
 ```
 
-Run it with the Flame endpoint and cache endpoint configured:
-
 ```bash
-python hello_runner.py
+python hello_app.py
 ```
 
 ## Next Steps
 
-- Read the [`flamepy.runner` Guide](/docs/flamepy/runner/) for functions, classes, instances, object futures, and package storage.
+- Read the [`flamepy.app` Guide](/docs/flamepy/runner/) for functions, classes, futures, and package storage.
 - Read the [flamepy Guide](/docs/flamepy/) for the Python SDK overview.
 - Read the [flame-rs Guide](/docs/flame-rs/) for Rust clients and service binaries.
 - Read the [User Guide](/docs/user-guide/) for `flmctl`, application registration, and cluster operations.
