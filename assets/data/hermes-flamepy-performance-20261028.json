@@ -1,0 +1,413 @@
+{
+  "date": "2026-10-28",
+  "scope": "Direct in-cluster startup and warm-call confirmation only; excludes parallel throughput",
+  "startup": [
+    {
+      "api": "sandbox",
+      "rounds": 6,
+      "allocation_s": {
+        "median": 0.0011169277131557465,
+        "range": [
+          0.0009907316416501999,
+          0.0012924093753099442
+        ],
+        "values_by_round": [
+          0.0009907316416501999,
+          0.0012917201966047287,
+          0.001018112525343895,
+          0.0011560264974832535,
+          0.0010778289288282394,
+          0.0012924093753099442
+        ]
+      },
+      "first_call_s": {
+        "median": 0.08397808577865362,
+        "range": [
+          0.07761088944971561,
+          0.43080203607678413
+        ],
+        "values_by_round": [
+          0.43080203607678413,
+          0.07761088944971561,
+          0.09316668286919594,
+          0.09023474343121052,
+          0.07772142812609673,
+          0.07770074531435966
+        ]
+      },
+      "seconds": {
+        "median": 0.08519196230918169,
+        "range": [
+          0.07879925705492496,
+          0.43179276771843433
+        ],
+        "values_by_round": [
+          0.43179276771843433,
+          0.07890260964632034,
+          0.09418479539453983,
+          0.09139076992869377,
+          0.07879925705492496,
+          0.07899315468966961
+        ]
+      }
+    },
+    {
+      "api": "session",
+      "rounds": 6,
+      "allocation_s": {
+        "median": 0.0010958323255181313,
+        "range": [
+          0.0010738540440797806,
+          0.0012312531471252441
+        ],
+        "values_by_round": [
+          0.0012312531471252441,
+          0.0010847579687833786,
+          0.0010738540440797806,
+          0.0010935720056295395,
+          0.001098092645406723,
+          0.0011977292597293854
+        ]
+      },
+      "first_call_s": {
+        "median": 0.09306954126805067,
+        "range": [
+          0.07034713216125965,
+          0.19867286831140518
+        ],
+        "values_by_round": [
+          0.19867286831140518,
+          0.09401835501194,
+          0.07959413900971413,
+          0.07034713216125965,
+          0.09482796303927898,
+          0.09212072752416134
+        ]
+      },
+      "seconds": {
+        "median": 0.09421078488230705,
+        "range": [
+          0.07144070416688919,
+          0.19990412145853043
+        ],
+        "values_by_round": [
+          0.19990412145853043,
+          0.09510311298072338,
+          0.08066799305379391,
+          0.07144070416688919,
+          0.09592605568468571,
+          0.09331845678389072
+        ]
+      }
+    }
+  ],
+  "warm_descriptive": [
+    {
+      "api": "sandbox",
+      "language": "python",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.025164176244288683,
+      "median_of_round_p95_s": 0.029147691931575535
+    },
+    {
+      "api": "sandbox",
+      "language": "shell",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.008600275497883558,
+      "median_of_round_p95_s": 0.010104039963334798
+    },
+    {
+      "api": "session",
+      "language": "python",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.02363781351596117,
+      "median_of_round_p95_s": 0.02654297649860382
+    },
+    {
+      "api": "session",
+      "language": "shell",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.008674916345626116,
+      "median_of_round_p95_s": 0.009744110936298966
+    }
+  ],
+  "warm_per_round": [
+    {
+      "round": 0,
+      "api": "sandbox",
+      "language": "python",
+      "median_s": 0.022817584685981274,
+      "p95_s": 0.02603596551343798
+    },
+    {
+      "round": 1,
+      "api": "sandbox",
+      "language": "python",
+      "median_s": 0.025925577618181705,
+      "p95_s": 0.028806668240576982
+    },
+    {
+      "round": 2,
+      "api": "sandbox",
+      "language": "python",
+      "median_s": 0.02440277487039566,
+      "p95_s": 0.029636050947010516
+    },
+    {
+      "round": 3,
+      "api": "sandbox",
+      "language": "python",
+      "median_s": 0.02351696416735649,
+      "p95_s": 0.026694945152848957
+    },
+    {
+      "round": 4,
+      "api": "sandbox",
+      "language": "python",
+      "median_s": 0.027692271396517754,
+      "p95_s": 0.02948871562257409
+    },
+    {
+      "round": 5,
+      "api": "sandbox",
+      "language": "python",
+      "median_s": 0.027911637909710407,
+      "p95_s": 0.030402598809450863
+    },
+    {
+      "round": 0,
+      "api": "sandbox",
+      "language": "shell",
+      "median_s": 0.007782183587551117,
+      "p95_s": 0.009754778631031512
+    },
+    {
+      "round": 1,
+      "api": "sandbox",
+      "language": "shell",
+      "median_s": 0.008493142202496529,
+      "p95_s": 0.010305747296661139
+    },
+    {
+      "round": 2,
+      "api": "sandbox",
+      "language": "shell",
+      "median_s": 0.008539792150259018,
+      "p95_s": 0.010215799137949943
+    },
+    {
+      "round": 3,
+      "api": "sandbox",
+      "language": "shell",
+      "median_s": 0.00873959343880415,
+      "p95_s": 0.010308524779975414
+    },
+    {
+      "round": 4,
+      "api": "sandbox",
+      "language": "shell",
+      "median_s": 0.008660758845508099,
+      "p95_s": 0.009930831752717494
+    },
+    {
+      "round": 5,
+      "api": "sandbox",
+      "language": "shell",
+      "median_s": 0.008918916806578636,
+      "p95_s": 0.009992280788719653
+    },
+    {
+      "round": 0,
+      "api": "session",
+      "language": "python",
+      "median_s": 0.02731963060796261,
+      "p95_s": 0.029959340393543244
+    },
+    {
+      "round": 1,
+      "api": "session",
+      "language": "python",
+      "median_s": 0.02277345024049282,
+      "p95_s": 0.025149164069443942
+    },
+    {
+      "round": 2,
+      "api": "session",
+      "language": "python",
+      "median_s": 0.02534108515828848,
+      "p95_s": 0.027469959948211907
+    },
+    {
+      "round": 3,
+      "api": "session",
+      "language": "python",
+      "median_s": 0.02450217679142952,
+      "p95_s": 0.02713785655796528
+    },
+    {
+      "round": 4,
+      "api": "session",
+      "language": "python",
+      "median_s": 0.022564788348972797,
+      "p95_s": 0.02594809643924236
+    },
+    {
+      "round": 5,
+      "api": "session",
+      "language": "python",
+      "median_s": 0.022758844308555126,
+      "p95_s": 0.025289582088589665
+    },
+    {
+      "round": 0,
+      "api": "session",
+      "language": "shell",
+      "median_s": 0.009131183847784996,
+      "p95_s": 0.010166460741311311
+    },
+    {
+      "round": 1,
+      "api": "session",
+      "language": "shell",
+      "median_s": 0.007888581603765488,
+      "p95_s": 0.0095782533288002
+    },
+    {
+      "round": 2,
+      "api": "session",
+      "language": "shell",
+      "median_s": 0.008715993724763393,
+      "p95_s": 0.009829531610012054
+    },
+    {
+      "round": 3,
+      "api": "session",
+      "language": "shell",
+      "median_s": 0.008633838966488838,
+      "p95_s": 0.009625609219074249
+    },
+    {
+      "round": 4,
+      "api": "session",
+      "language": "shell",
+      "median_s": 0.008230451494455338,
+      "p95_s": 0.009658690262585878
+    },
+    {
+      "round": 5,
+      "api": "session",
+      "language": "shell",
+      "median_s": 0.008799654431641102,
+      "p95_s": 0.010193163156509399
+    }
+  ],
+  "protocol": {
+    "rounds": 6,
+    "startup_observations": 12,
+    "warm_calls": 1200,
+    "calls_per_api_language_per_round": 50,
+    "excluded_warmups_per_group": 5,
+    "between_round_copies": "Checkpoints saved inside client pod; all checkpoint collection occurs after measured rounds finish",
+    "image_reference": "Exact Linux amd64 platform-manifest digest; image caches retained"
+  },
+  "runtime": {
+    "sdk_version": "0.7.0",
+    "client_image": "docker.io/xflops/flame-console@sha256:8d8257449f592dc571a530feb9f7e2591754fb8a446f87d3246d778ebdf7054e",
+    "execution_image": "python:3.12-slim@sha256:1148dbb014615300fa7e713b2f94f550c0d1c69780c0805f84f093ceee34dd0b",
+    "worker_manager_image": "docker.io/xflops/flame-executor-manager@sha256:11bd2dc67de4b229878197ae5caeb1ab365deca1e8db53eb21f7a977959168b6",
+    "packages": {
+      "flamepy": "0.7.0",
+      "grpcio": "1.85.0",
+      "protobuf": "7.36.2"
+    },
+    "client_python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "pr663_deployed": false
+  },
+  "validation": {
+    "all_outputs_checked": true,
+    "local_summary_matches_cluster": true,
+    "existing_sessions_preserved": true,
+    "owned_sessions_deleted": true,
+    "owned_namespace_deleted": true,
+    "production_unchanged_during_measurements": true
+  },
+  "provenance": {
+    "source_manifest": {
+      "agent_perf.py": "dfe2dd859e2bd87cc6a383179a8ff15a3383287a92f286179583997aa4e87031",
+      "agentperf_stats.py": "16b80364eb27568d5d464165ed045e62329f872c93ac2a84ca7d003231562038",
+      "inputs.json": "542d84012733e5c30658428a7e269d4449bb00124fa52c04b5779d318549e8d8",
+      "sdk/flamepy/__init__.py": "8cb72375130bf888449b7c68f36bf736ddd28341a0bc9d2855177829aaf02256",
+      "sdk/flamepy/__main__.py": "0b1e739b8268c0569d6829d0c32ae9ab4930a3dbf8b4fff4bc8926b29158e7b2",
+      "sdk/flamepy/serving/instance.py": "9cd4a7d831ce6c6555af671283db8f2ae101d7ebd645193cbc5179b46b4dbda8",
+      "sdk/flamepy/serving/client.py": "48b05dc80f95280d78d88cee8995df19d92ece8b3af86ec3232874e04feefe1d",
+      "sdk/flamepy/serving/__init__.py": "5577831fc4a94e69b3148152ba3ae66b0b60f48c705005f32927fb0fdadd7288",
+      "sdk/flamepy/core/service.py": "d059256f79789b4dba89e2fff8a367b3d510ebcb234564e4091e6ee1a0739556",
+      "sdk/flamepy/core/client.py": "f348b8934cefa71c8f9ff4c52014518d5be987dc47c6a8fcec771400b1e3058a",
+      "sdk/flamepy/core/cache.py": "f1f25b30ee3a8b994d13d7ffa41cb24645edc9f056fc2fa311c9ec503a8e36ba",
+      "sdk/flamepy/core/__init__.py": "5ee1f051e0b2d70541cb7de3f1f3dde3f6561cedaaa1c77cc0076927ec5fe9cb",
+      "sdk/flamepy/core/types.py": "baab3a17a38e5738a16a2926472719c308b713326902abf13d33958b0afdb8aa",
+      "sdk/flamepy/core/_bridge.py": "6645cb33973a0730575f960c961769c54ede5fd430618cbfc482700cddc21c1d",
+      "sdk/flamepy/app/client.py": "998d47eb6c469ae3ef084677f86a871a722a6ad9074ca3e9bca3ea790de2c4a2",
+      "sdk/flamepy/app/__init__.py": "b16908914ffc670b03948d4d89b19eaac6b58746988b032af7ef31593901bd53",
+      "sdk/flamepy/app/types.py": "b610eac602ef6391cbf8376b9de183bae0a6b6368b7fa7a38de0d44533534208",
+      "sdk/flamepy/app/_context.py": "235d1741aa86d31ed758b5c5a48192480a71fb418196cad9118aa921cf09c65a",
+      "sdk/flamepy/app/storage.py": "97d820e82412bda838a3de62f64f212c908b845ff9e4b85e45990c6b43d41510",
+      "sdk/flamepy/app/helper.py": "d017110a2ac8366fc8fea228fb9cf6cb7ec8d0d09a8bb8cceadfa9a40f8adf7b",
+      "sdk/flamepy/app/runpy.py": "1b23e7fd1bc4c4f3d10b8be1d3dd6e061451fd94114d8c58aff925b4f1a3610f",
+      "sdk/flamepy/cache/__init__.py": "bfba8dbfe3f41d04a479f2669880f2695e85ac855a71c2e9f6ed50c7c73c84cb",
+      "sdk/flamepy/proto/types_pb2_grpc.py": "8b29cbbf196883870eb2e1fb3c9670104c033135e477d326b3150cb2770b9aa5",
+      "sdk/flamepy/proto/__init__.py": "0a2aa9557b6346e29f5ebde0209c1a8e834e5e12c326c406a206162c0b78bb1f",
+      "sdk/flamepy/proto/cache_pb2_grpc.py": "f77a6ced1a815c4685c6d73005d969bd7e418ddb2670b86e9cf2a73f6c076110",
+      "sdk/flamepy/proto/shim_pb2_grpc.py": "5e712a8cf7a5f375249e9d2b6e52b59bc535c606a1a5e4655bceacd45e7d5ee8",
+      "sdk/flamepy/proto/frontend_pb2.py": "9d072af93c3e369a933fbd1ea06b7373d590706aa25d7309c29c9ca029bdf753",
+      "sdk/flamepy/proto/shim_pb2.py": "a57b7d9b2d141234cd23063b24d6086120fa8314ce825912b4e97f8a5084bc81",
+      "sdk/flamepy/proto/frontend_pb2_grpc.py": "c54a6d6e745e29ed2037522f1c996f869d54ddbe31011af66ca38d872e5afc58",
+      "sdk/flamepy/proto/cache_pb2.py": "045ad70798185c0495db91774d932f874ebb53d29ea4ae7fc21ad0ec530200f5",
+      "sdk/flamepy/proto/types_pb2.py": "6a355cf62e46205c35ea4bfe6ddf40c0a7df73b29abe08215a0893d50c7cddbb",
+      "sdk/flamepy/util/__init__.py": "20fe8c14a053abfc8ce1e597ef8c1a36e21888c004ba8dad4dfc62a42eba13d4",
+      "sdk/flamepy/agent/session.py": "91694a9bbe2aff74ca7f9dcf468a655d500f9d4dbd285de30b07a477d378fb40",
+      "sdk/flamepy/agent/__init__.py": "f02869c06e3cbf1bf147dd2703a06d8e0ef6c5234d8e276d748fb43089892a3a",
+      "sdk/flamepy/agent/sandbox.py": "a3c039c4ea3087047b149baf05c3608d046563c6b837569f7865e8ff2f6e7a80",
+      "sdk/flamepy/core/aio/service.py": "5c7b1b75b922a97651df799e4184cfa21b561ee8df56121bf179e7c62cb51aa2",
+      "sdk/flamepy/core/aio/client.py": "430556d1bed36134f84b960cd0ba86795bfffb9953f5af83451ecccc2016cb8c",
+      "sdk/flamepy/core/aio/cache.py": "af90bb1e7021285ee016e64859382bf1f89a33d048cfcf9cd11e023cd22fbc3f",
+      "sdk/flamepy/core/aio/__init__.py": "05cf81c723ab2a9cfbe4443215c66f6592abc3e9cd9b7d53e14fe3d9cb0bb825",
+      "sdk/flamepy-0.7.0.dist-info/METADATA": "4f6c9c7d2711f700d873f6235fdd827aef292add152e16d81dff37ebd95477e8",
+      "sdk/flamepy-0.7.0.dist-info/WHEEL": "98e75747d0b7c0c568bfb71263c3d8f970b3a374a6996087bc642be5cb09a1aa"
+    },
+    "frozen_input_sha256": {
+      "agent_perf.py": "dfe2dd859e2bd87cc6a383179a8ff15a3383287a92f286179583997aa4e87031",
+      "agentperf_stats.py": "16b80364eb27568d5d464165ed045e62329f872c93ac2a84ca7d003231562038",
+      "inputs.json": "542d84012733e5c30658428a7e269d4449bb00124fa52c04b5779d318549e8d8",
+      "sdk-0.7.0.tgz": "b4a3241e7d61f6310eaf6bc174a8e95297d07ccbd67eb86812bc9edd1cee8782"
+    },
+    "raw_evidence_sha256": "1715ebebb5b3d46d86fbddb2b8b683e745fdb5bdb099849799a74fa65497cb07",
+    "raw_evidence_bytes": 295760
+  },
+  "worker_revision": "905a36049650af25cd86f07475bcdae091c3c98f",
+  "measurement_definitions": {
+    "startup": "Creation API call through first completed Python command; SDK already connected; image pinned to its Linux amd64 platform manifest with worker image caches retained.",
+    "warm_median": "Median of six within-round medians, each with50calls after5excludedwarmups.",
+    "typical_round_p95": "Median of six within-round p95 estimates, each based on50calls; not a pooled tail estimate.",
+    "network": "Direct internal Kubernetes Services with proxy variables removed. In-cluster RPC remains included; Mac-to-cluster transport is outside measured intervals.",
+    "executor_lifecycle": "New logical environments reuse the same two executors across rounds. First-use observations are432ms/200ms; later allocations on retained executors are71\u201395ms. Aggregate medians mix both conditions and are not fully cold executor-startup results."
+  },
+  "resources": {
+    "worker_cpu_request": 1,
+    "worker_memory_request_bytes": 536870912,
+    "worker_gpu_request": 0,
+    "client_cpu_request": 1,
+    "client_memory_request_bytes": 1073741824,
+    "client_cpu_limit": 2,
+    "client_memory_limit_bytes": 2147483648
+  },
+  "limitations": [
+    "Measures direct agent.Sandbox and agent.Session SDK calls, excluding Hermes orchestration and LLM inference.",
+    "Startup uses retained image caches and an established SDK connection; uncached image downloads and initial client connection setup are not measured.",
+    "Startup phases have not been isolated, so the result does not attribute time to scheduler, storage, RPC or sandbox runtime individually.",
+    "Parallel throughput is not validated by this report. A separate eight-worker Session pool allocation timed out and its partial results are excluded.",
+    "Six rounds on one deployment; observed ranges and typical round p95 estimates are descriptive, not production latency guarantees.",
+    "The configured SDK benchmark pins the platform digest explicitly. It does not measure PR663 or establish the same startup latency for mutable image tags or the plugin default image reference.",
+    "The85/94ms medians include retained-executor reuse; a fresh logical session does not imply a newly launched worker service."
+  ]
+}

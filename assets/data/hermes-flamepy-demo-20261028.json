@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-28",
+  "plugin": "hermes-flamepy",
+  "plugin_version": "0.2.0",
+  "flamepy_version": "0.7.0",
+  "image": "python:3.12-slim",
+  "client_platform": "macOS",
+  "remote_platform": "Linux",
+  "validation_level": "Registered Hermes plugin handlers against a live Flame cluster; no LLM inference",
+  "full_hermes_chat_validated": false,
+  "direct_connection": true,
+  "proxy_environment_disabled": true,
+  "path_normalization": {
+    "display_path": "/tmp/hermes-flamepy-demo",
+    "note": "The live run used a unique temporary directory; only that path was normalized."
+  },
+  "calls": [
+    {
+      "tool": "sandbox",
+      "arguments": {
+        "language": "shell",
+        "timeout": 30,
+        "code": "mkdir /tmp/hermes-flamepy-demo\ncat > /tmp/hermes-flamepy-demo/sales.csv <<'CSV'\nregion,revenue,cost\neast,120,75\nwest,80,55\neast,150,90\nwest,100,70\nCSV\nprintf 'sales.csv created\\n'"
+      },
+      "output": "sales.csv created\n"
+    },
+    {
+      "tool": "sandbox",
+      "arguments": {
+        "language": "python",
+        "timeout": 30,
+        "code": "import csv, json, platform\nfrom pathlib import Path\np = Path('/tmp/hermes-flamepy-demo')\nrows = list(csv.DictReader((p / 'sales.csv').open()))\nrevenue = sum(int(r['revenue']) for r in rows)\nprofit = revenue - sum(int(r['cost']) for r in rows)\nsummary = dict(rows=len(rows), revenue=revenue, profit=profit)\n(p / 'summary.json').write_text(json.dumps(summary))\nprint(json.dumps(summary))\nprint(platform.system())"
+      },
+      "output": "{\"rows\": 4, \"revenue\": 450, \"profit\": 160}\nLinux\n"
+    },
+    {
+      "tool": "sandbox",
+      "arguments": {
+        "language": "shell",
+        "timeout": 30,
+        "code": "cat /tmp/hermes-flamepy-demo/summary.json"
+      },
+      "output": "{\"rows\": 4, \"revenue\": 450, \"profit\": 160}"
+    },
+    {
+      "tool": "session",
+      "arguments": {
+        "language": "python",
+        "timeout": 30,
+        "codes": [
+          "import json\nrevenues = [120, 80, 150, 100]\ncosts = [75, 55, 90, 70]\ndiscount = 0.0\nif not 0 <= discount <= 1:\n    raise ValueError('discount must be between 0 and 1')\nrevenue = round(sum(revenues) * (1 - discount), 2)\nprofit = round(revenue - sum(costs), 2)\nprint(json.dumps(dict(discount=discount, revenue=revenue, profit=profit)))",
+          "import json\nrevenues = [120, 80, 150, 100]\ncosts = [75, 55, 90, 70]\ndiscount = 0.1\nif not 0 <= discount <= 1:\n    raise ValueError('discount must be between 0 and 1')\nrevenue = round(sum(revenues) * (1 - discount), 2)\nprofit = round(revenue - sum(costs), 2)\nprint(json.dumps(dict(discount=discount, revenue=revenue, profit=profit)))",
+          "import json\nrevenues = [120, 80, 150, 100]\ncosts = [75, 55, 90, 70]\ndiscount = 0.2\nif not 0 <= discount <= 1:\n    raise ValueError('discount must be between 0 and 1')\nrevenue = round(sum(revenues) * (1 - discount), 2)\nprofit = round(revenue - sum(costs), 2)\nprint(json.dumps(dict(discount=discount, revenue=revenue, profit=profit)))",
+          "import json\nrevenues = [120, 80, 150, 100]\ncosts = [75, 55, 90, 70]\ndiscount = 1.2\nif not 0 <= discount <= 1:\n    raise ValueError('discount must be between 0 and 1')\nrevenue = round(sum(revenues) * (1 - discount), 2)\nprofit = round(revenue - sum(costs), 2)\nprint(json.dumps(dict(discount=discount, revenue=revenue, profit=profit)))"
+        ]
+      },
+      "output": "[{\"exit_code\": 0, \"stdout\": \"{\\\"discount\\\": 0.0, \\\"revenue\\\": 450.0, \\\"profit\\\": 160.0}\\n\", \"stderr\": \"\"}, {\"exit_code\": 0, \"stdout\": \"{\\\"discount\\\": 0.1, \\\"revenue\\\": 405.0, \\\"profit\\\": 115.0}\\n\", \"stderr\": \"\"}, {\"exit_code\": 0, \"stdout\": \"{\\\"discount\\\": 0.2, \\\"revenue\\\": 360.0, \\\"profit\\\": 70.0}\\n\", \"stderr\": \"\"}, {\"exit_code\": 1, \"stdout\": \"\", \"stderr\": \"Traceback (most recent call last):\\n  File \\\"<string>\\\", line 6, in <module>\\nValueError: discount must be between 0 and 1\\n\"}]",
+      "decoded_results": [
+        {
+          "exit_code": 0,
+          "stdout": "{\"discount\": 0.0, \"revenue\": 450.0, \"profit\": 160.0}\n",
+          "stderr": ""
+        },
+        {
+          "exit_code": 0,
+          "stdout": "{\"discount\": 0.1, \"revenue\": 405.0, \"profit\": 115.0}\n",
+          "stderr": ""
+        },
+        {
+          "exit_code": 0,
+          "stdout": "{\"discount\": 0.2, \"revenue\": 360.0, \"profit\": 70.0}\n",
+          "stderr": ""
+        },
+        {
+          "exit_code": 1,
+          "stdout": "",
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 6, in <module>\nValueError: discount must be between 0 and 1\n"
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "file_persistence_verified": true,
+    "session_exit_codes": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "demo_files_removed": true,
+    "preexisting_machine_sessions_preserved": true,
+    "new_session_ids_created": 0
+  },
+  "performance_claim": null,
+  "source_reference": "https://github.com/xflops/hermes-flamepy/tree/618ffd3c701daeb31c76bdf646cddc4aa587ae85"
+}

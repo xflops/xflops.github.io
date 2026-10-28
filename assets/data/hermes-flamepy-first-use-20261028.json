@@ -1,0 +1,270 @@
+{
+  "date": "2026-10-28",
+  "scope": "Sandbox SDK allocation to first result; fresh client and temporary application per pair",
+  "rounds": 6,
+  "pairs": 12,
+  "rows": [
+    {
+      "round": 0,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.19847645610570908,
+          "allocation_s": 0.0011633802205324173
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.08102789893746376,
+          "allocation_s": 0.0009919032454490662
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.1681855171918869,
+          "allocation_s": 0.00113685242831707
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.0886501669883728,
+          "allocation_s": 0.0011338889598846436
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.19343142583966255,
+          "allocation_s": 0.0010823700577020645
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.08862543478608131,
+          "allocation_s": 0.0010019782930612564
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.18842245265841484,
+          "allocation_s": 0.001282036304473877
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.0748346671462059,
+          "allocation_s": 0.0011719819158315659
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.18503118492662907,
+          "allocation_s": 0.0012055020779371262
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.06996628269553185,
+          "allocation_s": 0.0010658148676156998
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.16868930868804455,
+          "allocation_s": 0.0011741388589143753
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.0825491901487112,
+          "allocation_s": 0.0010560359805822372
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.18450632318854332,
+          "allocation_s": 0.0011928565800189972
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.0754900798201561,
+          "allocation_s": 0.001100407913327217
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.1842141542583704,
+          "allocation_s": 0.0012744497507810593
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.07307912409305573,
+          "allocation_s": 0.000985449180006981
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.2067279163748026,
+          "allocation_s": 0.0011640451848506927
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.08518438972532749,
+          "allocation_s": 0.0011727288365364075
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.19718152657151222,
+          "allocation_s": 0.0011140126734972
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.08570954948663712,
+          "allocation_s": 0.0009554494172334671
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.20149866864085197,
+          "allocation_s": 0.0010857321321964264
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.0815889723598957,
+          "allocation_s": 0.001052243635058403
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.19819675385951996,
+          "allocation_s": 0.0012688692659139633
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.09239209070801735,
+          "allocation_s": 0.0010290667414665222
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "phase": "first",
+      "median_s": 0.1909269392490387,
+      "range_s": [
+        0.1681855171918869,
+        0.2067279163748026
+      ],
+      "values_s": [
+        0.19847645610570908,
+        0.1681855171918869,
+        0.19343142583966255,
+        0.18842245265841484,
+        0.18503118492662907,
+        0.16868930868804455,
+        0.18450632318854332,
+        0.1842141542583704,
+        0.2067279163748026,
+        0.19718152657151222,
+        0.20149866864085197,
+        0.19819675385951996
+      ]
+    },
+    {
+      "phase": "reuse",
+      "median_s": 0.08206908125430346,
+      "range_s": [
+        0.06996628269553185,
+        0.09239209070801735
+      ],
+      "values_s": [
+        0.08102789893746376,
+        0.0886501669883728,
+        0.08862543478608131,
+        0.0748346671462059,
+        0.06996628269553185,
+        0.0825491901487112,
+        0.0754900798201561,
+        0.07307912409305573,
+        0.08518438972532749,
+        0.08570954948663712,
+        0.0815889723598957,
+        0.09239209070801735
+      ]
+    }
+  ],
+  "image": "python:3.12-slim@sha256:6b25cbe6577518889d553cdd5a5da97d259348d8f6e45b527dd731caaba27a07",
+  "worker_revision": "6dc0ed2eb66f82c4e4cc2b9c34192017ae361196",
+  "application_delay_release_seconds": 3,
+  "worker_cpu_request": 1,
+  "worker_memory_request_bytes": 536870912,
+  "client_instrumented": true,
+  "worker_tracing": false,
+  "existing_sdk_connection_established_before_timing": true,
+  "image_cache": "Index alias prewarmed and verified on all 11 workers before measurements; all 12 traced first-use samples confirmed alias presence",
+  "validation": {
+    "outputs_checked": true,
+    "exact_executor_reuse_confirmed": true,
+    "independent_summary_match": true,
+    "owned_sessions_and_executors_cleaned": true,
+    "namespace_deleted": true,
+    "raw_evidence_sha256": "4f72763bcebbd492abe16addfcdd2c86a1578e7121696188d985c6398d33808e"
+  },
+  "limitations": [
+    "Sandbox only; does not estimate Session startup.",
+    "Prewarmed worker-local aliases may need rebuilding after pod replacement.",
+    "Twelve observations do not establish a tail-latency guarantee.",
+    "Temporary application uses a three-second executor release delay; reuse was verified by executor ID.",
+    "SDK client timing hooks are enabled; no worker tracing wrapper is used for these control samples."
+  ]
+}
