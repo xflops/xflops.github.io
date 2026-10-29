@@ -60,28 +60,6 @@ When Flame launches the service, the executor shim provides `FLAME_INSTANCE_ENDP
 
 The service runtime currently requires Unix domain socket support.
 
-## Register the Application
-
-Register the built service binary as a Flame application:
-
-```yaml
-metadata:
-  name: rust-echo
-spec:
-  command: /usr/local/flame/bin/rust-echo-service
-  environments:
-    RUST_LOG: info
-```
-
-Then register it:
-
-```bash
-flmctl register --file rust-echo.yaml
-flmctl list --application
-```
-
-An administrator usually owns this step for production services, including binary installation, application versioning, resource policy, and rollout.
-
 ## Cargo Setup
 
 From the Flame source workspace, examples depend on the local SDK:
@@ -108,15 +86,24 @@ path = "src/client.rs"
 
 ## Build and Deploy
 
-A typical source build produces the service binary with Cargo:
+From the Flame source repository, build and deploy the Rust Pi service:
 
 ```bash
-cargo build --release -p pi
-sudo install -m 755 target/release/pi-service /usr/local/flame/bin/
-flmctl register --file examples/pi/rust/pi-app.yaml
+cargo build -p pi --release
+flmctl deploy --name pi --application target/release/pi-service --dry-run -o yaml
+flmctl deploy --name pi --application target/release/pi-service
+flmctl view --application pi
 ```
 
-The exact install path should match the `spec.command` path in the application YAML.
+`flmctl deploy` packages the binary, uploads it to the configured Flame object cache, and registers the application. The dry run previews the deployment without uploading or registering it. The session manager and workers need access to the cache; the binary must also be compatible with the workers' operating system, architecture, and runtime libraries.
+
+Use the same application name when running the client:
+
+```bash
+cargo run -p pi --bin pi -- --app pi
+```
+
+See [Deploy Applications](/docs/user-guide/#deploy-applications) for endpoint configuration, project packaging, and deployment options. If an administrator manages binary installation and application manifests separately, `flmctl register --file app.yaml` remains available.
 
 ## Session Context
 
