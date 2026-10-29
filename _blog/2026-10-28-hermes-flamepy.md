@@ -205,7 +205,7 @@ After five excluded warmup calls per API and language, each round measured 50 ca
 
 The median column is the median of the six within-round medians. The p95 column is the median of six within-round p95 estimates, each based on 50 observations. It describes these rounds; it is not a pooled tail estimate or a production latency guarantee. A retained worker still starts a new snippet process, so these values are not isolated scheduler overhead.
 
-![Sandbox first-use and retained-executor allocation alongside warm SDK round trips](/assets/images/hermes-flamepy/agent-sdk-prewarmed-performance.svg)
+![Sandbox first-use and retained-executor allocation alongside warm SDK round trips](/assets/images/hermes-flamepy/agent-sdk-prewarmed-performance.svg?v=20261029a621)
 
 The allocation experiment checked all 12 pairs, independently reproduced its summary, and cleaned up its temporary sessions, executors, and client namespace. The separate warm-call experiment checked 1,200 calls. A connection reset interrupted collection of its final result; the complete result was recovered, its summary independently reproduced and matched to the client summary, and its temporary namespace removed. See the [warm-call data](/assets/data/hermes-flamepy-performance-20261029.json).
 
