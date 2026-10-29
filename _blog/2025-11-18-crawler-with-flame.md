@@ -7,7 +7,7 @@ categories: ["AI Agent", "Flame", "Langchain"]
 tags: ["flame", "ai-agents", "distributed-computing"]
 ---
 
-> **Historical API:** This article describes the SDK available when it was written. Its `flamepy.service` examples do not work with the current SDK. See the [current Python guide](/docs/flamepy/) and [migration notes](/docs/flamepy/migration/).
+> **Historical API:** This article describes the SDK available when it was written. Its `flamepy.service` examples do not work with the current SDK. See the [current Python guide](/docs/flamepy/) and [migration notes](/docs/migration/flamepy.service/).
 
 
 As agent technology continues to evolve, enterprises and users are increasingly investing in developing and deploying agents to improve business efficiency.

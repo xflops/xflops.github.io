@@ -12,8 +12,12 @@
   url: /docs/flamepy/app/
 - title: flamepy.serving Guide
   url: /docs/flamepy/service/
+- title: flamepy.agent Guide
+  url: /docs/flamepy/agent/
 - title: flamepy.core Guide
   url: /docs/flamepy/core/
+- title: flamepy.service Migration
+  url: /docs/migration/flamepy.service/
 - title: flame-rs Guide
   url: /docs/flame-rs/
 - title: flame_rs::client

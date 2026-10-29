@@ -7,7 +7,7 @@ categories: ["AI Agent", "Flame", "OpenAI Agent SDK"]
 tags: ["flame", "ai-agents", "distributed-computing"]
 ---
 
-> **Historical API:** This article describes the SDK available when it was written. Its `flamepy.service` examples do not work with the current SDK. See the [current Python guide](/docs/flamepy/) and [migration notes](/docs/flamepy/migration/).
+> **Historical API:** This article describes the SDK available when it was written. Its `flamepy.service` examples do not work with the current SDK. See the [current Python guide](/docs/flamepy/) and [migration notes](/docs/migration/flamepy.service/).
 
 
 As more and more agents are being adopted in enterprises, it becomes increasingly important to deploy and manage them using distributed systems such as Kubernetes, Flame, or other cloud solutions. However, running agents remotely in the cloud introduces unique challenges for some fundamental features:

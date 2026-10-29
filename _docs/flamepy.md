@@ -12,10 +12,10 @@ flamepy is the Python SDK for Flame. It provides distributed Python services, lo
 | --- | --- |
 | [`flamepy.app`](/docs/flamepy/app/) | Package a Python project and run functions and classes as remote services. |
 | [`flamepy.core`](/docs/flamepy/core/) | Work directly with applications, sessions, byte tasks, and cached objects. |
-| `flamepy.agent` | Run agent workloads using Flame sessions and sandboxes. |
+| [`flamepy.agent`](/docs/flamepy/agent/) | Run agent workloads using Flame sessions and sandboxes. |
 | [`flamepy.serving`](/docs/flamepy/service/) | Deploy and call Python services, including model serving and agents. |
 
-The former `flamepy.runner` and `flamepy.service` modules are not part of the current SDK. For application code, start with `flamepy.app`; for a custom service protocol use `flamepy.core`. See the [migration notes](/docs/flamepy/migration/).
+The former `flamepy.runner` and `flamepy.service` modules are not part of the current SDK. For application code, start with `flamepy.app`; for a custom service protocol use `flamepy.core`. See the [migration notes](/docs/migration/flamepy.service/).
 
 ## First Service
 

@@ -72,4 +72,4 @@ For an inference example and measured comparison, see [Flame and vLLM serving](/
 
 ## Choosing an API
 
-Use `flamepy.serving` when deploying and calling a named Python service. Use [`flamepy.app`](/docs/flamepy/app/) to package a local Python project and expose its functions or classes as remote services. Use [`flamepy.core`](/docs/flamepy/core/) for direct byte-level protocols. The former `flamepy.service` API is historical; see the [migration notes](/docs/flamepy/migration/).
+Use `flamepy.serving` when deploying and calling a named Python service. Use [`flamepy.app`](/docs/flamepy/app/) to package a local Python project and expose its functions or classes as remote services. Use [`flamepy.core`](/docs/flamepy/core/) for direct byte-level protocols. The former `flamepy.service` API is historical; see the [migration notes](/docs/migration/flamepy.service/).
