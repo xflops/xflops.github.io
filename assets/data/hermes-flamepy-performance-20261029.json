@@ -1,0 +1,267 @@
+{
+  "date": "2026-10-29",
+  "scope": "Direct in-cluster warm-call results; excludes parallel throughput",
+  "warm_descriptive": [
+    {
+      "api": "sandbox",
+      "language": "python",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.025918452069163322,
+      "median_of_round_p95_s": 0.028479908173903817
+    },
+    {
+      "api": "sandbox",
+      "language": "shell",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.00842041289433837,
+      "median_of_round_p95_s": 0.01005723848938942
+    },
+    {
+      "api": "session",
+      "language": "python",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.023521755822002888,
+      "median_of_round_p95_s": 0.026138888206332922
+    },
+    {
+      "api": "session",
+      "language": "shell",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.007989160716533661,
+      "median_of_round_p95_s": 0.009702874626964331
+    }
+  ],
+  "warm_per_round": [
+    {
+      "round": 0,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.026202132925391197,
+      "p95_s": 0.0280033647082746
+    },
+    {
+      "round": 0,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.008771011605858803,
+      "p95_s": 0.010646627377718687
+    },
+    {
+      "round": 0,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.028260553255677223,
+      "p95_s": 0.031702976766973735
+    },
+    {
+      "round": 0,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.009247979149222374,
+      "p95_s": 0.01044877441599965
+    },
+    {
+      "round": 1,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.02365356031805277,
+      "p95_s": 0.025184581987559795
+    },
+    {
+      "round": 1,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.007681483402848244,
+      "p95_s": 0.008418292179703711
+    },
+    {
+      "round": 1,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.022844414226710796,
+      "p95_s": 0.0237026484683156
+    },
+    {
+      "round": 1,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.007710120640695095,
+      "p95_s": 0.008543627988547086
+    },
+    {
+      "round": 2,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.02841175440698862,
+      "p95_s": 0.03314659250900148
+    },
+    {
+      "round": 2,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.009022083133459091,
+      "p95_s": 0.01170544512569904
+    },
+    {
+      "round": 2,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.02297666296362877,
+      "p95_s": 0.024677838571369647
+    },
+    {
+      "round": 2,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.008020223118364811,
+      "p95_s": 0.01051597977057099
+    },
+    {
+      "round": 3,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.025634771212935448,
+      "p95_s": 0.02869509011507034
+    },
+    {
+      "round": 3,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.00798841379582882,
+      "p95_s": 0.009211611654609441
+    },
+    {
+      "round": 3,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.0232100123539567,
+      "p95_s": 0.025679200980812313
+    },
+    {
+      "round": 3,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.007627506740391254,
+      "p95_s": 0.008095760643482209
+    },
+    {
+      "round": 4,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.024347474798560143,
+      "p95_s": 0.02826472623273729
+    },
+    {
+      "round": 4,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.00844557024538517,
+      "p95_s": 0.010466152988374233
+    },
+    {
+      "round": 4,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.023833499290049076,
+      "p95_s": 0.02659857543185353
+    },
+    {
+      "round": 4,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.00795809831470251,
+      "p95_s": 0.00895697483792901
+    },
+    {
+      "round": 5,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.02853414975106716,
+      "p95_s": 0.03125717546790838
+    },
+    {
+      "round": 5,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.008395255543291569,
+      "p95_s": 0.009648323990404606
+    },
+    {
+      "round": 5,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.029455884359776974,
+      "p95_s": 0.034629730880260466
+    },
+    {
+      "round": 5,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.00914129987359047,
+      "p95_s": 0.013595532067120069
+    }
+  ],
+  "runtime": {
+    "sdk_version": "0.7.0",
+    "packages": {
+      "flamepy": "0.7.0",
+      "grpcio": "1.85.0",
+      "protobuf": "7.36.2"
+    },
+    "client_python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "execution_image": "python:3.12-slim@sha256:6b25cbe6577518889d553cdd5a5da97d259348d8f6e45b527dd731caaba27a07",
+    "client_image": "docker.io/xflops/flame-console@sha256:8d8257449f592dc571a530feb9f7e2591754fb8a446f87d3246d778ebdf7054e",
+    "worker_image": "docker.io/xflops/flame-executor-manager@sha256:b53062ae892661aa55acab27eefe4a1f1ca410f2effe5416fbfee35778dd65b1",
+    "worker_revision": "a621df4ecde627d629692c26d53a0d153cd4c1d1"
+  },
+  "protocol": {
+    "rounds": 6,
+    "warmup_per_language": 5,
+    "samples_per_api_language_round": 50,
+    "measured_calls": 1200,
+    "proxies_disabled": true
+  },
+  "validation": {
+    "all_outputs_checked": true,
+    "local_summary_matches_cluster": true,
+    "input_hashes_unchanged": true,
+    "owned_sessions_deleted": true,
+    "owned_namespace_deleted": true,
+    "running_pod_identity_unchanged": true,
+    "result_recovery": "Final result was recovered in compressed form after kubectl cp failed; independently recomputed summary matched the client summary."
+  },
+  "measurement_definitions": {
+    "median": "median of six within-round medians",
+    "p95": "median of six within-round interpolated p95 values (50 observations per round)"
+  },
+  "limitations": [
+    "No Mac network, Hermes or LLM time",
+    "Retained workers run a new process for each call",
+    "Round p95 is not a pooled tail SLO",
+    "No production throughput or concurrency claim"
+  ]
+}
