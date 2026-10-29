@@ -64,6 +64,33 @@ Close a session:
 flmctl close --session <session-id>
 ```
 
+## Deploy Applications
+
+`flmctl deploy` packages a local application, uploads it to the configured Flame object cache, and registers it with the session manager. Configure both endpoints as described below, and ensure executors can reach the object cache. For example, deploy a Python project directory:
+
+```bash
+flmctl deploy --name agent-app --application ./agent-app --dry-run -o yaml
+flmctl deploy --name agent-app --application ./agent-app
+flmctl view --application agent-app
+```
+
+The dry run prints the deployment plan without uploading or registering it. Deploy also accepts a standalone file or a `.tar.gz`/`.tgz` archive. For a directory, it detects a Python project or executable and its launch command; use `--command` and repeatable `--argument` options when detection does not provide the right command. A standalone `.py` file runs with `python3` and does not install project dependencies, so those dependencies must be present on the executors.
+
+A project directory can specify deployment defaults in `flame.yaml` or `flm.yaml`:
+
+```yaml
+metadata:
+  name: agent-app
+spec:
+  installer: python
+  command: python3
+  arguments: [-m, agent_app]
+```
+
+With this profile, `flmctl deploy --application ./agent-app` uses its application name and runtime settings. Explicit CLI options override profile fields; repeat `--env NAME=VALUE` to set environment variables. Add `.flameignore` or `.flmignore` to exclude files from a directory package. See `flmctl deploy --help` for all options, including runtime image and shim settings.
+
+For a complete Python service and client example, see the [`flamepy.serving` guide](/docs/flamepy/service/). Applications can also be registered directly from an existing YAML manifest:
+
 ## Register Applications
 
 Register an application from YAML:
@@ -79,7 +106,7 @@ flmctl update --application app.yaml
 flmctl unregister --application <app-name>
 ```
 
-Most Python users should start with [`flamepy.app`](/docs/flamepy/runner/), which packages the current project and registers an application for task-oriented Python code. Rust users can use [`flame-rs`](/docs/flame-rs/) for native clients and service binaries.
+Most Python users should start with [`flamepy.app`](/docs/flamepy/app/), which packages the current project and registers an application for task-oriented Python code. Rust users can use [`flame-rs`](/docs/flame-rs/) for native clients and service binaries.
 
 ## Client Configuration
 

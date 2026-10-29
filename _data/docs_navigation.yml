@@ -9,8 +9,8 @@
 - title: flamepy Guide
   url: /docs/flamepy/
 - title: flamepy.app Guide
-  url: /docs/flamepy/runner/
-- title: Python Service Migration
+  url: /docs/flamepy/app/
+- title: flamepy.serving Guide
   url: /docs/flamepy/service/
 - title: flamepy.core Guide
   url: /docs/flamepy/core/

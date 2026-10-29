@@ -7,7 +7,7 @@ categories: ["AI Agent", "Flame"]
 tags: ["flame", "ai-agents", "distributed-computing", "kubernetes"]
 ---
 
-> **Historical API:** This article describes the SDK available when it was written. Its `flamepy.service` examples do not work with the current SDK. See the [current Python guide](/docs/flamepy/) and [migration notes](/docs/flamepy/service/).
+> **Historical API:** This article describes the SDK available when it was written. Its `flamepy.service` examples do not work with the current SDK. See the [current Python guide](/docs/flamepy/) and [migration notes](/docs/flamepy/migration/).
 
 
 The landscape of AI agent development is evolving quickly. Many frameworks promise rapid prototyping and production-ready deployments, yet teams still face familiar challenges: high task latency, suboptimal resource usage, and awkward integration patterns. Because agent workloads are inherently elastic, Flame is a natural fit to address these challenges.

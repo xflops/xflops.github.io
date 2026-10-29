@@ -201,4 +201,4 @@ Without a `deserializer`, `get_object(ref)` returns the latest part. A deseriali
 
 ## Higher-Level APIs
 
-Use [`flamepy.app`](/docs/flamepy/runner/) to package and run Python functions and classes as remote services.
+Use [`flamepy.app`](/docs/flamepy/app/) to package and run Python functions and classes as remote services.

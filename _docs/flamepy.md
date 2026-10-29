@@ -10,12 +10,12 @@ flamepy is the Python SDK for Flame. It provides distributed Python services, lo
 
 | Module | Use it for |
 | --- | --- |
-| [`flamepy.app`](/docs/flamepy/runner/) | Package a Python project and run functions and classes as remote services. |
+| [`flamepy.app`](/docs/flamepy/app/) | Package a Python project and run functions and classes as remote services. |
 | [`flamepy.core`](/docs/flamepy/core/) | Work directly with applications, sessions, byte tasks, and cached objects. |
 | `flamepy.agent` | Run agent workloads using Flame sessions and sandboxes. |
-| `flamepy.serving` | Integrate model serving with Flame. |
+| [`flamepy.serving`](/docs/flamepy/service/) | Deploy and call Python services, including model serving and agents. |
 
-The former `flamepy.runner` and `flamepy.service` modules are not part of the current SDK. For application code, start with `flamepy.app`; for a custom service protocol use `flamepy.core`. See the [migration notes](/docs/flamepy/service/).
+The former `flamepy.runner` and `flamepy.service` modules are not part of the current SDK. For application code, start with `flamepy.app`; for a custom service protocol use `flamepy.core`. See the [migration notes](/docs/flamepy/migration/).
 
 ## First Service
 
@@ -36,6 +36,6 @@ finally:
     app.destroy()
 ```
 
-App uses the configured session manager and object cache and packages the current working directory. See [Getting Started](/docs/getting-started/) for configuration and [`flamepy.app`](/docs/flamepy/runner/) for lifecycle and packaging details.
+App uses the configured session manager and object cache and packages the current working directory. See [Getting Started](/docs/getting-started/) for configuration and [`flamepy.app`](/docs/flamepy/app/) for lifecycle and packaging details.
 
 For direct byte tasks, use [`flamepy.core`](/docs/flamepy/core/). The endpoint examples in these guides use plaintext for local development; configure TLS for deployments that require encrypted, authenticated connections.

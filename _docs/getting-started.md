@@ -118,7 +118,7 @@ python hello_app.py
 
 ## Next Steps
 
-- Read the [`flamepy.app` Guide](/docs/flamepy/runner/) for functions, classes, futures, and package storage.
+- Read the [`flamepy.app` Guide](/docs/flamepy/app/) for functions, classes, futures, and package storage.
 - Read the [flamepy Guide](/docs/flamepy/) for the Python SDK overview.
 - Read the [flame-rs Guide](/docs/flame-rs/) for Rust clients and service binaries.
 - Read the [User Guide](/docs/user-guide/) for `flmctl`, application registration, and cluster operations.
