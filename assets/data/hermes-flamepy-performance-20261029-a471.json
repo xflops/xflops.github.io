@@ -1,0 +1,269 @@
+{
+  "date": "2026-10-29",
+  "scope": "Direct in-cluster warm-call results; excludes parallel throughput",
+  "warm_descriptive": [
+    {
+      "api": "sandbox",
+      "language": "python",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.024718549568206072,
+      "median_of_round_p95_s": 0.027067145332694054
+    },
+    {
+      "api": "sandbox",
+      "language": "shell",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.008560855872929096,
+      "median_of_round_p95_s": 0.009812362445518374
+    },
+    {
+      "api": "session",
+      "language": "python",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.02424979116767645,
+      "median_of_round_p95_s": 0.026539744483307003
+    },
+    {
+      "api": "session",
+      "language": "shell",
+      "rounds": 6,
+      "median_of_round_medians_s": 0.008310628589242697,
+      "median_of_round_p95_s": 0.009529640339314936
+    }
+  ],
+  "warm_per_round": [
+    {
+      "round": 0,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.024322960525751114,
+      "p95_s": 0.02745929630473256
+    },
+    {
+      "round": 0,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.008713086135685444,
+      "p95_s": 0.010085882991552352
+    },
+    {
+      "round": 0,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.024829799309372902,
+      "p95_s": 0.030535078141838305
+    },
+    {
+      "round": 0,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.008258736692368984,
+      "p95_s": 0.009706840012222528
+    },
+    {
+      "round": 1,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.025399270467460155,
+      "p95_s": 0.02967298235744238
+    },
+    {
+      "round": 1,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.008448569104075432,
+      "p95_s": 0.00972168417647481
+    },
+    {
+      "round": 1,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.02221494261175394,
+      "p95_s": 0.02302449755370617
+    },
+    {
+      "round": 1,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.007595697417855263,
+      "p95_s": 0.0087872002273798
+    },
+    {
+      "round": 2,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.02370399236679077,
+      "p95_s": 0.025835536792874335
+    },
+    {
+      "round": 2,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.007638369686901569,
+      "p95_s": 0.009069695603102444
+    },
+    {
+      "round": 2,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.025184779427945614,
+      "p95_s": 0.0290504677221179
+    },
+    {
+      "round": 2,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.00827757641673088,
+      "p95_s": 0.009352440666407346
+    },
+    {
+      "round": 3,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.02490998152643442,
+      "p95_s": 0.026674994360655544
+    },
+    {
+      "round": 3,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.008681119419634342,
+      "p95_s": 0.010878883488476276
+    },
+    {
+      "round": 3,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.024233602918684483,
+      "p95_s": 0.027532078139483926
+    },
+    {
+      "round": 3,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.008343680761754513,
+      "p95_s": 0.009306080546230078
+    },
+    {
+      "round": 4,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.024527117609977722,
+      "p95_s": 0.026501135900616646
+    },
+    {
+      "round": 4,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.007975985296070576,
+      "p95_s": 0.00850935336202383
+    },
+    {
+      "round": 4,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.024265979416668415,
+      "p95_s": 0.02554741082713008
+    },
+    {
+      "round": 4,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.008363155648112297,
+      "p95_s": 0.010634468030184505
+    },
+    {
+      "round": 5,
+      "api": "sandbox",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.02557846810668707,
+      "p95_s": 0.029376768041402098
+    },
+    {
+      "round": 5,
+      "api": "sandbox",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.00867314264178276,
+      "p95_s": 0.00990304071456194
+    },
+    {
+      "round": 5,
+      "api": "session",
+      "language": "python",
+      "samples": 50,
+      "median_s": 0.02348894439637661,
+      "p95_s": 0.025096835941076277
+    },
+    {
+      "round": 5,
+      "api": "session",
+      "language": "shell",
+      "samples": 50,
+      "median_s": 0.00882224552333355,
+      "p95_s": 0.010899944137781857
+    }
+  ],
+  "runtime": {
+    "sdk_version": "0.7.0",
+    "packages": {
+      "flamepy": "0.7.0",
+      "grpcio": "1.85.0",
+      "protobuf": "7.36.2"
+    },
+    "client_python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "execution_image": "python:3.12-slim@sha256:6b25cbe6577518889d553cdd5a5da97d259348d8f6e45b527dd731caaba27a07",
+    "client_image": "docker.io/xflops/flame-console@sha256:8d8257449f592dc571a530feb9f7e2591754fb8a446f87d3246d778ebdf7054e",
+    "worker_image": "docker.io/xflops/flame-executor-manager@sha256:fcbf3c2c3792973fd01a4ad1d1e1442e62896c3e2391020ec7087fb835fdff8f",
+    "worker_revision": "a471e6b7e65f98b7648e732ec3ff725390a58c60"
+  },
+  "protocol": {
+    "rounds": 6,
+    "warmup_per_language": 5,
+    "samples_per_api_language_round": 50,
+    "measured_calls": 1200,
+    "proxies_disabled": true
+  },
+  "validation": {
+    "all_outputs_checked": true,
+    "local_summary_matches_cluster": true,
+    "input_hashes_unchanged": true,
+    "owned_sessions_deleted": true,
+    "owned_namespace_deleted": true,
+    "running_pod_identity_unchanged": true,
+    "result_recovery": "After a checkpoint copy timed out, the retained client was resumed; the complete result was recovered in compressed form and independently recomputed summary matched the client summary."
+  },
+  "measurement_definitions": {
+    "median": "median of six within-round medians",
+    "p95": "median of six within-round interpolated p95 values (50 observations per round)"
+  },
+  "limitations": [
+    "No Mac network, Hermes or LLM time",
+    "Retained workers run a new process for each call",
+    "Round p95 is not a pooled tail SLO",
+    "No production throughput or concurrency claim"
+  ],
+  "worker_rust_log": "info",
+  "performance_debug_logging": "disabled"
+}

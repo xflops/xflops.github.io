@@ -177,7 +177,7 @@ We measured `agent.Sandbox` and `agent.Session` directly from a client pod in th
 
 Each execution worker requested one CPU and 512 MiB of memory; no GPUs were requested. The client requested one CPU and 1 GiB, with limits of two CPUs and 2 GiB. Exact image digests, package versions, per-round measurements, and validation provenance are included in the linked data files.
 
-Both experiments used the worker image at revision [`a621df4`](https://github.com/xflops/flame/commit/a621df4ecde627d629692c26d53a0d153cd4c1d1), which includes the service-readiness change in [PR #674](https://github.com/xflops/flame/pull/674). The execution image was `python:3.12-slim` pinned to a multi-architecture index digest. Before the allocation test, workers were prewarmed; all 12 traced first-use samples confirmed both the index reference and platform image were cached. These are explicit SDK benchmark settings; the plugin's functional demos use its default image reference.
+Both experiments used the worker image at revision [`a471e6b`](https://github.com/xflops/flame/commit/a471e6b7e65f98b7648e732ec3ff725390a58c60), which includes the service-readiness change in [PR #674](https://github.com/xflops/flame/pull/674) and the startup change in [PR #677](https://github.com/xflops/flame/pull/677). Workers used `RUST_LOG=info`; performance and timeline debug logs were disabled. The execution image was `python:3.12-slim` pinned to a multi-architecture index digest. Before the allocation test, workers were prewarmed; all 12 traced first-use samples confirmed both the index reference and platform image were cached. These are explicit SDK benchmark settings; the plugin's functional demos use its default image reference.
 
 ### Fresh allocation and first execution
 
@@ -185,10 +185,10 @@ We measured Sandbox allocation from the creation API call until the first Python
 
 | Sandbox allocation | Median → first result | Observed range |
 | --- | ---: | ---: |
-| New executor and service | **148 ms** | 135–336 ms |
-| Retained executor and service | **79 ms** | 66–177 ms |
+| New executor and service | **127 ms** | 109–143 ms |
+| Retained executor and service | **76 ms** | 63–86 ms |
 
-The first-use median is below the 200 ms target, but the observed 336 ms maximum shows that this small sample does not establish a 200 ms tail-latency guarantee. The image reference and platform image were prewarmed; the 12 traced first-use samples separately confirmed both were present. Initial SDK connection setup is excluded. The test used temporary applications with a three-second executor release delay and enabled client timing hooks; the control samples did not use a worker tracing wrapper. These numbers measure Sandbox, not Session startup. A worker pod replacement can require the alias to be warmed again. See the [first-use measurements](/assets/data/hermes-flamepy-first-use-20261029.json).
+The first-use median and all 12 observed samples were below 200 ms. This small sample does not establish a 200 ms tail-latency guarantee. The image reference and platform image were prewarmed; the 12 traced first-use samples separately confirmed both were present. Initial SDK connection setup is excluded. The test used temporary applications with a three-second executor release delay and enabled client timing hooks; the control samples did not use a worker tracing wrapper. These numbers measure Sandbox, not Session startup. A worker pod replacement can require the alias to be warmed again. See the [first-use measurements](/assets/data/hermes-flamepy-first-use-20261029-a471.json).
 
 The measurement does not isolate scheduler/binding, service readiness, image lookup, runtime initialization, and command execution. The total should therefore not be attributed to gVisor or RPC alone.
 
@@ -198,16 +198,16 @@ After five excluded warmup calls per API and language, each round measured 50 ca
 
 | API | Language | Median latency | Typical round p95 |
 | --- | --- | ---: | ---: |
-| Sandbox | Python | **25.92 ms** | 28.48 ms |
-| Sandbox | shell | **8.42 ms** | 10.06 ms |
-| Session, one worker | Python | **23.52 ms** | 26.14 ms |
-| Session, one worker | shell | **7.99 ms** | 9.70 ms |
+| Sandbox | Python | **24.72 ms** | 27.07 ms |
+| Sandbox | shell | **8.56 ms** | 9.81 ms |
+| Session, one worker | Python | **24.25 ms** | 26.54 ms |
+| Session, one worker | shell | **8.31 ms** | 9.53 ms |
 
 The median column is the median of the six within-round medians. The p95 column is the median of six within-round p95 estimates, each based on 50 observations. It describes these rounds; it is not a pooled tail estimate or a production latency guarantee. A retained worker still starts a new snippet process, so these values are not isolated scheduler overhead.
 
-![Sandbox first-use and retained-executor allocation alongside warm SDK round trips](/assets/images/hermes-flamepy/agent-sdk-prewarmed-performance.svg?v=20261029a621)
+![Sandbox first-use and retained-executor allocation alongside warm SDK round trips](/assets/images/hermes-flamepy/agent-sdk-prewarmed-performance.svg?v=20261029a471)
 
-The allocation experiment checked all 12 pairs, independently reproduced its summary, and cleaned up its temporary sessions, executors, and client namespace. The separate warm-call experiment checked 1,200 calls. A connection reset interrupted collection of its final result; the complete result was recovered, its summary independently reproduced and matched to the client summary, and its temporary namespace removed. See the [warm-call data](/assets/data/hermes-flamepy-performance-20261029.json).
+The allocation experiment checked all 12 pairs, independently reproduced its summary, and cleaned up its temporary sessions, executors, and client namespace. The separate warm-call experiment checked 1,200 calls. A checkpoint download timed out after five rounds; the retained client was resumed for the final round. The complete result was recovered, its summary independently reproduced and matched to the client summary, and its temporary namespace removed. See the [warm-call data](/assets/data/hermes-flamepy-performance-20261029-a471.json).
 
 Parallel throughput is outside this report's validated scope. These measurements also do not establish whole-agent response time, maximum cluster throughput, or DAS affinity benefits.
 
@@ -235,7 +235,7 @@ The current tool schema does not expose per-call image selection, CPU/GPU requir
 
 Flame separates a session's logical lifetime from individual task calls. The plugin reuses its machine-level Sandbox and Session handles rather than creating a new logical environment for every request. `flmbox` also caches unpacked, digest-verified image root filesystems on workers, allowing subsequent sandboxes to reuse an available image.
 
-Image reuse does not preserve a previous sandbox's working data. With the index alias prewarmed, first-use Sandbox allocation had a 148 ms median, while allocation on a retained executor had a 79 ms median. In the separate warm-call test, subsequent Python snippets completed in about 24–26 ms for the trivial command above. Session submission semantics are demonstrated by the scenario example; parallel throughput remains outside the validated performance results.
+Image reuse does not preserve a previous sandbox's working data. With the index alias prewarmed, first-use Sandbox allocation had a 127 ms median, while allocation on a retained executor had a 76 ms median. In the separate warm-call test, subsequent Python snippets completed in about 24–25 ms for the trivial command above. Session submission semantics are demonstrated by the scenario example; parallel throughput remains outside the validated performance results.
 
 ## Session scope and lifecycle
 

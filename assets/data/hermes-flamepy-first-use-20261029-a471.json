@@ -1,0 +1,271 @@
+{
+  "date": "2026-10-29",
+  "scope": "Sandbox allocation through first Python result; fresh client and application per pair",
+  "rounds": 6,
+  "pairs": 12,
+  "rows": [
+    {
+      "round": 0,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.12723815999925137,
+          "allocation_s": 0.001271875575184822
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.07489814050495625,
+          "allocation_s": 0.0009942073374986649
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.13094935938715935,
+          "allocation_s": 0.0015702638775110245
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.07493052817881107,
+          "allocation_s": 0.0011582281440496445
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.10915099643170834,
+          "allocation_s": 0.0012198369950056076
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.06326174736022949,
+          "allocation_s": 0.0010022148489952087
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.12682278640568256,
+          "allocation_s": 0.0012107957154512405
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.07487744837999344,
+          "allocation_s": 0.001095995306968689
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.12410916015505791,
+          "allocation_s": 0.0011612381786108017
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.0770855937153101,
+          "allocation_s": 0.0010023768991231918
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.1274348795413971,
+          "allocation_s": 0.0011884160339832306
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.07657762616872787,
+          "allocation_s": 0.0009411312639713287
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.12411743961274624,
+          "allocation_s": 0.001138182356953621
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.06846763007342815,
+          "allocation_s": 0.0009613651782274246
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.13794547133147717,
+          "allocation_s": 0.001181967556476593
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.08616928942501545,
+          "allocation_s": 0.0013476219028234482
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.14110330492258072,
+          "allocation_s": 0.0011760946363210678
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.08268838934600353,
+          "allocation_s": 0.0009850766509771347
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.14343706890940666,
+          "allocation_s": 0.0012798719108104706
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.08324913308024406,
+          "allocation_s": 0.0009425580501556396
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "repetition": 1,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.14347925037145615,
+          "allocation_s": 0.001182863488793373
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.08510372787714005,
+          "allocation_s": 0.0010167714208364487
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "repetition": 0,
+      "measurements": [
+        {
+          "phase": "first",
+          "seconds": 0.11917436681687832,
+          "allocation_s": 0.0011723712086677551
+        },
+        {
+          "phase": "reuse",
+          "seconds": 0.06945299915969372,
+          "allocation_s": 0.0012978166341781616
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "phase": "first",
+      "median_s": 0.12733651977032423,
+      "range_s": [
+        0.10915099643170834,
+        0.14347925037145615
+      ],
+      "values_s": [
+        0.12723815999925137,
+        0.13094935938715935,
+        0.10915099643170834,
+        0.12682278640568256,
+        0.12410916015505791,
+        0.1274348795413971,
+        0.12411743961274624,
+        0.13794547133147717,
+        0.14110330492258072,
+        0.14343706890940666,
+        0.14347925037145615,
+        0.11917436681687832
+      ]
+    },
+    {
+      "phase": "reuse",
+      "median_s": 0.07575407717376947,
+      "range_s": [
+        0.06326174736022949,
+        0.08616928942501545
+      ],
+      "values_s": [
+        0.07489814050495625,
+        0.07493052817881107,
+        0.06326174736022949,
+        0.07487744837999344,
+        0.0770855937153101,
+        0.07657762616872787,
+        0.06846763007342815,
+        0.08616928942501545,
+        0.08268838934600353,
+        0.08324913308024406,
+        0.08510372787714005,
+        0.06945299915969372
+      ]
+    }
+  ],
+  "image": "python:3.12-slim@sha256:6b25cbe6577518889d553cdd5a5da97d259348d8f6e45b527dd731caaba27a07",
+  "worker_image": "docker.io/xflops/flame-executor-manager@sha256:fcbf3c2c3792973fd01a4ad1d1e1442e62896c3e2391020ec7087fb835fdff8f",
+  "worker_revision": "a471e6b7e65f98b7648e732ec3ff725390a58c60",
+  "application_delay_release_seconds": 3,
+  "worker_cpu_request": 1,
+  "worker_memory_request_bytes": 536870912,
+  "client_instrumented": true,
+  "worker_tracing": "Separate diagnostic arm; control values reported",
+  "existing_sdk_connection_established_before_timing": true,
+  "image_cache": "Index reference and platform image prewarmed; confirmed by 12 traced samples",
+  "validation": {
+    "outputs_checked": true,
+    "exact_executor_reuse_confirmed": true,
+    "independent_summary_match": true,
+    "owned_sessions_and_executors_cleaned": true,
+    "namespace_deleted": true,
+    "raw_evidence_sha256": "78cf4eaa1e10c8b2dd90cce446a69a6bdda946d6eea673754206736a0c49d8cd"
+  },
+  "limitations": [
+    "No Hermes, LLM or client connection setup time",
+    "Prewarmed image; excludes image download",
+    "Small sample; observed range is not a tail guarantee"
+  ],
+  "worker_rust_log": "info",
+  "performance_debug_logging": "disabled"
+}
