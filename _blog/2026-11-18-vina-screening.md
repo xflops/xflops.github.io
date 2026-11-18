@@ -31,6 +31,12 @@ Vina's Python API already allows an initialized engine to be reused locally. Fla
 
 Remote calls return futures, so the client can collect finished ligands without waiting for submission order. This example adds incremental ranked CSV files, pose files and a provenance manifest around those results. Those scientific output formats belong to the example code, while Flame handles dispatch and result delivery.
 
+### Why use Flame over Docker containers or Kubernetes Jobs?
+
+Docker containers and Kubernetes Jobs can run this screen directly. With one fresh process per ligand, each invocation loads Python, initializes Vina and builds receptor maps. Grouping ligands into a container amortizes that setup; a persistent worker pool can also retain engines across batches. That pool needs task dispatch, result delivery, replica allocation and progress tracking. Flame provides those mechanisms through a Python service handle and an open session, while containers or pods can still provide the underlying execution environment.
+
+For this screen, nine initialized engines served 101 ligand calls, including 92 warm invocations. Further batches can use the same open session, with engine reuse while the executors remain alive. Kubernetes Jobs remain a practical choice for an occasional batch of long-running ligands. Flame is useful when repeated batches, reusable state and many independent calls would otherwise require maintaining a worker service. This run did not compare performance against a persistent Kubernetes worker pool.
+
 ### Local and distributed execution
 
 The same VinaScreen class runs locally and on Flame. Its constructor and dock method contain no Flame API calls. Local execution creates the class directly:
@@ -50,7 +56,19 @@ Executor allocation is adjusted according to session demand, configured limits a
 
 Ray separates persistence from replica scaling. A [detached named actor](https://docs.ray.io/en/latest/ray-core/actors/named-actors.html) can outlive its creating driver, but does not automatically replicate when its method queue grows. The [Ray cluster autoscaler](https://docs.ray.io/en/latest/cluster/kubernetes/user-guides/configuring-autoscaling.html) can provision nodes for requested actors; that is distinct from creating additional actor instances. [Ray Data autoscaling actor pools](https://docs.ray.io/en/latest/data/api/doc/ray.data.ActorPoolStrategy.html) are a closer comparison for scaling execution capacity. For this workflow, Flame brings continued submissions and elastic executor allocation together under one session.
 
-### Setup reuse and overhead
+### Low overhead and high task throughput
+
+Flame targets low per-task overhead by dispatching calls to reusable executors, so each ligand does not require a new container, pod or Python process. The [Flame README performance benchmark](https://github.com/xflops/flame#performance) reports the following single-node `flmping` result:
+
+| Measurement | README benchmark |
+| --- | --- |
+| Command | `flmping -p -t 30000` |
+| Successful tasks | 30,000 of 30,000 |
+| Task submission and completion duration | 3.29 s |
+| Throughput | **9,124.09 tasks/s** |
+| Session creation reported separately | **1 ms** |
+
+The ping workload requests no sleep or memory allocation, making it a useful illustration of high task throughput with little application work. These figures describe the README's benchmark environment and Rust ping service; they are not measurements of Python docking throughput or isolated scheduler latency. Aggregate throughput also does not establish an individual call's round-trip latency. Session creation excludes application deployment and worker initialization.
 
 Receptor loading and map construction occurred once per executor instance. Nine initializations supported 101 tasks, including 92 warm invocations. This amortized setup across ligand calls. The recorded timings cover Vina setup and docking; scheduling, serialization and transport overhead were not measured independently.
 
