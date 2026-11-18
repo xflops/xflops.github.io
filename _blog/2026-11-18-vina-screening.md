@@ -5,8 +5,9 @@ date: 2026-11-18
 description: "Screen 100 ABL1 library compounds and an imatinib reference with AutoDock Vina, reusing initialized engines across Flame executors on two Linux workers."
 categories: ["Flame", "Scientific Computing"]
 tags: ["flamepy", "autodock-vina", "virtual-screening", "sessions"]
-thumbnail: "/assets/images/vina-screening/session-progress.png"
-thumbnail_alt: "AutoDock Vina screening session showing task progress on Flame"
+# Logo source: https://vina.scripps.edu/wp-content/uploads/sites/55/2020/12/vina_logo.png
+thumbnail: "/images/autodock-vina-logo.png"
+thumbnail_alt: "AutoDock Vina logo"
 thumbnail_fit: "contain"
 ---
 
