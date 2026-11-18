@@ -31,11 +31,11 @@ Vina's Python API already allows an initialized engine to be reused locally. Fla
 
 Remote calls return futures, so the client can collect finished ligands without waiting for submission order. This example adds incremental ranked CSV files, pose files and a provenance manifest around those results. Those scientific output formats belong to the example code, while Flame handles dispatch and result delivery.
 
-### Why use Flame over Docker containers or Kubernetes Jobs?
+### Comparison with direct container and Kubernetes Job execution
 
-Docker containers and Kubernetes Jobs can run this screen directly. With one fresh process per ligand, each invocation loads Python, initializes Vina and builds receptor maps. Grouping ligands into a container amortizes that setup; a persistent worker pool can also retain engines across batches. That pool needs task dispatch, result delivery, replica allocation and progress tracking. Flame provides those mechanisms through a Python service handle and an open session, while containers or pods can still provide the underlying execution environment.
+The screening workload can also be executed with Docker containers or Kubernetes Jobs. A separate process for each ligand repeats Python startup, Vina initialization and receptor-map construction. Processing several ligands in one container amortizes these costs. A persistent worker pool can retain initialized engines across batches, provided that task dispatch, result delivery, replica allocation and progress tracking are supplied by the application or supporting infrastructure.
 
-For this screen, nine initialized engines served 101 ligand calls, including 92 warm invocations. Further batches can use the same open session, with engine reuse while the executors remain alive. Kubernetes Jobs remain a practical choice for an occasional batch of long-running ligands. Flame is useful when repeated batches, reusable state and many independent calls would otherwise require maintaining a worker service. This run did not compare performance against a persistent Kubernetes worker pool.
+In this implementation, Flame supplied those functions through a Python service handle and a session. Nine initialized engines served 101 ligand calls, including 92 warm invocations. The session remained open for further submissions; engine state remained available for the lifetime of each executor instance. The distinction concerns management of ligand calls and reusable service state, while containers or pods can still provide the execution environment. No comparative run against Docker, Kubernetes Jobs or a persistent Kubernetes worker pool was conducted.
 
 ### Local and distributed execution
 
@@ -56,21 +56,21 @@ Executor allocation is adjusted according to session demand, configured limits a
 
 Ray separates persistence from replica scaling. A [detached named actor](https://docs.ray.io/en/latest/ray-core/actors/named-actors.html) can outlive its creating driver, but does not automatically replicate when its method queue grows. The [Ray cluster autoscaler](https://docs.ray.io/en/latest/cluster/kubernetes/user-guides/configuring-autoscaling.html) can provision nodes for requested actors; that is distinct from creating additional actor instances. [Ray Data autoscaling actor pools](https://docs.ray.io/en/latest/data/api/doc/ray.data.ActorPoolStrategy.html) are a closer comparison for scaling execution capacity. For this workflow, Flame brings continued submissions and elastic executor allocation together under one session.
 
-### Low overhead and high task throughput
+### Task throughput and execution overhead
 
-Flame targets low per-task overhead by dispatching calls to reusable executors, so each ligand does not require a new container, pod or Python process. The [Flame README performance benchmark](https://github.com/xflops/flame#performance) reports the following single-node `flmping` result:
+Calls were dispatched to reusable executors, avoiding a separate container, pod or Python process startup for each ligand. Task throughput was characterized separately in the [Flame README performance benchmark](https://github.com/xflops/flame#performance), which reports the following single-node `flmping` result:
 
 | Measurement | README benchmark |
 | --- | --- |
 | Command | `flmping -p -t 30000` |
 | Successful tasks | 30,000 of 30,000 |
 | Task submission and completion duration | 3.29 s |
-| Throughput | **9,124.09 tasks/s** |
-| Session creation reported separately | **1 ms** |
+| Throughput | 9,124.09 tasks/s |
+| Session creation reported separately | 1 ms |
 
-The ping workload requests no sleep or memory allocation, making it a useful illustration of high task throughput with little application work. These figures describe the README's benchmark environment and Rust ping service; they are not measurements of Python docking throughput or isolated scheduler latency. Aggregate throughput also does not establish an individual call's round-trip latency. Session creation excludes application deployment and worker initialization.
+The Rust ping workload requested no simulated delay or additional task memory. It completed 30,000 tasks in 3.29 seconds, demonstrating high throughput for lightweight tasks in the reported environment. The result provides context for Flame's task-processing capacity; it does not quantify Python docking overhead or individual call latency. The separately reported session-creation time excludes application deployment and worker initialization.
 
-Receptor loading and map construction occurred once per executor instance. Nine initializations supported 101 tasks, including 92 warm invocations. This amortized setup across ligand calls. The recorded timings cover Vina setup and docking; scheduling, serialization and transport overhead were not measured independently.
+In the Vina run, receptor loading and map construction occurred once per executor instance, totaling 24.41 seconds across nine instances. Reuse amortized this setup over 101 ligand calls. Scheduling, serialization and transport overhead were not measured independently, so the docking timings do not establish a numerical overhead estimate for Flame.
 
 ## Screening inputs and preparation
 
