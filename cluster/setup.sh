@@ -30,6 +30,7 @@ usage: setup.sh --hostname HOST [options]
   --worker NAME             worker name (default detected hostname)
   --address IPV4            worker LAN address (default detected private interface)
   --max-executors N          worker executor limit (default 10)
+  --shims LIST              cri, host, or cri,host (default cri; SRE prepares runtimes)
   --manage-object-cache      let flmlet manage the worker object cache
   --prefix DIR              existing Flame runtime directory (default /usr/local/flame)
   --systemd-dir DIR         systemd unit directory (default /etc/systemd/system)
@@ -39,6 +40,7 @@ usage: setup.sh --hostname HOST [options]
 Existing Kubernetes, cert-manager, Envoy Gateway/Gateway API, GatewayClass and
 ClusterIssuer are SRE prerequisites. This script does not install them. Worker
 mode requires Linux/systemd, root, Python 3, and an existing Flame runtime.
+Inline tokens can appear in process arguments; prefer --token-file on shared hosts.
 USAGE
 }
 
@@ -62,6 +64,7 @@ inline_join_token=
 worker=
 address=
 max_executors=10
+shims=cri
 manage_cache=0
 prefix=/usr/local/flame
 systemd_dir=/etc/systemd/system
@@ -80,7 +83,7 @@ while [ "$#" -gt 0 ]; do
         --adopt-existing) adopt=1; shift ;;
         --manage-object-cache) manage_cache=1; shift ;;
         -h|--help) usage; exit 0 ;;
-        --version|--image-tag|--artifacts-dir|--namespace|--cluster|--hostname|--values|--flame-version|--endpoint|--console-endpoint|--kubernetes-endpoint|--kubeconfig|--token-file|--worker|--address|--max-executors|--prefix|--systemd-dir)
+        --version|--image-tag|--artifacts-dir|--namespace|--cluster|--hostname|--values|--flame-version|--endpoint|--console-endpoint|--kubernetes-endpoint|--kubeconfig|--token-file|--worker|--address|--max-executors|--shims|--prefix|--systemd-dir)
             [ "$#" -ge 2 ] && [ -n "$2" ] || fail "$1 requires a value"
             option="$1"; value="$2"; shift 2
             case "$option" in
@@ -92,6 +95,7 @@ while [ "$#" -gt 0 ]; do
                 --kubernetes-endpoint) kubernetes_endpoint="$value" ;; --kubeconfig) kubeconfig="$value" ;;
                 --token-file) token_file="$value" ;; --worker) worker="$value" ;;
                 --address) address="$value" ;; --max-executors) max_executors="$value" ;;
+                --shims) shims="$value" ;;
                 --prefix) prefix="$value" ;; --systemd-dir) systemd_dir="$value" ;;
             esac ;;
         *) fail 'unknown installer option (use --help)' ;;
@@ -166,7 +170,7 @@ if [ "$mode" = cluster ]; then
     [ -z "$token_file" ] && [ -z "$worker" ] || fail '--token-file and --worker require --join'
     for tool in helm kubectl; do need "$tool"; done
     kube get --raw /readyz >/dev/null || fail 'Kubernetes API is not ready'
-    for crd in certificates.cert-manager.io clusterissuers.cert-manager.io gateways.gateway.networking.k8s.io httproutes.gateway.networking.k8s.io referencegrants.gateway.networking.k8s.io envoyproxies.gateway.envoyproxy.io clienttrafficpolicies.gateway.envoyproxy.io; do
+    for crd in certificates.cert-manager.io clusterissuers.cert-manager.io gateways.gateway.networking.k8s.io backendtlspolicies.gateway.networking.k8s.io httproutes.gateway.networking.k8s.io referencegrants.gateway.networking.k8s.io envoyproxies.gateway.envoyproxy.io clienttrafficpolicies.gateway.envoyproxy.io; do
         kube get crd "$crd" >/dev/null 2>&1 || fail "SRE prerequisite is missing: $crd"
     done
     fetch SHA256SUMS
@@ -192,8 +196,8 @@ if [ "$mode" = cluster ]; then
     kube get clusterissuer "$issuer" >/dev/null || fail "SRE ClusterIssuer is missing: $issuer"
     kube wait "gatewayclass/$gateway_class" --for=condition=Accepted --timeout=120s >/dev/null || fail 'SRE GatewayClass is not accepted'
     kube wait "clusterissuer/$issuer" --for=condition=Ready --timeout=120s >/dev/null || fail 'SRE ClusterIssuer is not ready'
-    console_endpoint="${console_endpoint:-http://$cluster-session-manager.$namespace.svc:8080}"
-    helm_command template flame-console "$work/charts/flame-console" --namespace "$namespace" --set-string "image.tag=$image_tag" --set-string "flame.endpoint=$console_endpoint" > "$work/console.yaml"
+    console_endpoint="${console_endpoint:-https://$cluster-session-manager.$namespace.svc:8080}"
+    helm_command template flame-console "$work/charts/flame-console" --namespace "$namespace" --set-string "image.tag=$image_tag" --set-string "flame.endpoint=$console_endpoint" --set-string "flame.tls.caConfigMap=$issuer" --set-string flame.tls.caKey=ca.crt --set-string flame.tls.certKey= --set-string flame.tls.keyKey= > "$work/console.yaml"
     helm_command template flame-ui "$work/charts/flame-ui" --namespace "$namespace" --set-string "image.tag=$image_tag" --set-string "consoleUpstream=flame-console.$namespace.svc:3000" > "$work/ui.yaml"
     # Flame CRDs belong to this release; third-party CRDs remain SRE-owned.
     [ -d "$work/charts/flame-operator/crds" ] || fail 'operator CRDs are missing from the release'
@@ -208,7 +212,7 @@ if [ "$mode" = cluster ]; then
     [ -z "$kubernetes_endpoint" ] || set -- "$@" --set-string "kubernetesEndpoint=$kubernetes_endpoint"
     helm_command "$@" --wait --atomic --timeout 5m
     kube -n "$namespace" wait "flamecluster/$cluster" --for=condition=Ready --timeout=15m
-    helm_command upgrade --install flame-console "$work/charts/flame-console" --namespace "$namespace" --set-string "image.tag=$image_tag" --set-string "flame.endpoint=$console_endpoint" --wait --atomic --timeout 5m
+    helm_command upgrade --install flame-console "$work/charts/flame-console" --namespace "$namespace" --set-string "image.tag=$image_tag" --set-string "flame.endpoint=$console_endpoint" --set-string "flame.tls.caConfigMap=$issuer" --set-string flame.tls.caKey=ca.crt --set-string flame.tls.certKey= --set-string flame.tls.keyKey= --wait --atomic --timeout 5m
     helm_command upgrade --install flame-ui "$work/charts/flame-ui" --namespace "$namespace" --set-string "image.tag=$image_tag" --set-string "consoleUpstream=flame-console.$namespace.svc:3000" --wait --atomic --timeout 5m
     printf 'Flame Cluster %s installed in %s.\n' "$cluster" "$namespace"
     printf 'Console: kubectl -n %s port-forward service/flame-ui 8080:80\n' "$namespace"
@@ -320,7 +324,7 @@ def private_write(path, value):
 
 
 def decode(arguments):
-    source, directory, namespace, explicit_namespace, cluster, explicit_cluster, worker, address, maximum, cache = arguments
+    source, directory, namespace, explicit_namespace, cluster, explicit_cluster, worker, address, maximum, cache, shims = arguments
     raw = Path(source).read_bytes()
     require(len(raw) <= 1024 * 1024, 'join token is too large')
     opaque = raw.strip().decode('ascii')
@@ -336,11 +340,13 @@ def decode(arguments):
     maximum = int(maximum)
     require(1 <= maximum <= 2147483647, '--max-executors must be a positive 32-bit integer')
     require(cache in ('0', '1'), 'invalid object cache setting')
+    shims = [value.strip() for value in shims.split(',')]
+    require(shims and len(set(shims)) == len(shims) and all(value in ('cri', 'host') for value in shims), '--shims must contain unique cri and/or host values')
     address = private_address(address) if address else detect_address(server)
     directory = Path(directory)
     private_write(directory / 'bootstrap.json', json.dumps(envelope))
     private_write(directory / 'opaque-token', opaque)
-    private_write(directory / 'join-request.json', json.dumps({'namespace': envelope['namespace'], 'cluster': envelope['cluster'], 'worker': worker, 'address': address, 'maxExecutors': maximum, 'manageObjectCache': cache == '1'}))
+    private_write(directory / 'join-request.json', json.dumps({'namespace': envelope['namespace'], 'cluster': envelope['cluster'], 'worker': worker, 'address': address, 'maxExecutors': maximum, 'manageObjectCache': cache == '1', 'shims': shims}))
     private_write(directory / 'namespace', envelope['namespace'])
     private_write(directory / 'worker', worker)
 
@@ -451,11 +457,11 @@ try:
 except (ValueError, TypeError, KeyError, AttributeError, OSError, binascii.Error):
     # Never echo token data, credential-bearing responses, or HTTP request bodies.
     error = sys.exc_info()[1]
-    safe = str(error) if isinstance(error, ValueError) and str(error).startswith(('worker enrollment ', 'cannot select one private LAN address', '--max-executors ', 'join namespace ', 'join cluster ', 'worker address ')) else 'invalid or mismatched join token or worker state'
+    safe = str(error) if isinstance(error, ValueError) and str(error).startswith(('worker enrollment ', 'cannot select one private LAN address', '--max-executors ', '--shims ', 'join namespace ', 'join cluster ', 'worker address ')) else 'invalid or mismatched join token or worker state'
     print(f'Flame Cluster: {safe}', file=sys.stderr)
     sys.exit(1)
 PY_ENROLL
-python3 "$work/enrollment.py" decode "$token_file" "$work" "$namespace" "$namespace_set" "$cluster" "$cluster_set" "$worker" "$address" "$max_executors" "$manage_cache"
+python3 "$work/enrollment.py" decode "$token_file" "$work" "$namespace" "$namespace_set" "$cluster" "$cluster_set" "$worker" "$address" "$max_executors" "$manage_cache" "$shims"
 namespace="$(cat "$work/namespace")"
 worker="$(cat "$work/worker")"
 case "$(uname -m)" in x86_64|amd64) architecture=amd64 ;; aarch64|arm64) architecture=arm64 ;; *) fail 'unsupported worker CPU architecture' ;; esac
