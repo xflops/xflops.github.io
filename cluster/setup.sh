@@ -30,7 +30,7 @@ usage: setup.sh [options]
   --worker NAME             worker name (default detected hostname)
   --address IPV4            worker LAN address (default detected private interface)
   --max-executors N          worker executor limit (default 10)
-  --shims LIST              cri, host, or cri,host (default cri; SRE prepares runtimes)
+  --shims LIST              cri, host, or cri,host (default cri,host; SRE prepares runtimes)
   --manage-object-cache      let flmlet manage the worker object cache
   --prefix DIR              Flame installation directory (default /usr/local/flame)
   --systemd-dir DIR         systemd unit directory (default /etc/systemd/system)
@@ -66,7 +66,7 @@ inline_join_token=
 worker=
 address=
 max_executors=10
-shims=cri
+shims=cri,host
 manage_cache=0
 prefix=/usr/local/flame
 systemd_dir=/etc/systemd/system
@@ -227,6 +227,27 @@ PY
     for component in flame-operator flame-cluster flame-ui; do
         [ -f "$work/charts/$component/Chart.yaml" ] || fail "release chart is missing: $component"
     done
+    # Share stream/List decoding between identity checks and namespace preparation.
+    cat > "$work/rendered_objects.py" <<'PY_OBJECTS'
+import json
+from pathlib import Path
+
+
+def read_objects(path):
+    remaining = Path(path).read_text().lstrip()
+    decoder = json.JSONDecoder()
+    objects = []
+    while remaining:
+        obj, end = decoder.raw_decode(remaining)
+        if not isinstance(obj, dict):
+            raise ValueError('rendered Kubernetes object must be a JSON object')
+        entries = obj.get('items') if obj.get('kind') == 'List' else [obj]
+        if not isinstance(entries, list) or any(not isinstance(item, dict) for item in entries):
+            raise ValueError('rendered Kubernetes List must contain JSON objects')
+        objects.extend(entries)
+        remaining = remaining[end:].lstrip()
+    return objects
+PY_OBJECTS
     # Render every component before the first persistent Kubernetes change.
     helm_command template flame-operator "$work/charts/flame-operator" --namespace "$namespace" --set-string "image.tag=$image_tag" > "$work/operator.yaml"
     set -- template flame-cluster "$work/charts/flame-cluster" --namespace "$namespace"
@@ -253,6 +274,57 @@ PY
         kube -n "$namespace" get configmap "$issuer" -o json > "$work/ca-$issuer.json" || fail "SRE public trust ConfigMap is missing: $namespace/$issuer"
     done < "$work/issuers"
     helm_command template flame-ui "$work/charts/flame-ui" --namespace "$namespace" --set-string "image.tag=$image_tag" --set-string "consoleUpstream=cluster.$namespace.svc:3000" --set-string "service.externalIPs[0]=$ui_address" > "$work/ui.yaml"
+    # Inspect stored identities before any mutation: new chart defaults must never
+    # silently move an existing Flame away from its storage and worker identities.
+    helm_command list --namespace "$namespace" --deployed --failed --pending --uninstalling --uninstalled --superseded --filter '^flame-cluster$' -o json > "$work/releases.json" || fail 'cannot inspect existing Flame Helm release'
+    existing_release="$(python3 - "$work/releases.json" <<'PY_RELEASE'
+import json
+from pathlib import Path
+import sys
+try:
+    releases = json.loads(Path(sys.argv[1]).read_text())
+    if not isinstance(releases, list) or len(releases) > 1 or any(not isinstance(item, dict) or item.get('name') != 'flame-cluster' for item in releases):
+        raise ValueError()
+    print('yes' if releases else 'no')
+except (ValueError, OSError):
+    sys.exit('Flame Cluster: cannot parse existing Flame Helm release inventory')
+PY_RELEASE
+)" || fail 'cannot inspect existing Flame Helm release'
+    if [ "$existing_release" = yes ]; then
+        helm_command get manifest flame-cluster --namespace "$namespace" > "$work/previous-cluster.yaml" || fail 'cannot inspect existing Flame Helm manifest'
+        kube create --dry-run=client --validate=false -f "$work/previous-cluster.yaml" -o json > "$work/previous-cluster.json" || fail 'cannot decode existing Flame Helm manifest'
+        kube create --dry-run=client --validate=false -f "$work/cluster.yaml" -o json > "$work/proposed-cluster.json" || fail 'cannot decode proposed Flame Helm manifest'
+        python3 - "$work" "$namespace" <<'PY_IDENTITIES'
+from pathlib import Path
+import re
+import sys
+work = Path(sys.argv[1])
+sys.path.insert(0, str(work))
+from rendered_objects import read_objects
+
+def identities(path):
+    result = set()
+    for obj in read_objects(path):
+        if obj.get('kind') != 'FlameCluster':
+            continue
+        metadata = obj.get('metadata', {})
+        pair = (metadata.get('namespace'), metadata.get('name'))
+        if any(not isinstance(value, str) or len(value) > 63 or not re.fullmatch(r'[a-z0-9]([-a-z0-9]*[a-z0-9])?', value) for value in pair) or pair in result:
+            raise ValueError()
+        result.add(pair)
+    if not result:
+        raise ValueError()
+    return result
+
+try:
+    removed = identities(work / 'previous-cluster.json') - identities(work / 'proposed-cluster.json')
+except (ValueError, TypeError, AttributeError, OSError):
+    sys.exit('Flame Cluster: cannot validate existing and proposed Flame identities; no changes were made')
+if removed:
+    retained = ', '.join(f'{namespace}/{name}' for namespace, name in sorted(removed))
+    sys.exit(f'Flame Cluster: upgrade would remove or move existing Flames: {retained}. No changes were made. Export `helm get values flame-cluster --namespace {sys.argv[2]} -o yaml > flame-values.yaml`, retain the FULL flames list and set each affected entry namespace explicitly to its existing namespace, then rerun setup.sh --values flame-values.yaml. Namespace migration requires a separate storage and credential migration.')
+PY_IDENTITIES
+    fi
     # Flame CRDs belong to this release; third-party CRDs remain SRE-owned.
     [ -d "$work/charts/flame-operator/crds" ] || fail 'operator CRDs are missing from the release'
     kube apply --server-side --field-manager=flame-cluster-setup -f "$work/charts/flame-operator/crds" >/dev/null
@@ -267,19 +339,9 @@ import sys
 work = Path(sys.argv[1])
 json_source = 'rendered Kubernetes'
 try:
-    # kubectl create prints one JSON object per YAML document, not a single List.
-    remaining = (work / 'cluster-objects.json').read_text().lstrip()
-    decoder = json.JSONDecoder()
-    objects = []
-    while remaining:
-        obj, end = decoder.raw_decode(remaining)
-        if not isinstance(obj, dict):
-            raise ValueError('rendered Kubernetes object must be a JSON object')
-        entries = obj.get('items') if obj.get('kind') == 'List' else [obj]
-        if not isinstance(entries, list) or any(not isinstance(item, dict) for item in entries):
-            raise ValueError('rendered Kubernetes List must contain JSON objects')
-        objects.extend(entries)
-        remaining = remaining[end:].lstrip()
+    sys.path.insert(0, str(work))
+    from rendered_objects import read_objects
+    objects = read_objects(work / 'cluster-objects.json')
     namespaces = [obj for obj in objects if obj.get('kind') == 'Namespace']
     declared = {obj['metadata']['name'] for obj in namespaces}
     flames = [obj for obj in objects if obj.get('kind') == 'FlameCluster']
