@@ -21,6 +21,41 @@ An agent workspace starts small: a shell, a project directory, and a few package
 
 ## Why build it with Flame?
 
+### High throughput and low latency
+
+Agent execution combines many short commands with longer-running programs. High task throughput helps the cluster serve concurrent sessions, while low command latency keeps an individual agent's edit-run-inspect loop responsive. Flame's session model and executor reuse reduce repeated runtime setup along that path.
+
+The [Flame performance benchmark](https://github.com/xflops/flame#performance) reports **30,000 lightweight Rust ping tasks in 3.29 seconds**, or **9,124 tasks per second**, on a single-node deployment. Our earlier [sandbox SDK measurements]({{ '/blog/hermes-flamepy/' | relative_url }}#performance-measured-inside-kubernetes) provide complementary latency results:
+
+| Measurement | Reported result |
+| --- | ---: |
+| New executor and service, allocation through first Python result | 127 ms median |
+| Retained sandbox, trivial shell command | 8.56 ms median |
+| Retained sandbox, trivial Python command | 24.72 ms median |
+
+The sandbox measurements used `flamepy` 0.7.0, prewarmed images, and an in-cluster client; initial SDK connection setup, model inference, and laptop-to-cluster networking were excluded. The warm-call figures summarize six rounds of measurements. These are separate task-throughput and sandbox-latency experiments, rather than an end-to-end benchmark of hermes-flamepy 0.3.2.
+
+### Keep system resource overhead low
+
+The Flame Executor Manager (**FEM**) is a small native Rust daemon on each worker. It handles executor lifecycle and communication with the session manager, while application code runs in the configured execution environment. The manager itself needs no Python interpreter or JVM. This lightweight worker component helps leave CPU and memory available for the sandboxes and programs doing the work. See the [FEM implementation](https://github.com/xflops/flame/tree/main/executor_manager).
+
+We measured the running services on both workers on November 22, 2026. Each worker had eight logical CPUs. Across 16 observations over approximately 30 seconds per host, FEM's resident memory stayed at the following values:
+
+| Worker | FEM resident memory (RSS) | FEM CPU, average over the interval |
+| --- | ---: | ---: |
+| `flm-worker-01` | 17.28 MiB | 0.10% of one CPU core |
+| `flm-worker-02` | 17.31 MiB | 0.07% of one CPU core |
+
+The accompanying `flmlet` processes used 10.46–10.64 MiB RSS, and the object-cache processes used 13.86–13.91 MiB RSS. These measurements came directly from Linux process counters, with systemd identifying each service's main process. CPU percentages use CPU-time deltas over the observation interval; memory figures describe resident process pages.
+
+The cluster had **no active executors, pending tasks, or running tasks** during the workload-status snapshot taken within the sampling window. These figures show the current idle worker-service footprint; they do not establish resource requirements under load. Worker sizing should account separately for sandbox runtimes, image caches, application processes, and control-plane services. The Dashboard's total memory usage covers the wider host workload. [Download the raw observations, CPU summaries, and measurement scope]({{ '/assets/data/flame-worker-resources-20261122.json' | relative_url }}).
+
+### Run workloads in different languages
+
+Flame's execution model is independent of the application's programming language. Python and Rust have [dedicated SDKs](https://github.com/xflops/flame/tree/main/sdk), while the gRPC service interface supports integration with other languages, including Go. Teams can use Python for agent workflows and compiled services for other parts of an application while retaining the same application, session, and task model.
+
+Sandbox commands can also invoke tools written in different languages when the chosen image contains their interpreters or compiled binaries. For example, a Hermes workspace can run Python analysis, shell scripts, and a compiled command-line tool in the same open sandbox. Select an image with the required tools; the default `python:3.12-slim` image does not include every language toolchain. See the [Flame language overview](https://github.com/xflops/flame#motivation) and [Hermes image requirements](https://github.com/xflops/hermes-flamepy#execution-and-files).
+
 ### Share worker capacity across agent sessions
 
 Clients submit work to Flame through a common endpoint. Flame places that work on available executors according to session demand, resource requests, cluster policy, and capacity. The client does not need a list of worker addresses or its own machine-selection logic.

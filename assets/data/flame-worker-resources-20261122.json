@@ -1,0 +1,1478 @@
+{
+  "title": "Flame worker process footprint, 2026-11-22",
+  "units": {
+    "memory": "bytes; MiB = 1048576 bytes",
+    "process_cpu_percent": "100% is one logical CPU core; interval CPU tick delta divided by elapsed wall time",
+    "host_cpu_percent": "100% is total host CPU capacity"
+  },
+  "workload_snapshot": {
+    "observed_at": "2026-11-22T13:23:58.962215782+00:00",
+    "session_count": 3,
+    "pending_tasks": 0,
+    "running_tasks": 0,
+    "executor_count": 0,
+    "note": "Two suspended flmbox sessions and one closed flmping session. Read-only sampling; no workload was submitted."
+  },
+  "limitations": [
+    "Two existing eight-logical-CPU workers observed for approximately 30 seconds each; current idle state, not a loaded benchmark or a maximum resource requirement.",
+    "RSS includes resident shared pages; PSS apportions shared pages. Process figures exclude child processes and the control plane.",
+    "systemd service memory accounting and process RSS use different accounting boundaries and must not be substituted for each other.",
+    "A zero process CPU tick delta indicates usage below the sampling resolution, not a guarantee of zero CPU consumption."
+  ],
+  "workers": [
+    {
+      "observed_at": "2026-11-22T13:23:48.222518+00:00",
+      "hostname": "flm-worker-01",
+      "sample_interval_seconds": 2,
+      "sample_count": 16,
+      "elapsed_seconds": 30.070856424979866,
+      "clock_ticks_per_second": 100,
+      "logical_cpu_count": 8,
+      "method": "Linux procfs process CPU tick deltas and RSS/PSS snapshots; systemd MainPID. Read-only; no load generated.",
+      "scope": "Current operating state only; not a loaded benchmark. Process RSS/PSS excludes child processes. Service cgroup memory is recorded separately.",
+      "host_cpu_percent_of_total_capacity": 0.18307397853041524,
+      "host_memory_used_bytes": {
+        "min": 732372992,
+        "median": 740247552.0,
+        "max": 741171200
+      },
+      "host_memory_total_bytes": 16613277696,
+      "units": {
+        "flame-executor-manager.service": {
+          "pid": 507856,
+          "active": "active",
+          "executable_name": "flame-executor-manager",
+          "binary_bytes": 21758976,
+          "initial_service_memory_bytes": "7761920",
+          "samples": [
+            {
+              "elapsed_seconds": 0.0,
+              "cpu_ticks": 14621,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 2.002018650993705,
+              "cpu_ticks": 14621,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 4.00607077893801,
+              "cpu_ticks": 14622,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 6.011147171026096,
+              "cpu_ticks": 14622,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 8.015841842861846,
+              "cpu_ticks": 14622,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 10.02100966591388,
+              "cpu_ticks": 14622,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 12.026113213971257,
+              "cpu_ticks": 14622,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 14.031275830930099,
+              "cpu_ticks": 14622,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 16.03641121694818,
+              "cpu_ticks": 14622,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 18.04151570284739,
+              "cpu_ticks": 14622,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 20.04651094088331,
+              "cpu_ticks": 14623,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 22.051628708839417,
+              "cpu_ticks": 14623,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 24.056782367872074,
+              "cpu_ticks": 14623,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 26.06197141087614,
+              "cpu_ticks": 14623,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 28.067065035924315,
+              "cpu_ticks": 14623,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            },
+            {
+              "elapsed_seconds": 30.070856424979866,
+              "cpu_ticks": 14624,
+              "start_ticks": 111549252,
+              "rss_bytes": 18120704,
+              "pss_bytes": 15944704,
+              "private_bytes": 15777792
+            }
+          ],
+          "cpu_seconds": 0.03,
+          "cpu_percent_of_one_core": 0.09976436845037441,
+          "rss_bytes": {
+            "min": 18120704,
+            "median": 18120704.0,
+            "max": 18120704
+          },
+          "pss_bytes": {
+            "min": 15944704,
+            "median": 15944704.0,
+            "max": 15944704
+          },
+          "private_bytes": {
+            "min": 15777792,
+            "median": 15777792.0,
+            "max": 15777792
+          },
+          "final_service_memory_bytes": "8028160"
+        },
+        "flame-object-cache.service": {
+          "pid": 507807,
+          "active": "active",
+          "executable_name": "flame-object-cache",
+          "binary_bytes": 14495400,
+          "initial_service_memory_bytes": "6258688",
+          "samples": [
+            {
+              "elapsed_seconds": 0.0,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 2.002018650993705,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 4.00607077893801,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 6.011147171026096,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 8.015841842861846,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 10.02100966591388,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 12.026113213971257,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 14.031275830930099,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 16.03641121694818,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 18.04151570284739,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 20.04651094088331,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 22.051628708839417,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 24.056782367872074,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 26.06197141087614,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 28.067065035924315,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            },
+            {
+              "elapsed_seconds": 30.070856424979866,
+              "cpu_ticks": 723,
+              "start_ticks": 111549221,
+              "rss_bytes": 14589952,
+              "pss_bytes": 12413952,
+              "private_bytes": 12247040
+            }
+          ],
+          "cpu_seconds": 0.0,
+          "cpu_percent_of_one_core": 0.0,
+          "rss_bytes": {
+            "min": 14589952,
+            "median": 14589952.0,
+            "max": 14589952
+          },
+          "pss_bytes": {
+            "min": 12413952,
+            "median": 12413952.0,
+            "max": 12413952
+          },
+          "private_bytes": {
+            "min": 12247040,
+            "median": 12247040.0,
+            "max": 12247040
+          },
+          "final_service_memory_bytes": "6258688"
+        },
+        "flmlet.service": {
+          "pid": 790510,
+          "active": "active",
+          "executable_name": "flmlet",
+          "binary_bytes": 14156864,
+          "initial_service_memory_bytes": "2252800",
+          "samples": [
+            {
+              "elapsed_seconds": 0.0,
+              "cpu_ticks": 5994,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 2.002018650993705,
+              "cpu_ticks": 5994,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 4.00607077893801,
+              "cpu_ticks": 5995,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 6.011147171026096,
+              "cpu_ticks": 5995,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 8.015841842861846,
+              "cpu_ticks": 5995,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 10.02100966591388,
+              "cpu_ticks": 5995,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 12.026113213971257,
+              "cpu_ticks": 5995,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 14.031275830930099,
+              "cpu_ticks": 5997,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 16.03641121694818,
+              "cpu_ticks": 5997,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 18.04151570284739,
+              "cpu_ticks": 5997,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 20.04651094088331,
+              "cpu_ticks": 5997,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 22.051628708839417,
+              "cpu_ticks": 5997,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 24.056782367872074,
+              "cpu_ticks": 5998,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 26.06197141087614,
+              "cpu_ticks": 5998,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 28.067065035924315,
+              "cpu_ticks": 5998,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            },
+            {
+              "elapsed_seconds": 30.070856424979866,
+              "cpu_ticks": 5998,
+              "start_ticks": 119946614,
+              "rss_bytes": 10973184,
+              "pss_bytes": 8806400,
+              "private_bytes": 8642560
+            }
+          ],
+          "cpu_seconds": 0.04,
+          "cpu_percent_of_one_core": 0.13301915793383254,
+          "rss_bytes": {
+            "min": 10973184,
+            "median": 10973184.0,
+            "max": 10973184
+          },
+          "pss_bytes": {
+            "min": 8806400,
+            "median": 8806400.0,
+            "max": 8806400
+          },
+          "private_bytes": {
+            "min": 8642560,
+            "median": 8642560.0,
+            "max": 8642560
+          },
+          "final_service_memory_bytes": "2265088"
+        }
+      },
+      "host_samples": [
+        {
+          "elapsed_seconds": 0.0,
+          "cpu_ticks": [
+            1632114,
+            580,
+            420173,
+            989214862,
+            245587,
+            0,
+            71815,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 735342592
+        },
+        {
+          "elapsed_seconds": 2.002018650993705,
+          "cpu_ticks": [
+            1632115,
+            580,
+            420174,
+            989216461,
+            245587,
+            0,
+            71815,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 736497664
+        },
+        {
+          "elapsed_seconds": 4.00607077893801,
+          "cpu_ticks": [
+            1632120,
+            580,
+            420178,
+            989218052,
+            245587,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 732372992
+        },
+        {
+          "elapsed_seconds": 6.011147171026096,
+          "cpu_ticks": [
+            1632120,
+            580,
+            420179,
+            989219648,
+            245592,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 732610560
+        },
+        {
+          "elapsed_seconds": 8.015841842861846,
+          "cpu_ticks": [
+            1632120,
+            580,
+            420179,
+            989221250,
+            245592,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 732610560
+        },
+        {
+          "elapsed_seconds": 10.02100966591388,
+          "cpu_ticks": [
+            1632121,
+            580,
+            420181,
+            989222851,
+            245592,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 732610560
+        },
+        {
+          "elapsed_seconds": 12.026113213971257,
+          "cpu_ticks": [
+            1632121,
+            580,
+            420182,
+            989224448,
+            245597,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 732598272
+        },
+        {
+          "elapsed_seconds": 14.031275830930099,
+          "cpu_ticks": [
+            1632125,
+            580,
+            420188,
+            989226039,
+            245597,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 740130816
+        },
+        {
+          "elapsed_seconds": 16.03641121694818,
+          "cpu_ticks": [
+            1632127,
+            580,
+            420188,
+            989227641,
+            245597,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 740372480
+        },
+        {
+          "elapsed_seconds": 18.04151570284739,
+          "cpu_ticks": [
+            1632127,
+            580,
+            420189,
+            989229237,
+            245602,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 740372480
+        },
+        {
+          "elapsed_seconds": 20.04651094088331,
+          "cpu_ticks": [
+            1632127,
+            580,
+            420190,
+            989230839,
+            245602,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 740364288
+        },
+        {
+          "elapsed_seconds": 22.051628708839417,
+          "cpu_ticks": [
+            1632127,
+            580,
+            420191,
+            989232441,
+            245602,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 740364288
+        },
+        {
+          "elapsed_seconds": 24.056782367872074,
+          "cpu_ticks": [
+            1632130,
+            580,
+            420196,
+            989234027,
+            245607,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 740761600
+        },
+        {
+          "elapsed_seconds": 26.06197141087614,
+          "cpu_ticks": [
+            1632131,
+            580,
+            420196,
+            989235629,
+            245607,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 741171200
+        },
+        {
+          "elapsed_seconds": 28.067065035924315,
+          "cpu_ticks": [
+            1632132,
+            580,
+            420197,
+            989237231,
+            245607,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 741171200
+        },
+        {
+          "elapsed_seconds": 30.070856424979866,
+          "cpu_ticks": [
+            1632132,
+            580,
+            420198,
+            989238827,
+            245612,
+            0,
+            71816,
+            0
+          ],
+          "memory_total_bytes": 16613277696,
+          "memory_used_bytes": 741171200
+        }
+      ]
+    },
+    {
+      "observed_at": "2026-11-22T13:23:47.479874+00:00",
+      "hostname": "flm-worker-02",
+      "sample_interval_seconds": 2,
+      "sample_count": 16,
+      "elapsed_seconds": 30.039559839991853,
+      "clock_ticks_per_second": 100,
+      "logical_cpu_count": 8,
+      "method": "Linux procfs process CPU tick deltas and RSS/PSS snapshots; systemd MainPID. Read-only; no load generated.",
+      "scope": "Current operating state only; not a loaded benchmark. Process RSS/PSS excludes child processes. Service cgroup memory is recorded separately.",
+      "host_cpu_percent_of_total_capacity": 0.16665277893508873,
+      "host_memory_used_bytes": {
+        "min": 966217728,
+        "median": 969592832.0,
+        "max": 973758464
+      },
+      "host_memory_total_bytes": 7947886592,
+      "units": {
+        "flame-executor-manager.service": {
+          "pid": 565103,
+          "active": "active",
+          "executable_name": "flame-executor-manager",
+          "binary_bytes": 21758976,
+          "initial_service_memory_bytes": "7675904",
+          "samples": [
+            {
+              "elapsed_seconds": 0.0,
+              "cpu_ticks": 5698,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 2.0021933489479125,
+              "cpu_ticks": 5698,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 4.004811353981495,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 6.007491616997868,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 8.01019594585523,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 10.012809097999707,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 12.015475602820516,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 14.018163736909628,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 16.02079849387519,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 18.023488075938076,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 20.026048657950014,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 22.028694706968963,
+              "cpu_ticks": 5699,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 24.031444588908926,
+              "cpu_ticks": 5700,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 26.034133785869926,
+              "cpu_ticks": 5700,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 28.036824739770964,
+              "cpu_ticks": 5700,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            },
+            {
+              "elapsed_seconds": 30.039559839991853,
+              "cpu_ticks": 5700,
+              "start_ticks": 184540033,
+              "rss_bytes": 18153472,
+              "pss_bytes": 15922176,
+              "private_bytes": 15732736
+            }
+          ],
+          "cpu_seconds": 0.02,
+          "cpu_percent_of_one_core": 0.06657887168297943,
+          "rss_bytes": {
+            "min": 18153472,
+            "median": 18153472.0,
+            "max": 18153472
+          },
+          "pss_bytes": {
+            "min": 15922176,
+            "median": 15922176.0,
+            "max": 15922176
+          },
+          "private_bytes": {
+            "min": 15732736,
+            "median": 15732736.0,
+            "max": 15732736
+          },
+          "final_service_memory_bytes": "8204288"
+        },
+        "flame-object-cache.service": {
+          "pid": 565054,
+          "active": "active",
+          "executable_name": "flame-object-cache",
+          "binary_bytes": 14495400,
+          "initial_service_memory_bytes": "6144000",
+          "samples": [
+            {
+              "elapsed_seconds": 0.0,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 2.0021933489479125,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 4.004811353981495,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 6.007491616997868,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 8.01019594585523,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 10.012809097999707,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 12.015475602820516,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 14.018163736909628,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 16.02079849387519,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 18.023488075938076,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 20.026048657950014,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 22.028694706968963,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 24.031444588908926,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 26.034133785869926,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 28.036824739770964,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            },
+            {
+              "elapsed_seconds": 30.039559839991853,
+              "cpu_ticks": 433,
+              "start_ticks": 184540004,
+              "rss_bytes": 14532608,
+              "pss_bytes": 12249088,
+              "private_bytes": 12062720
+            }
+          ],
+          "cpu_seconds": 0.0,
+          "cpu_percent_of_one_core": 0.0,
+          "rss_bytes": {
+            "min": 14532608,
+            "median": 14532608.0,
+            "max": 14532608
+          },
+          "pss_bytes": {
+            "min": 12249088,
+            "median": 12249088.0,
+            "max": 12249088
+          },
+          "private_bytes": {
+            "min": 12062720,
+            "median": 12062720.0,
+            "max": 12062720
+          },
+          "final_service_memory_bytes": "6139904"
+        },
+        "flmlet.service": {
+          "pid": 745907,
+          "active": "active",
+          "executable_name": "flmlet",
+          "binary_bytes": 14156864,
+          "initial_service_memory_bytes": "2240512",
+          "samples": [
+            {
+              "elapsed_seconds": 0.0,
+              "cpu_ticks": 4266,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 2.0021933489479125,
+              "cpu_ticks": 4266,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 4.004811353981495,
+              "cpu_ticks": 4266,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 6.007491616997868,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 8.01019594585523,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 10.012809097999707,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 12.015475602820516,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 14.018163736909628,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 16.02079849387519,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 18.023488075938076,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 20.026048657950014,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 22.028694706968963,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 24.031444588908926,
+              "cpu_ticks": 4267,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 26.034133785869926,
+              "cpu_ticks": 4268,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 28.036824739770964,
+              "cpu_ticks": 4268,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            },
+            {
+              "elapsed_seconds": 30.039559839991853,
+              "cpu_ticks": 4268,
+              "start_ticks": 189896639,
+              "rss_bytes": 11157504,
+              "pss_bytes": 8953856,
+              "private_bytes": 8777728
+            }
+          ],
+          "cpu_seconds": 0.02,
+          "cpu_percent_of_one_core": 0.06657887168297943,
+          "rss_bytes": {
+            "min": 11157504,
+            "median": 11157504.0,
+            "max": 11157504
+          },
+          "pss_bytes": {
+            "min": 8953856,
+            "median": 8953856.0,
+            "max": 8953856
+          },
+          "private_bytes": {
+            "min": 8777728,
+            "median": 8777728.0,
+            "max": 8777728
+          },
+          "final_service_memory_bytes": "2256896"
+        }
+      },
+      "host_samples": [
+        {
+          "elapsed_seconds": 0.0,
+          "cpu_ticks": [
+            4225614,
+            4400,
+            3656350,
+            1540937502,
+            1599289,
+            0,
+            62370,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 972660736
+        },
+        {
+          "elapsed_seconds": 2.0021933489479125,
+          "cpu_ticks": [
+            4225615,
+            4400,
+            3656352,
+            1540939102,
+            1599289,
+            0,
+            62370,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 972890112
+        },
+        {
+          "elapsed_seconds": 4.004811353981495,
+          "cpu_ticks": [
+            4225616,
+            4400,
+            3656352,
+            1540940702,
+            1599289,
+            0,
+            62370,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 972890112
+        },
+        {
+          "elapsed_seconds": 6.007491616997868,
+          "cpu_ticks": [
+            4225622,
+            4400,
+            3656356,
+            1540942289,
+            1599293,
+            0,
+            62371,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 969084928
+        },
+        {
+          "elapsed_seconds": 8.01019594585523,
+          "cpu_ticks": [
+            4225622,
+            4400,
+            3656356,
+            1540943890,
+            1599293,
+            0,
+            62371,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 969089024
+        },
+        {
+          "elapsed_seconds": 10.012809097999707,
+          "cpu_ticks": [
+            4225622,
+            4400,
+            3656357,
+            1540945489,
+            1599294,
+            0,
+            62371,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 969089024
+        },
+        {
+          "elapsed_seconds": 12.015475602820516,
+          "cpu_ticks": [
+            4225624,
+            4400,
+            3656360,
+            1540947072,
+            1599298,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 969084928
+        },
+        {
+          "elapsed_seconds": 14.018163736909628,
+          "cpu_ticks": [
+            4225624,
+            4400,
+            3656361,
+            1540948672,
+            1599298,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 969076736
+        },
+        {
+          "elapsed_seconds": 16.02079849387519,
+          "cpu_ticks": [
+            4225627,
+            4400,
+            3656364,
+            1540950263,
+            1599298,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 973504512
+        },
+        {
+          "elapsed_seconds": 18.023488075938076,
+          "cpu_ticks": [
+            4225627,
+            4400,
+            3656365,
+            1540951859,
+            1599303,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 973758464
+        },
+        {
+          "elapsed_seconds": 20.026048657950014,
+          "cpu_ticks": [
+            4225627,
+            4400,
+            3656365,
+            1540953459,
+            1599303,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 966217728
+        },
+        {
+          "elapsed_seconds": 22.028694706968963,
+          "cpu_ticks": [
+            4225627,
+            4400,
+            3656365,
+            1540955059,
+            1599303,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 966266880
+        },
+        {
+          "elapsed_seconds": 24.031444588908926,
+          "cpu_ticks": [
+            4225627,
+            4400,
+            3656366,
+            1540956659,
+            1599303,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 966262784
+        },
+        {
+          "elapsed_seconds": 26.034133785869926,
+          "cpu_ticks": [
+            4225632,
+            4400,
+            3656369,
+            1540958251,
+            1599303,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 970096640
+        },
+        {
+          "elapsed_seconds": 28.036824739770964,
+          "cpu_ticks": [
+            4225632,
+            4400,
+            3656369,
+            1540959851,
+            1599303,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 970100736
+        },
+        {
+          "elapsed_seconds": 30.039559839991853,
+          "cpu_ticks": [
+            4225632,
+            4400,
+            3656370,
+            1540961442,
+            1599311,
+            0,
+            62372,
+            0
+          ],
+          "memory_total_bytes": 7947886592,
+          "memory_used_bytes": 970100736
+        }
+      ]
+    }
+  ]
+}
