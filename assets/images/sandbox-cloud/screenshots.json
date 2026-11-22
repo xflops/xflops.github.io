@@ -1,0 +1,10 @@
+{
+  "captured_at": "2026-11-22T13:02:58.702Z",
+  "source": "Live Flame console; read-only browser navigation.",
+  "images": [
+    "console-dashboard.png",
+    "console-nodes.png",
+    "console-sessions.png"
+  ],
+  "note": "Resource counts and status reflect the deployment at capture time. Browser screenshots show the upper viewport containing each resource view. No session actions were invoked."
+}
